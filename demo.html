@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coded Clothing - Premium Cotton T-Shirts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="text-xl font-bold tracking-tight text-gray-900">
+                Coded Clothing
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-2 mb-4">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Premium Cotton T-Shirts</h1>
+                <p class="text-gray-500 text-sm md:text-base">
+                    Choose your favorite color to start customizing.
+                </p>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                <!-- Black Tee -->
+                <div class="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 ease-in-out active:scale-[0.98] cursor-pointer" onclick="selectProduct('Classic Black')">
+                    <div class="relative aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="https://placehold.co/600x800/1a1a1a/ffffff?text=Black+Tee" alt="Classic Black T-Shirt" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                        <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-xs font-semibold px-2.5 py-1 rounded-full text-gray-800 shadow-sm">Bestseller</span>
+                    </div>
+                    <div class="p-4 flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full border border-gray-200 shadow-inner" style="background-color: #1a1a1a;"></div>
+                            <h3 class="text-sm font-medium text-gray-900">Classic Black</h3>
+                        </div>
+                        <p class="text-sm text-gray-500">Starting at ₹299</p>
+                    </div>
+                </div>
+
+                <!-- White Tee -->
+                <div class="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 ease-in-out active:scale-[0.98] cursor-pointer" onclick="selectProduct('Pure White')">
+                    <div class="relative aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="https://placehold.co/600x800/ffffff/1a1a1a?text=White+Tee" alt="Pure White T-Shirt" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                        <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-xs font-semibold px-2.5 py-1 rounded-full text-gray-800 shadow-sm">Popular</span>
+                    </div>
+                    <div class="p-4 flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full border border-gray-200 shadow-inner" style="background-color: #ffffff;"></div>
+                            <h3 class="text-sm font-medium text-gray-900">Pure White</h3>
+                        </div>
+                        <p class="text-sm text-gray-500">Starting at ₹299</p>
+                    </div>
+                </div>
+
+                <!-- Navy Tee -->
+                <div class="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 ease-in-out active:scale-[0.98] cursor-pointer" onclick="selectProduct('Navy Blue')">
+                    <div class="relative aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="https://placehold.co/600x800/1e3a8a/ffffff?text=Navy+Tee" alt="Navy Blue T-Shirt" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                    </div>
+                    <div class="p-4 flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full border border-gray-200 shadow-inner" style="background-color: #1e3a8a;"></div>
+                            <h3 class="text-sm font-medium text-gray-900">Navy Blue</h3>
+                        </div>
+                        <p class="text-sm text-gray-500">Starting at ₹299</p>
+                    </div>
+                </div>
+
+                <!-- Grey Tee -->
+                <div class="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 ease-in-out active:scale-[0.98] cursor-pointer" onclick="selectProduct('Heather Grey')">
+                    <div class="relative aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="https://placehold.co/600x800/9ca3af/ffffff?text=Grey+Tee" alt="Heather Grey T-Shirt" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                    </div>
+                    <div class="p-4 flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full border border-gray-200 shadow-inner" style="background-color: #9ca3af;"></div>
+                            <h3 class="text-sm font-medium text-gray-900">Heather Grey</h3>
+                        </div>
+                        <p class="text-sm text-gray-500">Starting at ₹299</p>
+                    </div>
+                </div>
+
+                <!-- Red Tee -->
+                <div class="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 ease-in-out active:scale-[0.98] cursor-pointer" onclick="selectProduct('Crimson Red')">
+                    <div class="relative aspect-[3/4] overflow-hidden bg-gray-100">
+                        <img src="https://placehold.co/600x800/b91c1c/ffffff?text=Red+Tee" alt="Crimson Red T-Shirt" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                        <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-xs font-semibold px-2.5 py-1 rounded-full text-gray-800 shadow-sm">New</span>
+                    </div>
+                    <div class="p-4 flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full border border-gray-200 shadow-inner" style="background-color: #b91c1c;"></div>
+                            <h3 class="text-sm font-medium text-gray-900">Crimson Red</h3>
+                        </div>
+                        <p class="text-sm text-gray-500">Starting at ₹299</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function selectProduct(color) {
+            alert(`🎨 Ready to customize your ${color} t-shirt!\n\nThis would open the design studio in the full application.`);
+        }
+    </script>
+
+</body>
+</html>
