@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Skeleton } from '../ui/Skeleton';
 
 export default function TShirtCard({ product }) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   return (
     <Link
       to={`/product/${product.id}`}
@@ -9,12 +13,17 @@ export default function TShirtCard({ product }) {
                  hover:scale-[1.02]"
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+        {!imageLoaded && (
+          <Skeleton className="absolute inset-0 w-full h-full" />
+        )}
         <img
           src={product.image}
           alt={`${product.color} T-Shirt`}
           loading="lazy"
-          className="object-cover w-full h-full
-                     group-hover:scale-110 transition-transform duration-500 ease-out"
+          onLoad={() => setImageLoaded(true)}
+          className={`object-cover w-full h-full transition-all duration-500 ease-out ${
+            imageLoaded ? 'opacity-100 group-hover:scale-110' : 'opacity-0'
+          }`}
         />
 
         {product.label && (

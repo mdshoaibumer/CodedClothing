@@ -8,6 +8,7 @@ import { cn } from '../../../lib/utils';
 /**
  * UploadLogo Component
  * Handles uploading logos to Cloudinary and updating the customization store.
+ * Now includes upload progress indication for better UX.
  */
 
 // Constants
@@ -16,6 +17,7 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 export default function UploadLogo() {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef(null);
 
   // Store integration
@@ -48,13 +50,22 @@ export default function UploadLogo() {
     if (!file) return;
 
     setIsUploading(true);
+    setUploadProgress(0);
 
     try {
       // Validate file
       validateFile(file);
 
+      // Simulate upload progress with intervals
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + Math.random() * 30, 90));
+      }, 200);
+
       // Upload to Cloudinary
       const secureUrl = await uploadImage(file);
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
       
       // Update store - if "both" view, apply to both front AND back
       if (activeView === 'both') {
@@ -68,10 +79,15 @@ export default function UploadLogo() {
         console.log(`Logo uploaded and set for ${activeView}:`, secureUrl);
       }
     } catch (err) {
+      setUploadProgress(0);
       addToast(err.message, 'error');
       console.error('Upload error:', err);
     } finally {
-      setIsUploading(false);
+      // Reset upload state after a delay
+      setTimeout(() => {
+        setIsUploading(false);
+        setUploadProgress(0);
+      }, 500);
       // Reset input so the same file can be selected again
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
@@ -100,7 +116,7 @@ export default function UploadLogo() {
           {isUploading ? (
             <>
               <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-              <span>Uploading...</span>
+              <span>Uploading {uploadProgress}%...</span>
             </>
           ) : (
             <>
@@ -113,6 +129,22 @@ export default function UploadLogo() {
             </>
           )}
         </Button>
+
+        {/* Upload Progress Bar */}
+        {isUploading && (
+          <div className="w-full space-y-2 animate-in fade-in slide-in-from-bottom-2">
+            <div className="relative w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-black via-gray-800 to-black transition-all duration-300 ease-out"
+                style={{ width: `${uploadProgress}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-[8px] font-bold text-gray-500 uppercase">Uploading...</span>
+              <span className="text-[8px] font-bold text-gray-700">{Math.round(uploadProgress)}%</span>
+            </div>
+          </div>
+        )}
 
         {currentDesign?.logo && (
           <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 animate-in fade-in slide-in-from-bottom-2">

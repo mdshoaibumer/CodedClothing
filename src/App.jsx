@@ -1,9 +1,12 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import ErrorBoundary from './components/error/ErrorBoundary';
 import ToastContainer from './features/notifications/components/ToastContainer';
-import CollectionPage from './pages/CollectionPage';
-import ProductDetailPage from './pages/ProductDetailPage';
-import CustomizePage from './pages/CustomizePage';
+
+// Lazy load pages for code splitting
+const CollectionPage = lazy(() => import('./pages/CollectionPage'));
+const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
+const CustomizePage = lazy(() => import('./pages/CustomizePage'));
 
 const Header = () => (
   <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
@@ -26,11 +29,20 @@ export default function App() {
         <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
           <Header />
           <main className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 py-10">
-            <Routes>
-              <Route path="/" element={<CollectionPage />} />
-              <Route path="/product/:id" element={<ProductDetailPage />} />
-              <Route path="/customize/:id" element={<CustomizePage />} />
-            </Routes>
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-[400px]">
+                <div className="text-center">
+                  <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-gray-600 font-medium">Loading...</p>
+                </div>
+              </div>
+            }>
+              <Routes>
+                <Route path="/" element={<CollectionPage />} />
+                <Route path="/product/:id" element={<ProductDetailPage />} />
+                <Route path="/customize/:id" element={<CustomizePage />} />
+              </Routes>
+            </Suspense>
           </main>
           <ToastContainer />
         </div>

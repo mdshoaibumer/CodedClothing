@@ -10,7 +10,7 @@ import TShirtCanvas from './TShirtCanvas';
  * @param {Object} product - The product data containing image views.
  */
 export default function CanvasPreview({ product }) {
-  const { activeView, design, setPosition, setScale, saveToHistory } = useCustomizationStore();
+  const { activeView, design, setPosition, setScale, setRotation, saveToHistory } = useCustomizationStore();
 
   // Save to history when design changes (debounced via useEffect)
   useEffect(() => {
@@ -37,9 +37,13 @@ export default function CanvasPreview({ product }) {
             scale={design[viewKey].scale}
             x={design[viewKey].x}
             y={design[viewKey].y}
-            onUpdate={(newX, newY, newScale) => {
+            rotation={design[viewKey].rotation}
+            onUpdate={(newX, newY, newScale, newRotation) => {
               setPosition(viewKey, newX, newY);
               setScale(viewKey, newScale);
+              if (newRotation !== undefined) {
+                setRotation(viewKey, newRotation);
+              }
             }}
             label={viewKey.toUpperCase()}
             className={activeView !== 'both' ? "max-w-2xl mx-auto" : ""}
