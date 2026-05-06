@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Button } from '../../../components/ui/Button';
 import useCustomizationStore from '../store/useCustomizationStore';
 import useToastStore from '../../notifications/store/useToastStore';
@@ -45,6 +45,29 @@ export default function UploadLogo() {
     return true;
   };
 
+  /**
+   * Converts file to a local data URL as fallback when cloud upload fails
+   */
+  const fileToDataUrl = useCallback((file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  }, []);
+
+  const applyLogo = useCallback((url) => {
+    if (activeView === 'both') {
+      setLogo('front', url);
+      setLogo('back', url);
+      addToast('Logo uploaded to both sides!', 'success');
+    } else {
+      setLogo(activeView, url);
+      addToast(`Logo uploaded to ${activeView}!`, 'success');
+    }
+  }, [activeView, setLogo, addToast]);
+
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -57,26 +80,29 @@ export default function UploadLogo() {
       validateFile(file);
 
       // Simulate upload progress with intervals
-      const progressInterval = setInterval(() => {
+      let progressInterval = setInterval(() => {
         setUploadProgress(prev => Math.min(prev + Math.random() * 30, 90));
       }, 200);
 
-      // Upload to Cloudinary
-      const secureUrl = await uploadImage(file);
-      
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-      
-      // Update store - if "both" view, apply to both front AND back
-      if (activeView === 'both') {
-        setLogo('front', secureUrl);
-        setLogo('back', secureUrl);
-        addToast('Logo uploaded to both sides!', 'success');
-        console.log(`Logo uploaded and set for both sides:`, secureUrl);
-      } else {
-        setLogo(activeView, secureUrl);
-        addToast(`Logo uploaded to ${activeView}!`, 'success');
-        console.log(`Logo uploaded and set for ${activeView}:`, secureUrl);
+      try {
+        // Try Cloudinary upload first
+        const secureUrl = await uploadImage(file);
+        clearInterval(progressInterval);
+        setUploadProgress(100);
+        applyLogo(secureUrl);
+      } catch (cloudErr) {
+        // Fallback to local data URL if Cloudinary fails
+        clearInterval(progressInterval);
+        console.warn('Cloudinary upload failed, using local fallback:', cloudErr.message);
+        
+        try {
+          const localUrl = await fileToDataUrl(file);
+          setUploadProgress(100);
+          applyLogo(localUrl);
+          addToast('Using local preview (cloud upload unavailable)', 'warning');
+        } catch (fallbackErr) {
+          throw new Error('Failed to process image. Please try again.', { cause: fallbackErr });
+        }
       }
     } catch (err) {
       setUploadProgress(0);
@@ -156,7 +182,7 @@ export default function UploadLogo() {
             </div>
             <input
               type="range"
-              min="0.5"
+              min="0.1"
               max="2.0"
               step="0.01"
               value={currentDesign.scale}

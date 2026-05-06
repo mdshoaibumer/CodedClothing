@@ -1,5 +1,5 @@
 // NumericControls updated for better both-view editor UX
-import React, { useState } from 'react';
+import { useState } from 'react';
 import useCustomizationStore from '../store/useCustomizationStore';
 import useToastStore from '../../notifications/store/useToastStore';
 
@@ -9,7 +9,7 @@ import useToastStore from '../../notifications/store/useToastStore';
  * Now enhanced to work with "both" view for better UX
  */
 export default function NumericControls() {
-  const { activeView, design, setPosition, setScale, setRotation, setActiveView } = useCustomizationStore();
+  const { activeView, design, setPosition, setScale, setRotation } = useCustomizationStore();
   const addToast = useToastStore((state) => state.addToast);
 
   // Track which side user is editing when in "both" view
@@ -24,6 +24,10 @@ export default function NumericControls() {
   const editSide = activeView === 'both' ? bothViewEditSide : activeView;
   const currentDesign = design[editSide];
 
+  // Derive local values from store using render-time sync pattern
+  const [prevDesignKey, setPrevDesignKey] = useState('');
+  const designKey = `${editSide}-${currentDesign?.x}-${currentDesign?.y}-${currentDesign?.scale}-${currentDesign?.rotation}`;
+
   const [localValues, setLocalValues] = useState({
     x: currentDesign?.x || 0,
     y: currentDesign?.y || 0,
@@ -31,17 +35,24 @@ export default function NumericControls() {
     rotation: currentDesign?.rotation || 0,
   });
 
-  // Update local values when design changes
-  React.useEffect(() => {
-    if (currentDesign) {
-      setLocalValues({
-        x: currentDesign.x,
-        y: currentDesign.y,
-        scale: currentDesign.scale,
-        rotation: currentDesign.rotation,
-      });
+  // Sync from store when values change externally
+  if (prevDesignKey !== designKey) {
+    setPrevDesignKey(designKey);
+    const newValues = {
+      x: currentDesign?.x || 0,
+      y: currentDesign?.y || 0,
+      scale: currentDesign?.scale || 1,
+      rotation: currentDesign?.rotation || 0,
+    };
+    if (
+      newValues.x !== localValues.x ||
+      newValues.y !== localValues.y ||
+      newValues.scale !== localValues.scale ||
+      newValues.rotation !== localValues.rotation
+    ) {
+      setLocalValues(newValues);
     }
-  }, [currentDesign, editSide]);
+  }
 
   const handlePositionChange = (axis, value) => {
     const numValue = parseFloat(value) || 0;
@@ -53,7 +64,7 @@ export default function NumericControls() {
 
   const handleScaleChange = (value) => {
     const numValue = parseFloat(value) || 1;
-    const clampedValue = Math.max(0.3, Math.min(2.0, numValue));
+    const clampedValue = Math.max(0.1, Math.min(2.0, numValue));
 
     setLocalValues(prev => ({ ...prev, scale: clampedValue }));
     setScale(editSide, clampedValue);
@@ -125,8 +136,9 @@ export default function NumericControls() {
       <div className="grid grid-cols-2 gap-3 md:gap-4">
         {/* Position X */}
         <div className="space-y-2">
-          <label className="text-[8px] font-black text-purple-700 uppercase tracking-widest">X Position</label>
+          <label htmlFor="ctrl-pos-x" className="text-[8px] font-black text-purple-700 uppercase tracking-widest">X Position</label>
           <input
+            id="ctrl-pos-x"
             type="number"
             value={Math.round(localValues.x)}
             onChange={(e) => handlePositionChange('x', e.target.value)}
@@ -139,8 +151,9 @@ export default function NumericControls() {
 
         {/* Position Y */}
         <div className="space-y-2">
-          <label className="text-[8px] font-black text-purple-700 uppercase tracking-widest">Y Position</label>
+          <label htmlFor="ctrl-pos-y" className="text-[8px] font-black text-purple-700 uppercase tracking-widest">Y Position</label>
           <input
+            id="ctrl-pos-y"
             type="number"
             value={Math.round(localValues.y)}
             onChange={(e) => handlePositionChange('y', e.target.value)}
@@ -153,22 +166,24 @@ export default function NumericControls() {
 
         {/* Scale */}
         <div className="space-y-2">
-          <label className="text-[8px] font-black text-purple-700 uppercase tracking-widest">Scale (%)</label>
+          <label htmlFor="ctrl-scale" className="text-[8px] font-black text-purple-700 uppercase tracking-widest">Scale (%)</label>
           <input
+            id="ctrl-scale"
             type="number"
             value={Math.round(localValues.scale * 100)}
             onChange={(e) => handleScaleChange(e.target.value / 100)}
-            min="30"
+            min="10"
             max="200"
-            step="5"
+            step="1"
             className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-purple-100 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
           />
         </div>
 
         {/* Rotation */}
         <div className="space-y-2">
-          <label className="text-[8px] font-black text-purple-700 uppercase tracking-widest">Rotation (°)</label>
+          <label htmlFor="ctrl-rotation" className="text-[8px] font-black text-purple-700 uppercase tracking-widest">Rotation (°)</label>
           <input
+            id="ctrl-rotation"
             type="number"
             value={Math.round(localValues.rotation)}
             onChange={(e) => handleRotationChange(e.target.value)}

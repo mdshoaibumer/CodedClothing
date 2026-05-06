@@ -4,6 +4,7 @@ import { toPng } from 'html-to-image';
 import { formatPrice } from '../../features/product/product.utils';
 import useToastStore from '../../features/notifications/store/useToastStore';
 import useCustomizationStore from '../../features/customization/store/useCustomizationStore';
+import { Modal } from '../../components/ui/Modal';
 
 /**
  * CustomizePageHeader Component
@@ -87,6 +88,7 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
               onClick={() => { undo(); }}
               disabled={!canUndo}
               title="Undo (Ctrl+Z)"
+              aria-label="Undo"
               className="px-3 py-3 rounded-2xl border-2 border-gray-100 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-blue-500 hover:border-blue-500 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
            >
               ↶
@@ -95,6 +97,7 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
               onClick={() => { redo(); }}
               disabled={!canRedo}
               title="Redo (Ctrl+Y)"
+              aria-label="Redo"
               className="px-3 py-3 rounded-2xl border-2 border-gray-100 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-blue-500 hover:border-blue-500 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
            >
               ↷
@@ -103,45 +106,34 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
       </div>
 
       {/* Help Modal */}
-      {showHelp && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-8 relative">
-            <button
-              onClick={() => setShowHelp(false)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-            >
-              ✕
-            </button>
-            <h3 className="text-xl font-black text-gray-900 mb-6">Design Studio Guide</h3>
-            <div className="space-y-4 text-sm text-gray-600">
-              <div>
-                <h4 className="font-bold text-gray-900 mb-2">Getting Started</h4>
-                <p>Upload a transparent PNG logo for best results. The design zone shows where your logo will be printed.</p>
-              </div>
-              <div>
-                <h4 className="font-bold text-gray-900 mb-2">Customization</h4>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Drag the logo to reposition it</li>
-                  <li>Use corner handles to resize</li>
-                  <li>Scroll with mouse wheel for quick scaling</li>
-                  <li>Use the scale slider for precise control</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-bold text-gray-900 mb-2">Keyboard Shortcuts</h4>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Ctrl+Z: Undo last action</li>
-                  <li>Ctrl+Y or Ctrl+Shift+Z: Redo</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-bold text-gray-900 mb-2">Tips</h4>
-                <p>Use the Center button to quickly position your logo. For both sides, upload once and use copy actions.</p>
-              </div>
-            </div>
+      <Modal isOpen={showHelp} onClose={() => setShowHelp(false)} title="Design Studio Guide">
+        <div className="space-y-4 text-sm text-gray-600">
+          <div>
+            <h4 className="font-bold text-gray-900 mb-2">Getting Started</h4>
+            <p>Upload a transparent PNG logo for best results. The design zone shows where your logo will be printed.</p>
+          </div>
+          <div>
+            <h4 className="font-bold text-gray-900 mb-2">Customization</h4>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Drag the logo to reposition it</li>
+              <li>Use corner handles to resize</li>
+              <li>Scroll with mouse wheel for quick scaling</li>
+              <li>Use the scale slider for precise control</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold text-gray-900 mb-2">Keyboard Shortcuts</h4>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Ctrl+Z: Undo last action</li>
+              <li>Ctrl+Y or Ctrl+Shift+Z: Redo</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold text-gray-900 mb-2">Tips</h4>
+            <p>Use the Center button to quickly position your logo. For both sides, upload once and use copy actions.</p>
           </div>
         </div>
-      )}
+      </Modal>
     </>
   );
 }

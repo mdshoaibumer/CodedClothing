@@ -1,7 +1,6 @@
 import { memo } from 'react';
 import { cn } from '../../../lib/utils';
 import DraggableLogo from './DraggableLogo';
-import { getPrintSafeArea } from '../utils/canvas.utils';
 
 /**
  * TShirtCanvas Component
@@ -124,7 +123,11 @@ const TShirtCanvas = memo(
       prevProps.y === nextProps.y &&
       prevProps.rotation === nextProps.rotation &&
       prevProps.label === nextProps.label &&
-      prevProps.className === nextProps.className
+      prevProps.className === nextProps.className &&
+      prevProps.showGuides?.horizontal === nextProps.showGuides?.horizontal &&
+      prevProps.showGuides?.vertical === nextProps.showGuides?.vertical &&
+      prevProps.showGuides?.edges?.length === nextProps.showGuides?.edges?.length &&
+      prevProps.showGuides?.edges?.every((e, i) => e === nextProps.showGuides?.edges?.[i])
     );
   }
 );

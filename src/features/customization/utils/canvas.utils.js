@@ -218,10 +218,11 @@ export const smoothInterpolate = (current, target, factor = 0.15, easing = 'ease
     case 'magnetic':
       // Magnetic easing with resistance
       return current + distance * factor * 0.8;
-    case 'ease-out':
+    case 'ease-out': {
       // Cubic ease-out for smooth deceleration
       const t = 1 - Math.pow(1 - factor, 3);
       return current + distance * t;
+    }
     case 'linear':
     default:
       return current + distance * factor;
@@ -274,7 +275,8 @@ export const calculateSmoothScale = (delta, currentScale, sensitivity = 0.005) =
  * @param {number} intensity - Texture intensity (0-1)
  * @returns {string} CSS filter string
  */
-export const generateFabricTexture = (fabricColor = '#ffffff', intensity = 0.3) => {
+// eslint-disable-next-line no-unused-vars
+export const generateFabricTexture = (_fabricColor = '#ffffff', intensity = 0.3) => {
   const brightness = intensity > 0.5 ? '102%' : '98%';
   const contrast = intensity > 0.5 ? '105%' : '95%';
   const saturation = '101%';
@@ -295,10 +297,6 @@ export const generateFabricTexture = (fabricColor = '#ffffff', intensity = 0.3) 
  * @returns {string} CSS gradient string
  */
 export const createFabricLighting = (angle = 135, intensity = 0.2) => {
-  const radian = (angle * Math.PI) / 180;
-  const x = Math.cos(radian);
-  const y = Math.sin(radian);
-
   const startColor = `rgba(255,255,255,${intensity * 0.8})`;
   const endColor = `rgba(0,0,0,${intensity * 0.3})`;
 

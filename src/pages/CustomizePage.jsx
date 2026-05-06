@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProductById } from '../features/product/product.utils';
 import useCustomizationStore from '../features/customization/store/useCustomizationStore';

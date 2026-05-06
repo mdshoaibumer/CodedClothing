@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { formatPrice } from '../../features/product/product.utils';
 import { Button } from '../../components/ui/Button';
+import { Modal } from '../../components/ui/Modal';
 import UploadLogo from '../../features/customization/components/UploadLogo';
 import NumericControls from '../../features/customization/components/NumericControls';
 import useCustomizationStore from '../../features/customization/store/useCustomizationStore';
@@ -39,7 +40,11 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
   };
 
   const handleWhatsAppOrder = () => {
-    const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER || "919876543210";
+    const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER;
+    if (!phoneNumber) {
+      addToast('WhatsApp number is not configured.', 'error');
+      return;
+    }
     const text = `*New Order from Coded Clothing*\n\n` +
       `- *Product:* ${product.color} Premium Tee\n` +
       `- *Quantity:* ${quantity}\n` +
@@ -182,51 +187,40 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
       </div>
 
       {/* Order Preview Modal */}
-      {showOrderPreview && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-8 relative">
-            <button
-              onClick={() => setShowOrderPreview(false)}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-            >
-              ✕
-            </button>
-            <h3 className="text-xl font-black text-gray-900 mb-6">Order Preview</h3>
-            <div className="space-y-4 text-sm">
-              <div className="bg-gray-50 p-4 rounded-2xl">
-                <h4 className="font-bold text-gray-900 mb-2">Product Details</h4>
-                <p><strong>Item:</strong> {product.color} Premium Tee</p>
-                <p><strong>Price:</strong> {formatPrice(product.price)}</p>
-                <p><strong>Quantity:</strong> {quantity}</p>
-                <p><strong>Total:</strong> {formatPrice(product.price * quantity)}</p>
-              </div>
-              <div className="bg-gray-50 p-4 rounded-2xl">
-                <h4 className="font-bold text-gray-900 mb-2">Design Details</h4>
-                <p><strong>Front Logo:</strong> {design.front.logo ? 'Yes' : 'No'}</p>
-                <p><strong>Back Logo:</strong> {design.back.logo ? 'Yes' : 'No'}</p>
-              </div>
-              <p className="text-xs text-gray-500">Click "Send to WhatsApp" to place your order. Our team will contact you for payment and production details.</p>
-            </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowOrderPreview(false)}
-                className="flex-1 px-4 py-3 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  setShowOrderPreview(false);
-                  handleWhatsAppOrder();
-                }}
-                className="flex-1 px-4 py-3 rounded-2xl bg-green-500 text-white font-bold hover:bg-green-600 transition-colors"
-              >
-                Send to WhatsApp
-              </button>
-            </div>
+      <Modal isOpen={showOrderPreview} onClose={() => setShowOrderPreview(false)} title="Order Preview">
+        <div className="space-y-4 text-sm">
+          <div className="bg-gray-50 p-4 rounded-2xl">
+            <h4 className="font-bold text-gray-900 mb-2">Product Details</h4>
+            <p><strong>Item:</strong> {product.color} Premium Tee</p>
+            <p><strong>Price:</strong> {formatPrice(product.price)}</p>
+            <p><strong>Quantity:</strong> {quantity}</p>
+            <p><strong>Total:</strong> {formatPrice(product.price * quantity)}</p>
           </div>
+          <div className="bg-gray-50 p-4 rounded-2xl">
+            <h4 className="font-bold text-gray-900 mb-2">Design Details</h4>
+            <p><strong>Front Logo:</strong> {design.front.logo ? 'Yes' : 'No'}</p>
+            <p><strong>Back Logo:</strong> {design.back.logo ? 'Yes' : 'No'}</p>
+          </div>
+          <p className="text-xs text-gray-500">Click "Send to WhatsApp" to place your order. Our team will contact you for payment and production details.</p>
         </div>
-      )}
+        <div className="flex gap-3 mt-6">
+          <button
+            onClick={() => setShowOrderPreview(false)}
+            className="flex-1 px-4 py-3 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              setShowOrderPreview(false);
+              handleWhatsAppOrder();
+            }}
+            className="flex-1 px-4 py-3 rounded-2xl bg-green-500 text-white font-bold hover:bg-green-600 transition-colors"
+          >
+            Send to WhatsApp
+          </button>
+        </div>
+      </Modal>
     </>
   );
 }

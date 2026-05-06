@@ -4,9 +4,14 @@
  * Includes retry logic, timeout handling, and comprehensive error management.
  */
 
-// Environment variables with fallbacks for development
-const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dmwnbtflg';
-const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'Codedclothing';
+// Environment variables - no hardcoded fallbacks for security
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+if (!CLOUD_NAME || !UPLOAD_PRESET) {
+  console.error('Missing Cloudinary configuration. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in your .env file.');
+}
+
 const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
 const UPLOAD_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 2;
@@ -54,8 +59,11 @@ const compressImage = async (file) => {
     const ctx = canvas.getContext('2d');
     const img = new Image();
 
+    img.onerror = () => {
+      resolve(file); // Fallback to original if image load fails
+    };
+
     img.onload = () => {
-      // Calculate new dimensions (max 1920px on longest side)
       const maxDimension = 1920;
       let { width, height } = img;
 
@@ -76,9 +84,14 @@ const compressImage = async (file) => {
 
       // Draw and compress
       ctx.drawImage(img, 0, 0, width, height);
+      URL.revokeObjectURL(img.src);
 
       canvas.toBlob(
         (blob) => {
+          if (!blob) {
+            resolve(file); // Fallback to original if compression fails
+            return;
+          }
           const compressedFile = new File([blob], file.name, {
             type: file.type,
             lastModified: Date.now(),
@@ -103,9 +116,15 @@ const compressImage = async (file) => {
  * @throws {Error} - If the upload fails after retries or times out.
  */
 export const uploadImage = async (file, retryCount = 0) => {
-  console.log(`--- Cloudinary Upload Start (Attempt ${retryCount + 1}/${MAX_RETRIES + 1}) ---`);
-  console.log('File Name:', file.name);
-  console.log('File Size:', (file.size / 1024).toFixed(2), 'KB');
+  if (!CLOUD_NAME || !UPLOAD_PRESET) {
+    throw new Error('Cloudinary is not configured. Please set environment variables.');
+  }
+
+  if (import.meta.env.DEV) {
+    console.log(`--- Cloudinary Upload Start (Attempt ${retryCount + 1}/${MAX_RETRIES + 1}) ---`);
+    console.log('File Name:', file.name);
+    console.log('File Size:', (file.size / 1024).toFixed(2), 'KB');
+  }
 
   try {
     // Validate file
@@ -113,15 +132,19 @@ export const uploadImage = async (file, retryCount = 0) => {
 
     // Compress if necessary
     const processedFile = await compressImage(file);
-    console.log('Processed File Size:', (processedFile.size / 1024).toFixed(2), 'KB');
+    if (import.meta.env.DEV) {
+      console.log('Processed File Size:', (processedFile.size / 1024).toFixed(2), 'KB');
+    }
 
     const formData = new FormData();
     formData.append('file', processedFile);
     formData.append('upload_preset', UPLOAD_PRESET);
 
-    console.log('FormData Content:');
-    for (let [key, value] of formData.entries()) {
-      console.log(`  ${key}:`, value instanceof File ? `File (${value.name})` : value);
+    if (import.meta.env.DEV) {
+      console.log('FormData Content:');
+      for (let [key, value] of formData.entries()) {
+        console.log(`  ${key}:`, value instanceof File ? `File (${value.name})` : value);
+      }
     }
 
     // Create abort controller for timeout
@@ -142,7 +165,9 @@ export const uploadImage = async (file, retryCount = 0) => {
     }
 
     const data = await response.json();
-    console.log('Upload successful:', data.secure_url);
+    if (import.meta.env.DEV) {
+      console.log('Upload successful:', data.secure_url);
+    }
 
     return data.secure_url;
 
@@ -151,11 +176,11 @@ export const uploadImage = async (file, retryCount = 0) => {
 
     // Handle specific error types
     if (error.name === 'AbortError') {
-      throw new Error('Upload timed out. Please check your connection and try again.');
+      throw new Error('Upload timed out. Please check your connection and try again.', { cause: error });
     }
 
     if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
-      throw new Error('Network error. Please check your internet connection.');
+      throw new Error('Network error. Please check your internet connection.', { cause: error });
     }
 
     // Retry logic for transient errors
@@ -172,6 +197,6 @@ export const uploadImage = async (file, retryCount = 0) => {
     }
 
     // Re-throw with user-friendly message
-    throw new Error(error.message || 'Upload failed. Please try again.');
+    throw new Error(error.message || 'Upload failed. Please try again.', { cause: error });
   }
 };

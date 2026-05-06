@@ -41,6 +41,15 @@ export default function App() {
                 <Route path="/" element={<CollectionPage />} />
                 <Route path="/product/:id" element={<ProductDetailPage />} />
                 <Route path="/customize/:id" element={<CustomizePage />} />
+                <Route path="*" element={
+                  <div className="text-center py-20">
+                    <h2 className="text-4xl font-black text-gray-900 mb-4">404</h2>
+                    <p className="text-gray-500 mb-6">Page not found</p>
+                    <Link to="/" className="text-blue-600 hover:underline font-bold uppercase tracking-widest text-xs">
+                      Return to Collection
+                    </Link>
+                  </div>
+                } />
               </Routes>
             </Suspense>
           </main>

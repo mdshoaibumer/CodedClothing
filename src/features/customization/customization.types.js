@@ -48,7 +48,7 @@ export const VIEWS = {
 
 // Scale limits
 export const SCALE_LIMITS = {
-  MIN: 0.3,
+  MIN: 0.1,
   MAX: 2.0,
   DEFAULT: 1.0
 };

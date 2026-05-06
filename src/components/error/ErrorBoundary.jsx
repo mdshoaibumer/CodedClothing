@@ -11,7 +11,8 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  // eslint-disable-next-line no-unused-vars
+  static getDerivedStateFromError(_error) {
     return { hasError: true };
   }
 
@@ -34,7 +35,7 @@ class ErrorBoundary extends React.Component {
               We encountered an unexpected error. Don't worry, your design is saved locally.
             </p>
 
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <div className="mt-6 p-4 bg-red-50 rounded-lg border-2 border-red-200 text-left">
                 <p className="text-xs font-bold text-red-600 mb-2">Error Details:</p>
                 <pre className="text-[10px] text-red-700 overflow-auto max-h-40 font-mono">

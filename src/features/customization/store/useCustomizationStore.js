@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { SCALE_LIMITS, POSITION_LIMITS, ROTATION_LIMITS } from '../customization.types';
+import { SCALE_LIMITS, POSITION_LIMITS } from '../customization.types';
 
 /**
  * Customization Store
@@ -14,6 +14,9 @@ const POSITION_MAX = POSITION_LIMITS.MAX;
 const SCALE_MIN = SCALE_LIMITS.MIN;
 const SCALE_MAX = SCALE_LIMITS.MAX;
 
+// Maximum history entries to prevent unbounded localStorage growth
+const MAX_HISTORY = 50;
+
 // Helper function for efficient deep cloning
 const deepClone = (obj) => {
   if (obj === null || typeof obj !== 'object') return obj;
@@ -22,7 +25,7 @@ const deepClone = (obj) => {
   if (typeof obj === 'object') {
     const clonedObj = {};
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
         clonedObj[key] = deepClone(obj[key]);
       }
     }
@@ -182,7 +185,7 @@ const useCustomizationStore = create(
       saveToHistory: () =>
         set((state) => ({
           history: {
-            past: [...state.history.past, deepClone(state.design)],
+            past: [...state.history.past, deepClone(state.design)].slice(-MAX_HISTORY),
             future: [],
           },
         })),
