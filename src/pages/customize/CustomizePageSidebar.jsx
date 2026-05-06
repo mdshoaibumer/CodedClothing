@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { formatPrice } from '../../features/product/product.utils';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
@@ -7,10 +8,6 @@ import NumericControls from '../../features/customization/components/NumericCont
 import useCustomizationStore from '../../features/customization/store/useCustomizationStore';
 import useToastStore from '../../features/notifications/store/useToastStore';
 
-/**
- * CustomizePageSidebar Component
- * Handles the right sidebar with upload, actions, and order section
- */
 export default function CustomizePageSidebar({ product, hasDesign }) {
   const [quantity, setQuantity] = useState(1);
   const [showOrderPreview, setShowOrderPreview] = useState(false);
@@ -55,71 +52,91 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
     window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank');
   };
 
+  const sidebarVariants = {
+    hidden: { opacity: 0, x: 30 },
+    visible: {
+      opacity: 1, x: 0,
+      transition: { staggerChildren: 0.08, delayChildren: 0.3 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: 20 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }
+  };
+
   return (
     <>
-      <div className="lg:col-span-4 flex flex-col gap-6 md:gap-8">
+      <motion.div
+        variants={sidebarVariants}
+        initial="hidden"
+        animate="visible"
+        className="lg:col-span-4 flex flex-col gap-6 md:gap-8"
+      >
         {/* Upload Panel */}
-        <div className="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.05)] border border-gray-50 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50" />
+        <motion.div variants={itemVariants} className="bg-white p-6 md:p-10 rounded-[2rem] shadow-luxury border border-obsidian-50 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gold-100/30 rounded-full blur-3xl -mr-16 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold-400/20 to-transparent" />
 
           <div className="relative">
             <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
-              <span className="flex items-center justify-center w-8 md:w-10 h-8 md:h-10 rounded-2xl bg-gray-900 text-white text-xs md:text-sm font-black italic shadow-lg shadow-gray-900/20">C</span>
-              <h3 className="text-[9px] md:text-xs font-black text-gray-900 uppercase tracking-[0.2em]">
+              <motion.span
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.6 }}
+                className="flex items-center justify-center w-9 md:w-10 h-9 md:h-10 rounded-xl bg-obsidian-900 text-gold-500 text-xs md:text-sm font-black italic shadow-lg shadow-obsidian-900/20"
+              >
+                C
+              </motion.span>
+              <h3 className="text-[9px] md:text-xs font-black text-obsidian-900 uppercase tracking-[0.2em]">
                 Brand Assets {activeView !== 'both' && `(${activeView})`}
               </h3>
             </div>
 
-            <p className="text-xs md:text-sm text-gray-400 mb-6 md:mb-10 leading-relaxed font-bold">
-              Position your identity. Select a transparent PNG for the most seamless integration. <br />
-              <a href="https://www.flaticon.com/free-icons/logo" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Find sample logos</a> to get started.
+            <p className="text-xs md:text-sm text-obsidian-400 mb-6 md:mb-10 leading-relaxed font-medium">
+              Position your identity. Select a transparent PNG for seamless integration. <br />
+              <a href="https://www.flaticon.com/free-icons/logo" target="_blank" rel="noopener noreferrer" className="text-gold-600 hover:text-gold-700 hover:underline transition-colors">Find sample logos</a> to get started.
             </p>
 
             <UploadLogo />
           </div>
-        </div>
+        </motion.div>
 
         {/* Quick Action Buttons */}
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 md:p-8 rounded-[2rem] border border-green-100/50 space-y-4">
-          <h4 className="text-[9px] md:text-[10px] font-black text-green-900 mb-3 md:mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+        <motion.div variants={itemVariants} className="bg-gradient-to-br from-emerald-50 to-green-50 p-6 md:p-8 rounded-[2rem] border border-emerald-100/50 space-y-4">
+          <h4 className="text-[9px] md:text-[10px] font-black text-emerald-900 mb-3 md:mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-glow-pulse" />
             Quick Actions
           </h4>
 
           <div className="grid grid-cols-2 gap-2 md:gap-3">
-            <button
-              onClick={handleCenterLogo}
-              disabled={!hasDesign}
-              className="px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl bg-white border-2 border-green-100 text-[8px] md:text-xs font-black uppercase tracking-widest text-green-700 hover:border-green-500 hover:bg-green-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              📍 Center
-            </button>
-
-            <button
-              onClick={handleCopyFrontToBack}
-              disabled={!design.front.logo}
-              className="px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl bg-white border-2 border-green-100 text-[8px] md:text-xs font-black uppercase tracking-widest text-green-700 hover:border-green-500 hover:bg-green-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              📋 F→B
-            </button>
-
-            <button
-              onClick={handleCopyBackToFront}
-              disabled={!design.back.logo}
-              className="px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl bg-white border-2 border-green-100 text-[8px] md:text-xs font-black uppercase tracking-widest text-green-700 hover:border-green-500 hover:bg-green-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              📋 B→F
-            </button>
+            {[
+              { label: '📍 Center', onClick: handleCenterLogo, disabled: !hasDesign },
+              { label: '📋 F→B', onClick: handleCopyFrontToBack, disabled: !design.front.logo },
+              { label: '📋 B→F', onClick: handleCopyBackToFront, disabled: !design.back.logo },
+            ].map((action) => (
+              <motion.button
+                key={action.label}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={action.onClick}
+                disabled={action.disabled}
+                className="px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl bg-white border-2 border-emerald-100 text-[8px] md:text-xs font-black uppercase tracking-widest text-emerald-700 hover:border-emerald-400 hover:bg-emerald-50 hover:shadow-md transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                {action.label}
+              </motion.button>
+            ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Numeric Controls */}
-        <NumericControls />
+        <motion.div variants={itemVariants}>
+          <NumericControls />
+        </motion.div>
 
         {/* Interactive Tips */}
-        <div className="bg-blue-50 p-6 md:p-8 rounded-[2rem] border border-blue-100/50">
-          <h4 className="text-[9px] md:text-[10px] font-black text-blue-900 mb-3 md:mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+        <motion.div variants={itemVariants} className="bg-gradient-to-br from-gold-50 to-amber-50 p-6 md:p-8 rounded-[2rem] border border-gold-100/50">
+          <h4 className="text-[9px] md:text-[10px] font-black text-gold-900 mb-3 md:mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-gold-500 animate-pulse" />
             Editor Tips
           </h4>
           <ul className="space-y-2 md:space-y-3">
@@ -129,96 +146,112 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
               { icon: '⌨️', text: 'Scroll to resize' },
               { icon: '📍', text: 'Use Center button' }
             ].map((tip, i) => (
-              <li key={i} className="flex items-center gap-2 md:gap-3 text-[11px] md:text-xs font-bold text-blue-800/70">
+              <motion.li
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 + i * 0.1 }}
+                className="flex items-center gap-2 md:gap-3 text-[11px] md:text-xs font-bold text-gold-800/70"
+              >
                 <span className="text-xs md:text-sm">{tip.icon}</span>
                 {tip.text}
-              </li>
+              </motion.li>
             ))}
           </ul>
-        </div>
+        </motion.div>
 
         {/* Craftsmanship Section */}
-        <div className="bg-gray-900 p-10 rounded-[2.5rem] text-white shadow-2xl shadow-black/10 group overflow-hidden relative">
-           <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl -mb-24 -mr-24 transition-transform group-hover:scale-125 duration-700" />
-           <h4 className="text-[10px] font-black text-gray-500 mb-4 uppercase tracking-[0.3em]">Craftsmanship</h4>
-           <p className="text-sm text-gray-300 leading-relaxed font-medium">
+        <motion.div variants={itemVariants} className="bg-obsidian-900 p-10 rounded-[2rem] text-white shadow-luxury group overflow-hidden relative">
+           <div className="absolute bottom-0 right-0 w-48 h-48 bg-gold-500/5 rounded-full blur-3xl -mb-24 -mr-24 transition-transform group-hover:scale-150 duration-1000" />
+           <div className="absolute top-0 left-0 w-32 h-32 bg-gold-500/3 rounded-full blur-3xl -mt-16 -ml-16" />
+           <h4 className="text-[10px] font-black text-gold-500/70 mb-4 uppercase tracking-[0.3em]">Craftsmanship</h4>
+           <p className="text-sm text-obsidian-300 leading-relaxed font-medium">
              Each piece is treated with precision. Our screen-printing process ensures your {product.color} tee remains vibrant after countless washes.
            </p>
-        </div>
+           <div className="mt-4 flex gap-4">
+             {['Premium', 'Durable', 'Vibrant'].map((tag) => (
+               <span key={tag} className="text-[9px] font-black text-gold-500/50 uppercase tracking-widest">{tag}</span>
+             ))}
+           </div>
+        </motion.div>
 
         {/* Quantity and Order Section */}
-        <div className="pt-4 space-y-4 md:space-y-6">
-          <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border border-gray-100 flex items-center justify-between shadow-sm">
-            <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Qty</span>
+        <motion.div variants={itemVariants} className="pt-4 space-y-4 md:space-y-6">
+          <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border border-obsidian-100 flex items-center justify-between shadow-soft">
+            <span className="text-[9px] md:text-[10px] font-black text-obsidian-400 uppercase tracking-widest">Qty</span>
             <div className="flex items-center gap-4 md:gap-6">
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-gray-100 flex items-center justify-center text-gray-400 hover:border-gray-900 hover:text-gray-900 transition-all font-black text-lg md:text-xl active:scale-95"
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-obsidian-100 flex items-center justify-center text-obsidian-400 hover:border-gold-500 hover:text-gold-600 transition-all font-black text-lg md:text-xl"
               >
                 −
-              </button>
-              <span className="text-lg md:text-xl font-black text-gray-900 min-w-[2rem] text-center">{quantity}</span>
-              <button
+              </motion.button>
+              <span className="text-lg md:text-xl font-black text-obsidian-900 min-w-[2rem] text-center">{quantity}</span>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={() => setQuantity(quantity + 1)}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-gray-100 flex items-center justify-center text-gray-400 hover:border-gray-900 hover:text-gray-900 transition-all font-black text-lg md:text-xl active:scale-95"
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-obsidian-100 flex items-center justify-center text-obsidian-400 hover:border-gold-500 hover:text-gold-600 transition-all font-black text-lg md:text-xl"
               >
                 +
-              </button>
+              </motion.button>
             </div>
-          </div>
-
-          <div className="bg-gray-900 p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] text-white shadow-2xl shadow-black/10 group overflow-hidden relative">
-             <div className="absolute bottom-0 right-0 w-32 md:w-48 h-32 md:h-48 bg-white/5 rounded-full blur-3xl -mb-24 -mr-24 transition-transform group-hover:scale-125 duration-700" />
-             <h4 className="text-[9px] md:text-[10px] font-black text-gray-500 mb-3 md:mb-4 uppercase tracking-[0.3em]">Quality</h4>
-             <p className="text-xs md:text-sm text-gray-300 leading-relaxed font-medium">
-               Screen-printed for lasting vibrancy. Your {product.color} tee stays vibrant wash after wash.
-             </p>
           </div>
 
           <Button
              onClick={() => setShowOrderPreview(true)}
-             className="w-full h-16 md:h-24 rounded-[1.5rem] md:rounded-[2rem] text-lg md:text-2xl font-black bg-green-500 hover:bg-green-600 shadow-[0_20px_40px_-10px_rgba(34,197,94,0.3)] gap-3 md:gap-5 transition-all active:scale-[0.96] hover:-translate-y-1 md:hover:-translate-y-2 disabled:opacity-20 disabled:scale-100 group"
+             className="w-full h-16 md:h-20 rounded-[1.5rem] md:rounded-[2rem] text-lg md:text-xl font-black bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 shadow-[0_20px_40px_-10px_rgba(34,197,94,0.3)] gap-3 md:gap-5 transition-all disabled:opacity-20 disabled:scale-100"
              disabled={!design.front.logo && !design.back.logo}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="hidden md:block"><circle cx="12" cy="12" r="1"/><path d="M19.07 4.93L5.05 18.95M4.93 4.93l14.02 14.02"/></svg>
             ORDER NOW
           </Button>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Order Preview Modal */}
       <Modal isOpen={showOrderPreview} onClose={() => setShowOrderPreview(false)} title="Order Preview">
         <div className="space-y-4 text-sm">
-          <div className="bg-gray-50 p-4 rounded-2xl">
-            <h4 className="font-bold text-gray-900 mb-2">Product Details</h4>
-            <p><strong>Item:</strong> {product.color} Premium Tee</p>
-            <p><strong>Price:</strong> {formatPrice(product.price)}</p>
-            <p><strong>Quantity:</strong> {quantity}</p>
-            <p><strong>Total:</strong> {formatPrice(product.price * quantity)}</p>
+          <div className="bg-gradient-to-br from-obsidian-50 to-white p-5 rounded-2xl border border-obsidian-100">
+            <h4 className="font-black text-obsidian-900 mb-3 text-xs uppercase tracking-wider">Product Details</h4>
+            <div className="space-y-2 text-obsidian-600">
+              <p className="flex justify-between"><span>Item:</span> <span className="font-bold text-obsidian-900">{product.color} Premium Tee</span></p>
+              <p className="flex justify-between"><span>Price:</span> <span className="font-bold text-obsidian-900">{formatPrice(product.price)}</span></p>
+              <p className="flex justify-between"><span>Quantity:</span> <span className="font-bold text-obsidian-900">{quantity}</span></p>
+              <div className="section-divider my-3" />
+              <p className="flex justify-between text-base"><span className="font-bold">Total:</span> <span className="font-black gradient-text-gold text-lg">{formatPrice(product.price * quantity)}</span></p>
+            </div>
           </div>
-          <div className="bg-gray-50 p-4 rounded-2xl">
-            <h4 className="font-bold text-gray-900 mb-2">Design Details</h4>
-            <p><strong>Front Logo:</strong> {design.front.logo ? 'Yes' : 'No'}</p>
-            <p><strong>Back Logo:</strong> {design.back.logo ? 'Yes' : 'No'}</p>
+          <div className="bg-gradient-to-br from-gold-50 to-amber-50/30 p-5 rounded-2xl border border-gold-100/50">
+            <h4 className="font-black text-obsidian-900 mb-3 text-xs uppercase tracking-wider">Design Details</h4>
+            <div className="space-y-2 text-obsidian-600">
+              <p className="flex justify-between"><span>Front Logo:</span> <span className={`font-bold ${design.front.logo ? 'text-emerald-600' : 'text-obsidian-300'}`}>{design.front.logo ? '✓ Applied' : '✕ None'}</span></p>
+              <p className="flex justify-between"><span>Back Logo:</span> <span className={`font-bold ${design.back.logo ? 'text-emerald-600' : 'text-obsidian-300'}`}>{design.back.logo ? '✓ Applied' : '✕ None'}</span></p>
+            </div>
           </div>
-          <p className="text-xs text-gray-500">Click "Send to WhatsApp" to place your order. Our team will contact you for payment and production details.</p>
+          <p className="text-[11px] text-obsidian-400 leading-relaxed">Click "Send to WhatsApp" to place your order. Our artisan team will contact you for payment and production details.</p>
         </div>
         <div className="flex gap-3 mt-6">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setShowOrderPreview(false)}
-            className="flex-1 px-4 py-3 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors"
+            className="flex-1 px-4 py-3.5 rounded-2xl border-2 border-obsidian-200 text-obsidian-600 font-bold hover:bg-obsidian-50 transition-all"
           >
             Cancel
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => {
               setShowOrderPreview(false);
               handleWhatsAppOrder();
             }}
-            className="flex-1 px-4 py-3 rounded-2xl bg-green-500 text-white font-bold hover:bg-green-600 transition-colors"
+            className="flex-1 px-4 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-bold hover:from-emerald-700 hover:to-emerald-600 transition-all shadow-[0_10px_20px_-5px_rgba(34,197,94,0.3)]"
           >
             Send to WhatsApp
-          </button>
+          </motion.button>
         </div>
       </Modal>
     </>

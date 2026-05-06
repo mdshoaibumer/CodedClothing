@@ -4,11 +4,32 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Design custom premium t-shirts with your own logo. Upload, position, and order personalized clothing." />
-    <meta property="og:title" content="Coded Clothing - Custom Premium T-Shirts" />
-    <meta property="og:description" content="Design custom premium t-shirts with your own logo. Upload, position, and order personalized clothing." />
+    <meta name="description" content="Coded Clothing — Luxury custom t-shirts crafted with premium Egyptian cotton. Design bespoke apparel with our interactive studio." />
+    <meta property="og:title" content="Coded Clothing — Bespoke Premium Apparel" />
+    <meta property="og:description" content="Luxury custom t-shirts crafted with premium Egyptian cotton. Design your masterpiece in our interactive studio." />
     <meta property="og:type" content="website" />
-    <title>Coded Clothing</title>
+    <meta name="theme-color" content="#0a0a0a" />
+    
+    <!-- Premium Fonts: Inter + Playfair Display for luxury headings -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet">
+    
+    <title>Coded Clothing — Premium Custom Apparel</title>
+    
+    <style>
+      /* Premium page loading state with cinematic feel */
+      html { background: #050505; }
+      body { 
+        opacity: 0; 
+        animation: bodyReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.1s;
+        overflow-x: hidden;
+      }
+      @keyframes bodyReveal { to { opacity: 1; } }
+      
+      /* Prevent FOUC */
+      .no-js { visibility: hidden; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

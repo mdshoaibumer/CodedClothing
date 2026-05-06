@@ -1,4 +1,5 @@
 import { forwardRef } from 'react';
+import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
 const Button = forwardRef(({
@@ -9,26 +10,30 @@ const Button = forwardRef(({
   ...props
 }, ref) => {
   const variants = {
-    default: 'bg-gray-900 text-white hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/25',
-    outline: 'border border-gray-200 bg-white text-gray-900 hover:bg-gray-50 hover:border-gray-300',
-    ghost: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
-    link: 'text-blue-600 underline-offset-4 hover:underline',
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25',
-    success: 'bg-green-600 text-white hover:bg-green-700 hover:shadow-lg hover:shadow-green-600/25',
+    default: 'bg-obsidian-900 text-white hover:bg-obsidian-800 hover:shadow-luxury shadow-large',
+    outline: 'border-2 border-obsidian-200 bg-white text-obsidian-900 hover:border-gold-500 hover:shadow-gold/20',
+    ghost: 'text-obsidian-600 hover:text-obsidian-900 hover:bg-obsidian-50',
+    link: 'text-gold-600 underline-offset-4 hover:underline',
+    primary: 'bg-gradient-to-r from-gold-600 to-gold-500 text-white hover:from-gold-700 hover:to-gold-600 shadow-gold',
+    success: 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-700 hover:to-emerald-600 shadow-[0_20px_40px_-10px_rgba(34,197,94,0.3)]',
+    luxury: 'bg-obsidian-900 text-gold-500 border border-gold-500/20 hover:border-gold-500/50 hover:shadow-[0_0_30px_rgba(201,169,110,0.15)]',
   };
 
   const sizes = {
-    default: 'h-10 px-4 py-2',
-    sm: 'h-9 rounded-md px-3',
-    lg: 'h-11 rounded-md px-8',
-    xl: 'h-14 rounded-lg px-10 text-lg',
-    icon: 'h-10 w-10',
+    default: 'h-11 px-5 py-2.5',
+    sm: 'h-9 rounded-xl px-4',
+    lg: 'h-12 rounded-2xl px-8',
+    xl: 'h-16 rounded-2xl px-10 text-lg',
+    icon: 'h-11 w-11',
   };
 
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
       className={cn(
-        'inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98] transform hover:scale-[1.02] hover:shadow-lg',
+        'inline-flex items-center justify-center rounded-xl text-sm font-bold transition-all duration-300 ease-luxury focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/50 focus-visible:ring-offset-2 disabled:opacity-40 disabled:pointer-events-none relative overflow-hidden',
         variants[variant],
         sizes[size],
         className
@@ -36,8 +41,12 @@ const Button = forwardRef(({
       ref={ref}
       {...props}
     >
-      {children}
-    </button>
+      {/* Shimmer on hover */}
+      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700" />
+      <span className="relative z-10 flex items-center justify-center gap-2">
+        {children}
+      </span>
+    </motion.button>
   );
 });
 

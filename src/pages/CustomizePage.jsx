@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { getProductById } from '../features/product/product.utils';
 import useCustomizationStore from '../features/customization/store/useCustomizationStore';
 
@@ -27,10 +28,8 @@ export default function CustomizePage() {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
         e.preventDefault();
         if (canUndo) {
-          // Import undo function here to avoid circular dependency issues
           const { undo } = useCustomizationStore.getState();
           undo();
-          // Toast will be handled by the store
         }
       } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
         e.preventDefault();
@@ -57,7 +56,7 @@ export default function CustomizePage() {
         <h2 className="text-xl font-bold text-gray-900">Product not found</h2>
         <button
           onClick={() => navigate('/')}
-          className="mt-4 text-blue-600 hover:underline inline-block font-bold uppercase tracking-widest text-xs"
+          className="mt-4 text-gold-600 hover:underline inline-block font-bold uppercase tracking-widest text-xs"
         >
           Return to Collection
         </button>
@@ -66,7 +65,16 @@ export default function CustomizePage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-2 md:px-6 lg:px-8 pb-20 md:pb-12">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-6xl mx-auto px-2 md:px-6 lg:px-8 pb-20 md:pb-12 relative"
+    >
+      {/* Ambient decorative elements */}
+      <div className="absolute -top-20 -right-40 w-[500px] h-[500px] bg-gradient-radial from-gold-200/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -left-40 w-[400px] h-[400px] bg-gradient-radial from-gold-100/8 to-transparent rounded-full blur-3xl pointer-events-none" />
+      
       <CustomizePageHeader
         product={product}
         previewRef={previewRef}
@@ -84,6 +92,6 @@ export default function CustomizePage() {
           hasDesign={hasDesign}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }
