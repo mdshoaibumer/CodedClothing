@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5174';
-
 test.describe('Canvas Zoom Feature Test', () => {
 
   test('Zoom controls are visible and functional', async ({ page }) => {
-    await page.goto(`${BASE_URL}/customize/ts-black-01`);
+    await page.goto(`/customize/ts-black-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -75,7 +73,7 @@ test.describe('Canvas Zoom Feature Test', () => {
   });
 
   test('Zoom with uploaded logo for minute detail editing', async ({ page }) => {
-    await page.goto(`${BASE_URL}/customize/ts-black-01`);
+    await page.goto(`/customize/ts-black-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 

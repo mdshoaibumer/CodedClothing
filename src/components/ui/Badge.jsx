@@ -21,7 +21,7 @@ const Badge = forwardRef(({ className, variant = 'default', ...props }, ref) => 
     <div
       ref={ref}
       className={cn(
-        'inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-wider transition-all duration-300',
+        'inline-flex items-center rounded-full border px-3 py-1 text-xs font-black uppercase tracking-wider transition-all duration-300',
         variants[variant],
         className
       )}

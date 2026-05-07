@@ -2,7 +2,7 @@
  * Vite Configuration — Coded Clothing
  * 
  * Build Optimizations:
- * - Manual chunk splitting for optimal caching (Three.js, animations, React)
+ * - Manual chunk splitting for optimal caching (animations, React)
  * - CSS code splitting enabled
  * - Minification via esbuild (fastest)
  * - Target modern browsers for smaller bundle output
@@ -29,23 +29,29 @@ export default defineConfig({
     cssCodeSplit: true,
     /* Source maps off in production for security */
     sourcemap: false,
+    /* Chunk size warning at 300KB */
+    chunkSizeWarningLimit: 300,
     rollupOptions: {
       output: {
         /**
          * Manual chunk splitting strategy:
-         * - three-vendor: Three.js + React Three Fiber (~500KB) — cached separately
-         * - animation-vendor: Framer Motion + GSAP (~200KB) — shared across pages
+         * - animation-vendor: Framer Motion (~100KB) — shared across pages
          * - react-vendor: React DOM + Router (~150KB) — rarely changes
+         * - state-vendor: Zustand — rarely changes
+         * - scroll-vendor: Lenis smooth scroll — rarely changes
          */
         manualChunks(id) {
-          if (id.includes('three') || id.includes('@react-three')) {
-            return 'three-vendor';
-          }
-          if (id.includes('framer-motion') || id.includes('gsap')) {
+          if (id.includes('framer-motion')) {
             return 'animation-vendor';
           }
           if (id.includes('react-dom') || id.includes('react-router')) {
             return 'react-vendor';
+          }
+          if (id.includes('zustand')) {
+            return 'state-vendor';
+          }
+          if (id.includes('lenis')) {
+            return 'scroll-vendor';
           }
         },
       },

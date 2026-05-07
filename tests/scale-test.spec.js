@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5174';
-
 test.describe('Scale Limit Fix Verification', () => {
 
   test('Logo scale can go below 30% down to 10%', async ({ page }) => {
-    await page.goto(`${BASE_URL}/customize/ts-black-01`);
+    await page.goto(`/customize/ts-black-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 

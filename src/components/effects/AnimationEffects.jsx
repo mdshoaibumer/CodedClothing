@@ -7,28 +7,23 @@
  * All components use `viewport: { once: true }` to avoid re-triggering,
  * and leverage GPU-composited properties (transform, opacity) for 60fps.
  * 
+ * Now uses only Framer Motion (no GSAP dependency) for smaller bundle.
+ * 
  * Exports:
  * - AnimatedCounter — Counts up to a target number on viewport entry
  * - StaggerText — Reveals text word-by-word with 3D rotation
  * - RevealOnScroll — Fades in children when scrolled into view
  * - Marquee — Infinite horizontal scroll ticker
- * - MorphingBlob — GSAP-powered organic shape animation
+ * - MorphingBlob — CSS-powered organic shape animation
  * - ScaleReveal — Scale + blur reveal on scroll
  * - SpotlightCard — Card with mouse-following radial highlight
- * - NumberTicker — GSAP-powered smooth number counter
- * - TextLineReveal — GSAP scroll-triggered text reveal
+ * - NumberTicker — Framer Motion-powered smooth number counter
+ * - TextLineReveal — Scroll-triggered text reveal
  * - RotatingTextRing — Circular text that rotates infinitely
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, useInView } from 'framer-motion';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-/* Register GSAP plugins once */
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 /* ─── Shared Constants ─── */
 const EASE_LUXURY = [0.16, 1, 0.3, 1];
@@ -171,41 +166,18 @@ export function Marquee({ children, speed = 30, className = '' }) {
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 /**
- * MorphingBlob — Organic shape that animates border-radius via GSAP.
- * Used as decorative background elements.
+ * MorphingBlob — Organic shape that animates border-radius via CSS keyframes.
+ * Used as decorative background elements. Pure CSS — no JS animation overhead.
  */
 export function MorphingBlob({ className = '', color = 'rgba(201, 169, 110, 0.1)' }) {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const tl = gsap.timeline({ repeat: -1, yoyo: true });
-    tl.to(el, {
-      borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%',
-      duration: 4,
-      ease: 'sine.inOut',
-    })
-    .to(el, {
-      borderRadius: '70% 30% 30% 70% / 70% 70% 30% 30%',
-      duration: 4,
-      ease: 'sine.inOut',
-    })
-    .to(el, {
-      borderRadius: '50% 50% 30% 70% / 60% 40% 60% 40%',
-      duration: 4,
-      ease: 'sine.inOut',
-    });
-
-    return () => tl.kill();
-  }, []);
-
   return (
     <div
-      ref={ref}
       className={`absolute ${className}`}
-      style={{ background: color, borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%' }}
+      style={{
+        background: color,
+        borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%',
+        animation: 'morph-blob 12s ease-in-out infinite',
+      }}
     />
   );
 }
@@ -268,8 +240,8 @@ export function SpotlightCard({ children, className = '' }) {
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 /**
- * NumberTicker — GSAP-powered number counter with smooth easing.
- * More performant than AnimatedCounter for large numbers (uses GSAP's ticker).
+ * NumberTicker — Smooth number counter using requestAnimationFrame.
+ * More performant than AnimatedCounter for large numbers.
  */
 export function NumberTicker({ value, duration = 2.5, prefix = '', suffix = '', className = '' }) {
   const ref = useRef(null);
@@ -279,15 +251,25 @@ export function NumberTicker({ value, duration = 2.5, prefix = '', suffix = '', 
   useEffect(() => {
     if (!isInView) return;
 
-    const obj = { val: 0 };
-    const tween = gsap.to(obj, {
-      val: value,
-      duration,
-      ease: 'power2.out',
-      onUpdate: () => setDisplayValue(Math.floor(obj.val)),
-    });
+    let startTime;
+    let raf;
+    const durationMs = duration * 1000;
 
-    return () => tween.kill();
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
+      // Power2 ease-out
+      const eased = 1 - Math.pow(1 - progress, 2);
+      setDisplayValue(Math.floor(eased * value));
+
+      if (progress < 1) {
+        raf = requestAnimationFrame(animate);
+      }
+    };
+
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
   }, [isInView, value, duration]);
 
   return (
@@ -300,41 +282,24 @@ export function NumberTicker({ value, duration = 2.5, prefix = '', suffix = '', 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 /**
- * TextLineReveal — GSAP scroll-triggered text reveal with 3D perspective.
+ * TextLineReveal — Scroll-triggered text reveal with 3D perspective.
+ * Uses Framer Motion's useInView for viewport detection.
  */
 export function TextLineReveal({ children, className = '' }) {
   const ref = useRef(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const animation = gsap.fromTo(el,
-      { y: 80, opacity: 0, rotateX: 40 },
-      {
-        y: 0,
-        opacity: 1,
-        rotateX: 0,
-        duration: 1.2,
-        ease: 'power4.out',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 85%',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
-
-    return () => {
-      animation.scrollTrigger?.kill();
-      animation.kill();
-    };
-  }, []);
+  const isInView = useInView(ref, { once: true, margin: '-15%' });
 
   return (
-    <div ref={ref} className={className} style={{ perspective: '1000px' }}>
+    <motion.div
+      ref={ref}
+      initial={{ y: 80, opacity: 0, rotateX: 40 }}
+      animate={isInView ? { y: 0, opacity: 1, rotateX: 0 } : {}}
+      transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+      style={{ perspective: '1000px' }}
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
@@ -358,7 +323,7 @@ export function RotatingTextRing({ text, radius = 100, className = '' }) {
       {characters.map((char, i) => (
         <span
           key={i}
-          className="absolute left-1/2 top-0 origin-[0_100px] text-[10px] font-bold uppercase tracking-wider text-gold-500/60"
+          className="absolute left-1/2 top-0 origin-[0_100px] text-xs font-bold uppercase tracking-wider text-gold-500/60"
           style={{
             transform: `rotate(${anglePerChar * i}deg)`,
             transformOrigin: `0 ${radius}px`,

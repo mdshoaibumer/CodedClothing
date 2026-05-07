@@ -1,12 +1,10 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5174';
-
 test.describe('CodedClothing - Full UI/UX & Functionality Test', () => {
 
   test('Homepage - Collection Page Screenshot & Analysis', async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
     
     // Wait for images to load
@@ -45,7 +43,7 @@ test.describe('CodedClothing - Full UI/UX & Functionality Test', () => {
   });
 
   test('Product Detail Page - Navigation & Layout', async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     
@@ -91,7 +89,7 @@ test.describe('CodedClothing - Full UI/UX & Functionality Test', () => {
   });
 
   test('Product Detail - Size Guide Modal', async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     
@@ -117,7 +115,7 @@ test.describe('CodedClothing - Full UI/UX & Functionality Test', () => {
 
   test('Customize Page - Full Flow', async ({ page }) => {
     // Navigate directly to customize page for first product
-    await page.goto(`${BASE_URL}/customize/ts-black-01`);
+    await page.goto(`/customize/ts-black-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     
@@ -156,7 +154,7 @@ test.describe('CodedClothing - Full UI/UX & Functionality Test', () => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 812 });
     
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     
@@ -170,7 +168,7 @@ test.describe('CodedClothing - Full UI/UX & Functionality Test', () => {
     await page.screenshot({ path: 'tests/screenshots/13-mobile-product-detail.png', fullPage: true });
     
     // Navigate to customize
-    await page.goto(`${BASE_URL}/customize/ts-black-01`);
+    await page.goto(`/customize/ts-black-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     await page.screenshot({ path: 'tests/screenshots/14-mobile-customize.png', fullPage: true });
@@ -180,20 +178,20 @@ test.describe('CodedClothing - Full UI/UX & Functionality Test', () => {
     // Set tablet viewport
     await page.setViewportSize({ width: 768, height: 1024 });
     
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     
     await page.screenshot({ path: 'tests/screenshots/15-tablet-homepage.png', fullPage: true });
     
-    await page.goto(`${BASE_URL}/customize/ts-black-01`);
+    await page.goto(`/customize/ts-black-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     await page.screenshot({ path: 'tests/screenshots/16-tablet-customize.png', fullPage: true });
   });
 
   test('404 Page', async ({ page }) => {
-    await page.goto(`${BASE_URL}/nonexistent-page`);
+    await page.goto(`/nonexistent-page`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     
@@ -208,7 +206,7 @@ test.describe('CodedClothing - Full UI/UX & Functionality Test', () => {
   });
 
   test('Navigation & Routing', async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     
@@ -226,11 +224,11 @@ test.describe('CodedClothing - Full UI/UX & Functionality Test', () => {
     // Go back to home via brand link
     await brandLink.click();
     await page.waitForLoadState('networkidle');
-    expect(page.url()).toBe(`${BASE_URL}/`);
+    expect(page.url()).toBe(`/`);
   });
 
   test('Hover Effects & Interactions', async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1500);
     
@@ -243,7 +241,7 @@ test.describe('CodedClothing - Full UI/UX & Functionality Test', () => {
 
   test('Performance & Loading States', async ({ page }) => {
     // Throttle network to see loading states
-    await page.goto(BASE_URL);
+    await page.goto('/');
     
     // Screenshot immediately to catch loading spinner
     await page.screenshot({ path: 'tests/screenshots/19-loading-state.png' });
@@ -254,7 +252,7 @@ test.describe('CodedClothing - Full UI/UX & Functionality Test', () => {
   });
 
   test('Accessibility - Focus States & Tab Navigation', async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     

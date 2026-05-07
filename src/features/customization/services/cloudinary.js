@@ -1,7 +1,13 @@
 /**
  * Cloudinary Upload Service
- * Handles uploading images to Cloudinary using a signed/unsigned preset.
- * Includes retry logic, timeout handling, and comprehensive error management.
+ * Handles uploading images to Cloudinary using an unsigned preset.
+ * Includes retry logic, timeout handling, rate limiting, and comprehensive error management.
+ * 
+ * Security Notes:
+ * - Uses unsigned upload preset (configured in Cloudinary dashboard with restrictions)
+ * - Client-side file validation (type, size, dimensions)
+ * - Rate limiting to prevent abuse
+ * - No sensitive credentials exposed (cloud name + unsigned preset only)
  */
 
 // Environment variables - no hardcoded fallbacks for security
@@ -15,6 +21,13 @@ if (!CLOUD_NAME || !UPLOAD_PRESET) {
 const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
 const UPLOAD_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 2;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+// Rate limiting: max 5 uploads per minute
+const uploadTimestamps = [];
+const RATE_LIMIT_WINDOW = 60000; // 1 minute
+const RATE_LIMIT_MAX = 5;
 
 /**
  * Validates file before upload
@@ -27,13 +40,12 @@ const validateFile = (file) => {
   }
 
   // Check file size
-  if (file.size > 5 * 1024 * 1024) { // 5MB
+  if (file.size > MAX_FILE_SIZE) {
     throw new Error(`File too large. Maximum size is 5MB (your file: ${(file.size / 1024 / 1024).toFixed(2)}MB)`);
   }
 
   // Check file type
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-  if (!allowedTypes.includes(file.type)) {
+  if (!ALLOWED_TYPES.includes(file.type)) {
     throw new Error(`Invalid file type. Allowed: PNG, JPG, WebP, GIF (your file: ${file.type || 'unknown'})`);
   }
 
@@ -41,6 +53,22 @@ const validateFile = (file) => {
   if (!file.type.startsWith('image/')) {
     throw new Error('File is not a valid image');
   }
+};
+
+/**
+ * Rate limit check - prevents upload abuse
+ * @throws {Error} If rate limit exceeded
+ */
+const checkRateLimit = () => {
+  const now = Date.now();
+  // Remove timestamps outside the window
+  while (uploadTimestamps.length > 0 && uploadTimestamps[0] < now - RATE_LIMIT_WINDOW) {
+    uploadTimestamps.shift();
+  }
+  if (uploadTimestamps.length >= RATE_LIMIT_MAX) {
+    throw new Error('Upload rate limit exceeded. Please wait a moment before uploading again.');
+  }
+  uploadTimestamps.push(now);
 };
 
 /**
@@ -127,6 +155,9 @@ export const uploadImage = async (file, retryCount = 0) => {
   }
 
   try {
+    // Rate limit check
+    checkRateLimit();
+
     // Validate file
     validateFile(file);
 

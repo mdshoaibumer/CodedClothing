@@ -3,15 +3,17 @@
  * 
  * Central preview panel with front/back view toggle.
  * Renders the CanvasPreview component with zoom/pan support.
+ * Shows onboarding guidance when no design is applied.
  */
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import CanvasPreview from '../../features/customization/components/CanvasPreview';
 import useCustomizationStore from '../../features/customization/store/useCustomizationStore';
 
 export default function CustomizePagePreview({ product, previewRef }) {
-  const { activeView, setActiveView } = useCustomizationStore();
+  const { activeView, setActiveView, design } = useCustomizationStore();
+  const hasAnyDesign = design.front.logo || design.back.logo;
 
   return (
     <motion.div
@@ -21,7 +23,7 @@ export default function CustomizePagePreview({ product, previewRef }) {
       className="lg:col-span-8 relative"
     >
       {/* Premium canvas wrapper */}
-      <div className="relative rounded-[2rem] overflow-hidden shadow-luxury bg-gradient-to-br from-obsidian-50 to-white">
+      <div className="relative rounded-4xl overflow-hidden shadow-luxury bg-gradient-to-br from-obsidian-50 to-white">
         {/* Decorative corner elements */}
         <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-gold-300/30 rounded-tl-xl pointer-events-none z-20" />
         <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-gold-300/30 rounded-tr-xl pointer-events-none z-20" />
@@ -31,6 +33,37 @@ export default function CustomizePagePreview({ product, previewRef }) {
         <div ref={previewRef}>
           <CanvasPreview product={product} />
         </div>
+
+        {/* Onboarding overlay — shown when no logo has been uploaded yet */}
+        <AnimatePresence>
+          {!hasAnyDesign && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
+            >
+              <div className="bg-white/90 backdrop-blur-xl rounded-3xl border border-gold-200/50 shadow-luxury px-8 py-6 text-center max-w-xs">
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  className="text-3xl mb-3"
+                >
+                  🎨
+                </motion.div>
+                <h4 className="text-xs font-black text-obsidian-900 uppercase tracking-widest mb-2">Start Designing</h4>
+                <p className="text-[11px] text-obsidian-400 leading-relaxed">
+                  Upload a logo using the panel on the right to begin customizing your tee.
+                </p>
+                <div className="mt-4 flex items-center justify-center gap-2 text-xs font-bold text-gold-600 uppercase tracking-widest">
+                  <span>→</span>
+                  <span>Upload Panel</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Premium view switcher */}

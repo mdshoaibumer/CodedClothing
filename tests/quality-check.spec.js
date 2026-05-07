@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5174';
-
 test.describe('Console Errors & Warnings Check', () => {
   test('Homepage - Check for console errors', async ({ page }) => {
     const errors = [];
@@ -12,7 +10,7 @@ test.describe('Console Errors & Warnings Check', () => {
       if (msg.type() === 'warning') warnings.push(msg.text());
     });
 
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -32,7 +30,7 @@ test.describe('Console Errors & Warnings Check', () => {
       if (msg.type() === 'error') errors.push(msg.text());
     });
 
-    await page.goto(`${BASE_URL}/product/ts-black-01`);
+    await page.goto(`/product/ts-black-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -48,7 +46,7 @@ test.describe('Console Errors & Warnings Check', () => {
       if (msg.type() === 'error') errors.push(msg.text());
     });
 
-    await page.goto(`${BASE_URL}/customize/ts-black-01`);
+    await page.goto(`/customize/ts-black-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -66,7 +64,7 @@ test.describe('Console Errors & Warnings Check', () => {
       }
     });
 
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(3000);
 
@@ -77,7 +75,7 @@ test.describe('Console Errors & Warnings Check', () => {
 
   test('Check page load performance', async ({ page }) => {
     const startTime = Date.now();
-    await page.goto(BASE_URL);
+    await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
     const domReady = Date.now() - startTime;
     

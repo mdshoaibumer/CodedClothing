@@ -133,7 +133,7 @@ const Modal = forwardRef(({ isOpen, onClose, title, children, className }, ref) 
               else if (ref) ref.current = node;
             }}
             className={cn(
-              "relative w-full max-w-lg bg-white rounded-[2rem] shadow-luxury overflow-hidden border border-obsidian-100/50",
+              "relative w-full max-w-lg bg-white rounded-4xl shadow-luxury overflow-hidden border border-obsidian-100/50",
               className
             )}
           >

@@ -59,7 +59,7 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
       `- *Back Logo:* ${design.back.logo ? 'Yes' : 'No'}\n` +
       `- *Total Price:* ${formatPrice(product.price * quantity)}`;
 
-    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank');
+    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
   };
 
   const sidebarVariants = {
@@ -84,7 +84,7 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
         className="lg:col-span-4 flex flex-col gap-6 md:gap-8"
       >
         {/* Upload Panel */}
-        <motion.div variants={itemVariants} className="bg-white p-6 md:p-10 rounded-[2rem] shadow-luxury border border-obsidian-50 relative overflow-hidden group">
+        <motion.div variants={itemVariants} className="bg-white p-6 md:p-10 rounded-4xl shadow-luxury border border-obsidian-50 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gold-100/30 rounded-full blur-3xl -mr-16 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold-400/20 to-transparent" />
 
@@ -112,9 +112,9 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
         </motion.div>
 
         {/* Quick Action Buttons */}
-        <motion.div variants={itemVariants} className="bg-gradient-to-br from-emerald-50 to-green-50 p-6 md:p-8 rounded-[2rem] border border-emerald-100/50 space-y-4">
-          <h4 className="text-[9px] md:text-[10px] font-black text-emerald-900 mb-3 md:mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-glow-pulse" />
+        <motion.div variants={itemVariants} className="bg-gradient-to-br from-obsidian-50 to-obsidian-100/30 p-6 md:p-8 rounded-4xl border border-obsidian-100/50 space-y-4">
+          <h4 className="text-[9px] md:text-[10px] font-black text-obsidian-900 mb-3 md:mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-gold-500 animate-glow-pulse" />
             Quick Actions
           </h4>
 
@@ -130,7 +130,7 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
                 whileTap={{ scale: 0.97 }}
                 onClick={action.onClick}
                 disabled={action.disabled}
-                className="px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl bg-white border-2 border-emerald-100 text-[8px] md:text-xs font-black uppercase tracking-widest text-emerald-700 hover:border-emerald-400 hover:bg-emerald-50 hover:shadow-md transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                className="px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl bg-white border-2 border-obsidian-100 text-[8px] md:text-xs font-black uppercase tracking-widest text-obsidian-700 hover:border-gold-400 hover:bg-gold-50 hover:shadow-md transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 {action.label}
               </motion.button>
@@ -144,7 +144,7 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
         </motion.div>
 
         {/* Interactive Tips */}
-        <motion.div variants={itemVariants} className="bg-gradient-to-br from-gold-50 to-amber-50 p-6 md:p-8 rounded-[2rem] border border-gold-100/50">
+        <motion.div variants={itemVariants} className="bg-gradient-to-br from-gold-50 to-amber-50 p-6 md:p-8 rounded-4xl border border-gold-100/50">
           <h4 className="text-[9px] md:text-[10px] font-black text-gold-900 mb-3 md:mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-gold-500 animate-pulse" />
             Editor Tips
@@ -171,7 +171,7 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
         </motion.div>
 
         {/* Craftsmanship Section */}
-        <motion.div variants={itemVariants} className="bg-obsidian-900 p-10 rounded-[2rem] text-white shadow-luxury group overflow-hidden relative">
+        <motion.div variants={itemVariants} className="bg-obsidian-900 p-10 rounded-4xl text-white shadow-luxury group overflow-hidden relative">
            <div className="absolute bottom-0 right-0 w-48 h-48 bg-gold-500/5 rounded-full blur-3xl -mb-24 -mr-24 transition-transform group-hover:scale-150 duration-1000" />
            <div className="absolute top-0 left-0 w-32 h-32 bg-gold-500/3 rounded-full blur-3xl -mt-16 -ml-16" />
            <h4 className="text-[10px] font-black text-gold-500/70 mb-4 uppercase tracking-[0.3em]">Craftsmanship</h4>
@@ -187,7 +187,7 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
 
         {/* Quantity and Order Section */}
         <motion.div variants={itemVariants} className="pt-4 space-y-4 md:space-y-6">
-          <div className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border border-obsidian-100 flex items-center justify-between shadow-soft">
+          <div className="bg-white p-4 md:p-6 rounded-3xl md:rounded-4xl border border-obsidian-100 flex items-center justify-between shadow-soft">
             <span className="text-[9px] md:text-[10px] font-black text-obsidian-400 uppercase tracking-widest">Qty</span>
             <div className="flex items-center gap-4 md:gap-6">
               <motion.button
@@ -212,7 +212,7 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
 
           <Button
              onClick={() => setShowOrderPreview(true)}
-             className="w-full h-16 md:h-20 rounded-[1.5rem] md:rounded-[2rem] text-lg md:text-xl font-black bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 shadow-[0_20px_40px_-10px_rgba(34,197,94,0.3)] gap-3 md:gap-5 transition-all disabled:opacity-20 disabled:scale-100"
+             className="w-full h-16 md:h-20 rounded-3xl md:rounded-4xl text-lg md:text-xl font-black bg-gradient-to-r from-obsidian-900 to-obsidian-800 hover:from-gold-600 hover:to-gold-500 shadow-luxury gap-3 md:gap-5 transition-all disabled:opacity-20 disabled:scale-100"
              disabled={!design.front.logo && !design.back.logo}
           >
             ORDER NOW
@@ -236,8 +236,8 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
           <div className="bg-gradient-to-br from-gold-50 to-amber-50/30 p-5 rounded-2xl border border-gold-100/50">
             <h4 className="font-black text-obsidian-900 mb-3 text-xs uppercase tracking-wider">Design Details</h4>
             <div className="space-y-2 text-obsidian-600">
-              <p className="flex justify-between"><span>Front Logo:</span> <span className={`font-bold ${design.front.logo ? 'text-emerald-600' : 'text-obsidian-300'}`}>{design.front.logo ? '✓ Applied' : '✕ None'}</span></p>
-              <p className="flex justify-between"><span>Back Logo:</span> <span className={`font-bold ${design.back.logo ? 'text-emerald-600' : 'text-obsidian-300'}`}>{design.back.logo ? '✓ Applied' : '✕ None'}</span></p>
+              <p className="flex justify-between"><span>Front Logo:</span> <span className={`font-bold ${design.front.logo ? 'text-gold-600' : 'text-obsidian-300'}`}>{design.front.logo ? '✓ Applied' : '✕ None'}</span></p>
+              <p className="flex justify-between"><span>Back Logo:</span> <span className={`font-bold ${design.back.logo ? 'text-gold-600' : 'text-obsidian-300'}`}>{design.back.logo ? '✓ Applied' : '✕ None'}</span></p>
             </div>
           </div>
           <p className="text-[11px] text-obsidian-400 leading-relaxed">Click "Send to WhatsApp" to place your order. Our artisan team will contact you for payment and production details.</p>
@@ -258,7 +258,7 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
               setShowOrderPreview(false);
               handleWhatsAppOrder();
             }}
-            className="flex-1 px-4 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-bold hover:from-emerald-700 hover:to-emerald-600 transition-all shadow-[0_10px_20px_-5px_rgba(34,197,94,0.3)]"
+            className="flex-1 px-4 py-3.5 rounded-2xl bg-gradient-to-r from-obsidian-900 to-obsidian-800 text-white font-bold hover:from-gold-600 hover:to-gold-500 transition-all shadow-luxury"
           >
             Send to WhatsApp
           </motion.button>

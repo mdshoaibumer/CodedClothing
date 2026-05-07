@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5174';
-
 test.describe('Logo Upload & Editor Controls - Deep Test', () => {
 
   test('Upload logo and verify editor controls appear', async ({ page }) => {
@@ -15,7 +13,7 @@ test.describe('Logo Upload & Editor Controls - Deep Test', () => {
     });
 
     // Navigate to customize page
-    await page.goto(`${BASE_URL}/customize/ts-black-01`);
+    await page.goto(`/customize/ts-black-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -92,7 +90,7 @@ test.describe('Logo Upload & Editor Controls - Deep Test', () => {
       if (msg.type() === 'error') errors.push(msg.text());
     });
 
-    await page.goto(`${BASE_URL}/customize/ts-black-01`);
+    await page.goto(`/customize/ts-black-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -211,7 +209,7 @@ test.describe('Logo Upload & Editor Controls - Deep Test', () => {
   });
 
   test('Test drag interaction on logo', async ({ page }) => {
-    await page.goto(`${BASE_URL}/customize/ts-black-01`);
+    await page.goto(`/customize/ts-black-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
@@ -271,7 +269,7 @@ test.describe('Logo Upload & Editor Controls - Deep Test', () => {
   });
 
   test('Test header buttons - Help, Undo, Redo, Clear', async ({ page }) => {
-    await page.goto(`${BASE_URL}/customize/ts-black-01`);
+    await page.goto(`/customize/ts-black-01`);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 

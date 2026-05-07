@@ -1,5 +1,5 @@
 // NumericControls updated for better both-view editor UX
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useCustomizationStore from '../store/useCustomizationStore';
 import useToastStore from '../../notifications/store/useToastStore';
 
@@ -24,10 +24,6 @@ export default function NumericControls() {
   const editSide = activeView === 'both' ? bothViewEditSide : activeView;
   const currentDesign = design[editSide];
 
-  // Derive local values from store using render-time sync pattern
-  const [prevDesignKey, setPrevDesignKey] = useState('');
-  const designKey = `${editSide}-${currentDesign?.x}-${currentDesign?.y}-${currentDesign?.scale}-${currentDesign?.rotation}`;
-
   const [localValues, setLocalValues] = useState({
     x: currentDesign?.x || 0,
     y: currentDesign?.y || 0,
@@ -35,24 +31,26 @@ export default function NumericControls() {
     rotation: currentDesign?.rotation || 0,
   });
 
-  // Sync from store when values change externally
-  if (prevDesignKey !== designKey) {
-    setPrevDesignKey(designKey);
+  // Sync from store when values change externally (via drag, undo/redo, etc.)
+  useEffect(() => {
     const newValues = {
       x: currentDesign?.x || 0,
       y: currentDesign?.y || 0,
       scale: currentDesign?.scale || 1,
       rotation: currentDesign?.rotation || 0,
     };
-    if (
-      newValues.x !== localValues.x ||
-      newValues.y !== localValues.y ||
-      newValues.scale !== localValues.scale ||
-      newValues.rotation !== localValues.rotation
-    ) {
-      setLocalValues(newValues);
-    }
-  }
+    setLocalValues((prev) => {
+      if (
+        prev.x === newValues.x &&
+        prev.y === newValues.y &&
+        prev.scale === newValues.scale &&
+        prev.rotation === newValues.rotation
+      ) {
+        return prev;
+      }
+      return newValues;
+    });
+  }, [editSide, currentDesign?.x, currentDesign?.y, currentDesign?.scale, currentDesign?.rotation]);
 
   const handlePositionChange = (axis, value) => {
     const numValue = parseFloat(value) || 0;
@@ -102,9 +100,9 @@ export default function NumericControls() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 md:p-8 rounded-[2rem] border border-purple-100/50 space-y-4">
-      <h4 className="text-[9px] md:text-[10px] font-black text-purple-900 mb-3 md:mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+    <div className="bg-gradient-to-br from-gold-50 to-gold-100/30 p-6 md:p-8 rounded-4xl border border-gold-200/50 space-y-4">
+      <h4 className="text-xs md:text-xs font-black text-obsidian-900 mb-3 md:mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-gold-500" />
         Precision Controls {activeView === 'both' ? `(${editSide})` : `(${activeView})`}
       </h4>
 
@@ -112,20 +110,20 @@ export default function NumericControls() {
         <div className="flex gap-2 p-2 bg-white/50 rounded-lg">
           <button
             onClick={() => setBothViewEditSide('front')}
-            className={`flex-1 px-3 py-2 text-[9px] font-black uppercase tracking-widest rounded-md transition-all ${
+            className={`flex-1 px-3 py-2 text-xs font-black uppercase tracking-widest rounded-md transition-all ${
               bothViewEditSide === 'front'
-                ? 'bg-purple-500 text-white'
-                : 'bg-white border-2 border-purple-100 text-purple-700 hover:border-purple-500'
+                ? 'bg-obsidian-900 text-gold-400'
+                : 'bg-white border-2 border-gold-200 text-obsidian-700 hover:border-gold-500'
             }`}
           >
             Front
           </button>
           <button
             onClick={() => setBothViewEditSide('back')}
-            className={`flex-1 px-3 py-2 text-[9px] font-black uppercase tracking-widest rounded-md transition-all ${
+            className={`flex-1 px-3 py-2 text-xs font-black uppercase tracking-widest rounded-md transition-all ${
               bothViewEditSide === 'back'
-                ? 'bg-purple-500 text-white'
-                : 'bg-white border-2 border-purple-100 text-purple-700 hover:border-purple-500'
+                ? 'bg-obsidian-900 text-gold-400'
+                : 'bg-white border-2 border-gold-200 text-obsidian-700 hover:border-gold-500'
             }`}
           >
             Back
@@ -136,7 +134,7 @@ export default function NumericControls() {
       <div className="grid grid-cols-2 gap-3 md:gap-4">
         {/* Position X */}
         <div className="space-y-2">
-          <label htmlFor="ctrl-pos-x" className="text-[8px] font-black text-purple-700 uppercase tracking-widest">X Position</label>
+          <label htmlFor="ctrl-pos-x" className="text-2xs font-black text-obsidian-600 uppercase tracking-widest">X Position</label>
           <input
             id="ctrl-pos-x"
             type="number"
@@ -145,13 +143,13 @@ export default function NumericControls() {
             min="-80"
             max="80"
             step="1"
-            className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-purple-100 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
+            className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-gold-200 rounded-lg focus:border-gold-500 focus:outline-none transition-colors"
           />
         </div>
 
         {/* Position Y */}
         <div className="space-y-2">
-          <label htmlFor="ctrl-pos-y" className="text-[8px] font-black text-purple-700 uppercase tracking-widest">Y Position</label>
+          <label htmlFor="ctrl-pos-y" className="text-2xs font-black text-obsidian-600 uppercase tracking-widest">Y Position</label>
           <input
             id="ctrl-pos-y"
             type="number"
@@ -160,13 +158,13 @@ export default function NumericControls() {
             min="-80"
             max="80"
             step="1"
-            className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-purple-100 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
+            className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-gold-200 rounded-lg focus:border-gold-500 focus:outline-none transition-colors"
           />
         </div>
 
         {/* Scale */}
         <div className="space-y-2">
-          <label htmlFor="ctrl-scale" className="text-[8px] font-black text-purple-700 uppercase tracking-widest">Scale (%)</label>
+          <label htmlFor="ctrl-scale" className="text-2xs font-black text-obsidian-600 uppercase tracking-widest">Scale (%)</label>
           <input
             id="ctrl-scale"
             type="number"
@@ -175,13 +173,13 @@ export default function NumericControls() {
             min="10"
             max="200"
             step="1"
-            className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-purple-100 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
+            className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-gold-200 rounded-lg focus:border-gold-500 focus:outline-none transition-colors"
           />
         </div>
 
         {/* Rotation */}
         <div className="space-y-2">
-          <label htmlFor="ctrl-rotation" className="text-[8px] font-black text-purple-700 uppercase tracking-widest">Rotation (°)</label>
+          <label htmlFor="ctrl-rotation" className="text-2xs font-black text-obsidian-600 uppercase tracking-widest">Rotation (°)</label>
           <input
             id="ctrl-rotation"
             type="number"
@@ -190,7 +188,7 @@ export default function NumericControls() {
             min="0"
             max="359"
             step="15"
-            className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-purple-100 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
+            className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-gold-200 rounded-lg focus:border-gold-500 focus:outline-none transition-colors"
           />
         </div>
       </div>
@@ -198,7 +196,7 @@ export default function NumericControls() {
       {/* Reset Button */}
       <button
         onClick={resetToDefaults}
-        className="w-full px-4 py-2 bg-white border-2 border-purple-100 text-[9px] font-black uppercase tracking-widest text-purple-700 hover:border-purple-500 hover:bg-purple-50 transition-all rounded-lg"
+        className="w-full px-4 py-2 bg-white border-2 border-gold-200 text-xs font-black uppercase tracking-widest text-obsidian-700 hover:border-gold-500 hover:bg-gold-50 transition-all rounded-lg"
       >
         🔄 Reset to Center
       </button>

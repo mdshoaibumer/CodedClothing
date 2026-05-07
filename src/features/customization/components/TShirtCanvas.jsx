@@ -21,7 +21,7 @@ const TShirtCanvas = memo(
   function TShirtCanvas({ image, logo, scale, x, y, rotation = 0, onUpdate, label, className, showGuides = { horizontal: false, vertical: false, edges: [] } }) {
     return (
       <div className={cn(
-        "relative flex-1 bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.06)] group transition-all duration-500 hover:shadow-[0_48px_80px_-20px_rgba(0,0,0,0.1)]",
+        "relative flex-1 bg-white rounded-5xl border border-obsidian-100 overflow-hidden shadow-soft group transition-all duration-500 hover:shadow-luxury",
         className
       )}>
         {/* Background */}
@@ -49,7 +49,7 @@ const TShirtCanvas = memo(
                   height: '50%',
                 }}
               />
-              <div className="absolute top-[23%] left-1/2 -translate-x-1/2 bg-red-500/80 text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">
+              <div className="absolute top-[23%] left-1/2 -translate-x-1/2 bg-red-500/80 text-white text-2xs font-black px-2 py-0.5 rounded-full uppercase tracking-widest">
                 Print Area
               </div>
             </div>
@@ -95,9 +95,9 @@ const TShirtCanvas = memo(
                   onUpdate={onUpdate}
                 />
               ) : (
-                <div className="w-full h-full border-2 border-dashed border-gray-200/40 rounded-2xl flex flex-col items-center justify-center bg-white/5 backdrop-blur-[2px] pointer-events-none">
-                  <span className="text-[8px] font-black text-gray-300 uppercase tracking-[0.3em]">Design Zone</span>
-                  <span className="text-[6px] font-bold text-gray-300 uppercase tracking-[0.2em] mt-1">Click Upload to Start</span>
+                <div className="w-full h-full border-2 border-dashed border-obsidian-200/40 rounded-2xl flex flex-col items-center justify-center bg-white/5 backdrop-blur-[2px] pointer-events-none">
+                  <span className="text-2xs font-black text-obsidian-300 uppercase tracking-[0.3em]">Design Zone</span>
+                  <span className="text-2xs font-bold text-obsidian-300 uppercase tracking-[0.2em] mt-1">Click Upload to Start</span>
                 </div>
               )}
             </div>
@@ -106,8 +106,8 @@ const TShirtCanvas = memo(
 
         {/* Side Label */}
         {label && (
-          <div className="absolute top-6 left-6 px-4 py-1.5 bg-white/90 backdrop-blur-sm rounded-full border border-gray-100 shadow-sm z-30">
-            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{label}</span>
+          <div className="absolute top-6 left-6 px-4 py-1.5 bg-white/90 backdrop-blur-sm rounded-full border border-obsidian-100 shadow-sm z-30">
+            <span className="text-xs font-black text-obsidian-400 uppercase tracking-widest">{label}</span>
           </div>
         )}
       </div>

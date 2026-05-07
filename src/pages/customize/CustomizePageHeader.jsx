@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toPng } from 'html-to-image';
 import { formatPrice } from '../../features/product/product.utils';
@@ -52,10 +52,18 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
         className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12"
       >
         <div className="space-y-3">
+          {/* Breadcrumbs for wayfinding */}
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-obsidian-300">
+            <Link to="/" className="hover:text-gold-600 transition-colors">Collection</Link>
+            <span aria-hidden="true">›</span>
+            <Link to={`/product/${product.id}`} className="hover:text-gold-600 transition-colors">{product.color}</Link>
+            <span aria-hidden="true">›</span>
+            <span className="text-gold-600">Customize</span>
+          </nav>
           <motion.button
             whileHover={{ x: -4 }}
             onClick={() => navigate(`/product/${product.id}`)}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-obsidian-100 text-[10px] font-black uppercase tracking-[0.2em] text-obsidian-400 hover:text-obsidian-900 hover:border-obsidian-900 transition-all group shadow-sm hover:shadow-md"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-obsidian-100 text-xs font-black uppercase tracking-[0.2em] text-obsidian-400 hover:text-obsidian-900 hover:border-obsidian-900 transition-all group shadow-sm hover:shadow-md"
           >
             <span className="group-hover:-translate-x-1 transition-transform">←</span> Back
           </motion.button>
@@ -155,11 +163,11 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
             </h4>
             <div className="grid grid-cols-2 gap-2">
               <div className="flex items-center gap-2">
-                <kbd className="px-2 py-1 bg-white rounded-lg text-[10px] font-bold border shadow-sm">Ctrl+Z</kbd>
+                <kbd className="px-2 py-1 bg-white rounded-lg text-xs font-bold border shadow-sm">Ctrl+Z</kbd>
                 <span className="text-xs">Undo</span>
               </div>
               <div className="flex items-center gap-2">
-                <kbd className="px-2 py-1 bg-white rounded-lg text-[10px] font-bold border shadow-sm">Ctrl+Y</kbd>
+                <kbd className="px-2 py-1 bg-white rounded-lg text-xs font-bold border shadow-sm">Ctrl+Y</kbd>
                 <span className="text-xs">Redo</span>
               </div>
             </div>

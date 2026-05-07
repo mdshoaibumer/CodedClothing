@@ -124,11 +124,8 @@ export default function CollectionPage() {
   });
 
   const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
-  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.88]);
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const smoothHeroY = useSpring(heroY, { stiffness: 100, damping: 30 });
-  const heroRotateX = useTransform(scrollYProgress, [0, 1], [0, 8]);
-  const heroBlur = useTransform(scrollYProgress, [0, 0.5, 1], [0, 0, 5]);
 
   return (
     <div className="relative cinematic-grain">
@@ -144,20 +141,14 @@ export default function CollectionPage() {
         <div className="absolute -top-20 -right-20 w-[600px] h-[600px] bg-gradient-radial from-gold-200/15 via-gold-300/5 to-transparent rounded-full blur-3xl aurora-float" style={{ animationDuration: '25s' }} />
         <div className="absolute -bottom-32 -left-20 w-[500px] h-[500px] bg-gradient-radial from-gold-300/10 via-gold-100/5 to-transparent rounded-full blur-3xl aurora-float" style={{ animationDuration: '30s', animationDelay: '5s' }} />
 
-        {/* Geometric decorations — lightweight infinite animations */}
-        <motion.div
-          animate={{ rotate: 360, y: [0, -25, 0] }}
-          transition={{ rotate: { duration: 25, repeat: Infinity, ease: "linear" }, y: { duration: 4, repeat: Infinity, ease: "easeInOut" } }}
+        {/* Geometric decorations — static, no infinite rotation */}
+        <div
           className="absolute top-20 right-[20%] w-20 h-20 border border-gold-300/20 rounded-xl hidden md:block"
         />
-        <motion.div
-          animate={{ rotate: -360, y: [0, 20, 0] }}
-          transition={{ rotate: { duration: 20, repeat: Infinity, ease: "linear" }, y: { duration: 5, repeat: Infinity, ease: "easeInOut" } }}
+        <div
           className="absolute top-40 right-[10%] w-10 h-10 bg-gold-400/10 rounded-full hidden md:block"
         />
-        <motion.div
-          animate={{ rotate: 180, scale: [1, 1.3, 1] }}
-          transition={{ rotate: { duration: 18, repeat: Infinity, ease: "linear" }, scale: { duration: 6, repeat: Infinity, ease: "easeInOut" } }}
+        <div
           className="absolute bottom-20 right-[30%] w-28 h-28 border border-gold-200/10 rounded-full hidden md:block"
         />
 
@@ -165,10 +156,7 @@ export default function CollectionPage() {
         <motion.div
           style={{
             opacity: heroOpacity,
-            scale: heroScale,
             y: smoothHeroY,
-            rotateX: heroRotateX,
-            filter: useTransform(heroBlur, (v) => `blur(${v}px)`),
           }}
           className="relative pt-10 md:pt-20 pb-12"
         >
@@ -195,7 +183,7 @@ export default function CollectionPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.7 }}
-                className="text-[10px] font-black text-gold-600 uppercase tracking-[0.5em]"
+                className="text-xs font-black text-gold-600 uppercase tracking-[0.5em]"
               >
                 The Collection — 2026
               </motion.span>
@@ -270,7 +258,7 @@ export default function CollectionPage() {
                 <div className="text-3xl md:text-4xl font-black text-obsidian-900 group-hover:gradient-text-gold transition-all duration-500">
                   <AnimatedCounter target={stat.value} prefix={stat.prefix || ''} suffix={stat.suffix} duration={2 + i * 0.3} />
                 </div>
-                <div className="text-[9px] font-bold text-obsidian-400 uppercase tracking-[0.25em] mt-2">{stat.label}</div>
+                <div className="text-xs font-bold text-obsidian-400 uppercase tracking-[0.25em] mt-2">{stat.label}</div>
               </motion.div>
             ))}
           </motion.div>
@@ -327,14 +315,14 @@ export default function CollectionPage() {
 
           <div className="relative z-10 text-center max-w-4xl mx-auto">
             <TextLineReveal>
-              <span className="text-[10px] font-black text-gold-600 uppercase tracking-[0.5em] block mb-4">Our Process</span>
+              <span className="text-xs font-black text-gold-600 uppercase tracking-[0.5em] block mb-4">Our Process</span>
               <h2 className="text-3xl md:text-5xl font-black text-obsidian-900 tracking-tight">
                 From Concept to <span className="gradient-text-gold">Masterpiece</span>
               </h2>
             </TextLineReveal>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-16">
-              {PROCESS_STEPS.map((step, i) => (
+              {PROCESS_STEPS.map((step) => (
                 <ScaleReveal key={step.num}>
                   <SpotlightCard className="p-8 rounded-2xl bg-white border border-obsidian-100/50 hover:border-gold-300/50 transition-all duration-700 group h-full shadow-soft hover:shadow-luxury hover-magnify relative overflow-hidden">
                     {/* Step number watermark */}
@@ -347,13 +335,8 @@ export default function CollectionPage() {
                       className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold-100 to-gold-200/50 flex items-center justify-center mb-5 group-hover:shadow-gold transition-shadow duration-500 relative"
                     >
                       <span className="text-2xl text-gold-600">{step.icon}</span>
-                      <motion.div
-                        animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
-                        className="absolute inset-0 rounded-2xl border border-gold-400/30"
-                      />
                     </motion.div>
-                    <span className="text-[10px] font-black text-gold-500 tracking-[0.3em]">{step.num}</span>
+                    <span className="text-xs font-black text-gold-500 tracking-[0.3em]">{step.num}</span>
                     <h3 className="text-obsidian-900 font-bold mt-2 mb-2 text-lg group-hover:text-gold-700 transition-colors duration-300">{step.title}</h3>
                     <p className="text-obsidian-400 text-xs leading-relaxed relative z-10">{step.desc}</p>
                     <div className="h-[2px] w-0 group-hover:w-full bg-gradient-to-r from-gold-400 via-gold-300 to-transparent mt-4 transition-all duration-700" />
@@ -386,7 +369,7 @@ export default function CollectionPage() {
                 <div className="text-2xl md:text-4xl font-black text-white">
                   <NumberTicker value={stat.value} suffix={stat.suffix} duration={2 + i * 0.3} />
                 </div>
-                <div className="text-[9px] font-bold text-gold-400/80 uppercase tracking-[0.25em] mt-2">{stat.label}</div>
+                <div className="text-xs font-bold text-gold-400/80 uppercase tracking-[0.25em] mt-2">{stat.label}</div>
               </motion.div>
             ))}
           </div>
@@ -415,7 +398,7 @@ export default function CollectionPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <span className="text-[10px] font-black text-gold-400 uppercase tracking-[0.5em]">Why Premium</span>
+              <span className="text-xs font-black text-gold-400 uppercase tracking-[0.5em]">Why Premium</span>
               <h2 className="text-3xl md:text-5xl font-black text-white mt-4 mb-6 tracking-tight">
                 Crafted for <span className="gradient-text-gold">Perfection</span>
               </h2>
@@ -473,7 +456,7 @@ export default function CollectionPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: EASE_LUXURY }}
           >
-            <span className="text-[10px] font-black text-gold-600 uppercase tracking-[0.5em] block mb-6">Testimonials</span>
+            <span className="text-xs font-black text-gold-600 uppercase tracking-[0.5em] block mb-6">Testimonials</span>
             <blockquote className="text-2xl md:text-4xl font-bold text-obsidian-900 tracking-tight leading-tight mb-8">
               &ldquo;The quality is unlike anything I&rsquo;ve seen. Each piece feels like it was made just for me.&rdquo;
             </blockquote>
@@ -510,21 +493,12 @@ export default function CollectionPage() {
          ════════════════════════════════════════════════════════════════════════ */}
       <RevealOnScroll direction="scale" className="mt-16 mb-20">
         <section className="relative py-20 px-8 rounded-[3rem] bg-gradient-to-br from-gold-500 via-gold-400 to-gold-600 overflow-hidden">
-          {/* Rotating background circles */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+          {/* Static background circle */}
+          <div
             className="absolute -top-1/2 -right-1/2 w-full h-full opacity-10"
           >
             <div className="w-full h-full border-[40px] border-white/20 rounded-full" />
-          </motion.div>
-
-          {/* Shimmer sweep */}
-          <motion.div
-            animate={{ x: ['-100%', '200%'] }}
-            transition={{ duration: 3, repeat: Infinity, repeatDelay: 4, ease: 'linear' }}
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
-          />
+          </div>
 
           <div className="relative z-10 text-center max-w-2xl mx-auto">
             <motion.h2
@@ -545,13 +519,7 @@ export default function CollectionPage() {
               className="inline-flex items-center gap-3 px-12 py-5 bg-white text-obsidian-900 rounded-2xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl hover:shadow-[0_20px_60px_rgba(0,0,0,0.3)] transition-all duration-500 relative overflow-hidden group"
             >
               <span className="relative z-10">Start Designing</span>
-              <motion.span
-                className="relative z-10"
-                animate={{ x: [0, 4, 0] }}
-                transition={{ repeat: Infinity, duration: 1.5 }}
-              >
-                →
-              </motion.span>
+              <span className="relative z-10">→</span>
             </motion.a>
           </div>
         </section>

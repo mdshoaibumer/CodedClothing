@@ -125,7 +125,7 @@ export default function UploadLogo() {
         type="file"
         ref={fileInputRef}
         onChange={handleFileUpload}
-        accept="image/*"
+        accept=".png,.jpg,.jpeg,.webp,.gif"
         className="hidden"
         disabled={isUploading}
       />
@@ -135,13 +135,13 @@ export default function UploadLogo() {
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
           className={cn(
-            "w-full h-16 rounded-[1.5rem] text-sm font-black uppercase tracking-[0.2em] gap-4 transition-all active:scale-95 shadow-xl relative overflow-hidden",
-            isUploading ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-black text-white hover:bg-gray-900"
+            "w-full h-16 rounded-3xl text-sm font-black uppercase tracking-[0.2em] gap-4 transition-all active:scale-95 shadow-xl relative overflow-hidden",
+            isUploading ? "bg-obsidian-100 text-obsidian-400 cursor-not-allowed" : "bg-obsidian-900 text-white hover:bg-obsidian-800"
           )}
         >
           {isUploading ? (
             <>
-              <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-obsidian-300 border-t-obsidian-600 rounded-full animate-spin" />
               <span>Uploading {uploadProgress}%...</span>
             </>
           ) : (
@@ -156,27 +156,32 @@ export default function UploadLogo() {
           )}
         </Button>
 
+        {/* File requirements hint */}
+        <p className="text-[9px] text-obsidian-400 text-center tracking-wide">
+          PNG, JPG, WebP or GIF — Max 5MB
+        </p>
+
         {/* Upload Progress Bar */}
         {isUploading && (
           <div className="w-full space-y-2 animate-in fade-in slide-in-from-bottom-2">
-            <div className="relative w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="relative w-full h-2 bg-obsidian-100 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-black via-gray-800 to-black transition-all duration-300 ease-out"
+                className="h-full bg-gradient-to-r from-obsidian-900 via-obsidian-700 to-obsidian-900 transition-all duration-300 ease-out"
                 style={{ width: `${uploadProgress}%` }}
               />
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[8px] font-bold text-gray-500 uppercase">Uploading...</span>
-              <span className="text-[8px] font-bold text-gray-700">{Math.round(uploadProgress)}%</span>
+              <span className="text-[8px] font-bold text-obsidian-400 uppercase">Uploading...</span>
+              <span className="text-[8px] font-bold text-obsidian-700">{Math.round(uploadProgress)}%</span>
             </div>
           </div>
         )}
 
         {currentDesign?.logo && (
-          <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 animate-in fade-in slide-in-from-bottom-2">
+          <div className="p-6 bg-obsidian-50 rounded-3xl border border-obsidian-100 animate-in fade-in slide-in-from-bottom-2">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Logo Scale</span>
-              <span className="text-[10px] font-black text-gray-900 bg-white px-2 py-1 rounded-md shadow-sm">
+              <span className="text-[10px] font-black text-obsidian-400 uppercase tracking-widest">Logo Scale</span>
+              <span className="text-[10px] font-black text-obsidian-900 bg-white px-2 py-1 rounded-md shadow-sm">
                 {Math.round(currentDesign.scale * 100)}%
               </span>
             </div>
@@ -187,11 +192,11 @@ export default function UploadLogo() {
               step="0.01"
               value={currentDesign.scale}
               onChange={(e) => setScale(activeView, parseFloat(e.target.value))}
-              className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+              className="w-full h-1.5 bg-obsidian-200 rounded-lg appearance-none cursor-pointer accent-obsidian-900"
             />
             <div className="flex justify-between mt-2">
-              <span className="text-[8px] font-bold text-gray-300 uppercase">Min</span>
-              <span className="text-[8px] font-bold text-gray-300 uppercase">Max</span>
+              <span className="text-[8px] font-bold text-obsidian-300 uppercase">Min</span>
+              <span className="text-[8px] font-bold text-obsidian-300 uppercase">Max</span>
             </div>
           </div>
         )}

@@ -55,7 +55,7 @@ export default function ProductGallery() {
             <div className="w-2.5 h-2.5 rounded-full bg-gold-500 animate-glow-pulse" />
             <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-gold-500 animate-ping opacity-30" />
           </div>
-          <span className="text-[10px] font-black text-obsidian-400 uppercase tracking-[0.3em]">
+          <span className="text-xs font-black text-obsidian-400 uppercase tracking-[0.3em]">
             {tshirts.length} Premium Styles Available
           </span>
         </div>
@@ -64,7 +64,7 @@ export default function ProductGallery() {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 0.5 }}
-          className="hidden md:flex items-center gap-2 text-[10px] text-obsidian-300 uppercase tracking-wider font-bold"
+          className="hidden md:flex items-center gap-2 text-xs text-obsidian-300 uppercase tracking-wider font-bold"
         >
           <span>Scroll to explore</span>
           <motion.span

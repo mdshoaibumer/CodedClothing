@@ -339,14 +339,14 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
 
             {/* Scale badge during resize */}
             {isResizing && (
-              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-lg z-30 whitespace-nowrap">
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-obsidian-900 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-30 whitespace-nowrap">
                 {Math.round(scale * 100)}%
               </div>
             )}
 
             {/* Rotation badge during rotate */}
             {isRotating && (
-              <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-lg z-30 whitespace-nowrap">
+              <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-obsidian-900 text-white text-xs font-bold px-2 py-1 rounded-md shadow-lg z-30 whitespace-nowrap">
                 {Math.round(rotation)}°
               </div>
             )}
@@ -370,13 +370,13 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
       {/* Shortcut hints when selected but idle */}
       {isSelected && !isInteracting && (
         <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
-          <div className="bg-gray-900/90 text-white text-[9px] font-medium px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap flex items-center gap-2">
+          <div className="bg-obsidian-900/90 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap flex items-center gap-2">
             <span>Drag to move</span>
-            <span className="text-gray-500">|</span>
+            <span className="text-obsidian-500">|</span>
             <span>Corners resize</span>
-            <span className="text-gray-500">|</span>
+            <span className="text-obsidian-500">|</span>
             <span>⟳ Rotate</span>
-            <span className="text-gray-500">|</span>
+            <span className="text-obsidian-500">|</span>
             <span>Scroll = scale</span>
           </div>
         </div>

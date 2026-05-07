@@ -17,14 +17,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 /* ─── Static Data (computed once outside component) ─── */
 
-/** Burst particles — 20 lightweight nodes for visual impact without jank */
-const SPLASH_PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+/** Burst particles — 8 lightweight nodes for visual impact without jank */
+const SPLASH_PARTICLES = Array.from({ length: 8 }, (_, i) => ({
   id: i,
-  x: (Math.random() - 0.5) * 800,
-  y: (Math.random() - 0.5) * 800,
+  x: (Math.random() - 0.5) * 600,
+  y: (Math.random() - 0.5) * 600,
   size: Math.random() * 4 + 1,
-  delay: Math.random() * 0.4,
-  duration: Math.random() * 1.5 + 1,
+  delay: Math.random() * 0.2,
+  duration: Math.random() * 0.8 + 0.6,
   opacity: 0.5 + Math.random() * 0.5,
 }));
 
@@ -59,11 +59,11 @@ function SplashParticles({ active }) {
   );
 }
 
-/** Expanding ring burst — 5 concentric rings for depth effect */
+/** Expanding ring burst — 3 concentric rings for depth effect */
 function AnimatedRings({ phase }) {
   return (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-      {[1, 2, 3, 4, 5].map((ring) => (
+      {[1, 2, 3].map((ring) => (
         <motion.div
           key={ring}
           initial={{ scale: 0, opacity: 0 }}
@@ -71,12 +71,12 @@ function AnimatedRings({ phase }) {
             scale: [0, ring * 2, ring * 3.5],
             opacity: [0.8, 0.4, 0],
           } : {}}
-          transition={{ duration: 2.5 + ring * 0.2, delay: ring * 0.1, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1.2 + ring * 0.1, delay: ring * 0.05, ease: [0.16, 1, 0.3, 1] }}
           className="absolute rounded-full"
           style={{
             width: 100,
             height: 100,
-            border: `${ring % 2 === 0 ? '1px' : '2px'} solid rgba(201, 169, 110, ${0.5 - ring * 0.08})`,
+            border: `${ring % 2 === 0 ? '1px' : '2px'} solid rgba(201, 169, 110, ${0.5 - ring * 0.12})`,
             willChange: 'transform, opacity',
           }}
         />
@@ -92,16 +92,16 @@ export default function SplashScreen({ onComplete }) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    /* Phase timeline — controls the animation sequence */
-    const t1 = setTimeout(() => setPhase(1), 200);
-    const t2 = setTimeout(() => setPhase(2), 800);
-    const t3 = setTimeout(() => setPhase(3), 1800);
-    const t4 = setTimeout(() => setPhase(4), 2500);
-    const t5 = setTimeout(() => onComplete(), 2800);
+    /* Phase timeline — quick reveal under 800ms */
+    const t1 = setTimeout(() => setPhase(1), 50);
+    const t2 = setTimeout(() => setPhase(2), 200);
+    const t3 = setTimeout(() => setPhase(3), 450);
+    const t4 = setTimeout(() => setPhase(4), 650);
+    const t5 = setTimeout(() => onComplete(), 750);
 
     /* Progress counter — smoothly drives the loading bar */
     const startTime = Date.now();
-    const totalDuration = 2400;
+    const totalDuration = 1300;
     const progressInterval = setInterval(() => {
       const elapsed = Date.now() - startTime;
       const p = Math.min(elapsed / totalDuration, 1);
@@ -131,20 +131,16 @@ export default function SplashScreen({ onComplete }) {
           }}
           className="fixed inset-0 z-[10000] flex items-center justify-center bg-obsidian-950 overflow-hidden"
         >
-          {/* Rotating conic gradient — ambient background glow */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px]"
+          {/* Ambient background glow — static, no rotation */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px]"
           >
-            <div className="w-full h-full bg-gradient-conic from-gold-600/20 via-transparent via-25% to-gold-400/15 rounded-full blur-3xl" />
-          </motion.div>
+            <div className="w-full h-full bg-gradient-radial from-gold-600/20 to-transparent rounded-full blur-2xl" />
+          </div>
 
-          {/* Pulsing center light */}
-          <motion.div
-            animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.2, 1] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-radial from-gold-500/15 to-transparent rounded-full"
+          {/* Static center light */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-radial from-gold-500/15 to-transparent rounded-full"
           />
 
           {/* Ring burst effect */}
@@ -243,7 +239,7 @@ export default function SplashScreen({ onComplete }) {
                 <motion.div
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
-                  transition={{ duration: 2.4, ease: [0.4, 0, 0.2, 1] }}
+                  transition={{ duration: 1.3, ease: [0.4, 0, 0.2, 1] }}
                   className="h-full bg-gradient-to-r from-gold-600 via-gold-400 to-gold-300 origin-left"
                 />
               </div>

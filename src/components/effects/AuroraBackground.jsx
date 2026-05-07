@@ -24,7 +24,7 @@ function FloatingOrb({ size, position, color, duration, delay }) {
         top: position.top,
         left: position.left,
         background: `radial-gradient(circle, ${color} 0%, transparent 70%)`,
-        filter: 'blur(50px)',
+        filter: 'blur(30px)',
         animationDuration: `${duration}s`,
         animationDelay: `${delay}s`,
         willChange: 'transform',
@@ -35,10 +35,8 @@ function FloatingOrb({ size, position, color, duration, delay }) {
 
 export default function AuroraBackground() {
   const orbs = useMemo(() => [
-    { size: 1000, position: { top: '-20%', left: '-10%' }, color: 'rgba(201, 169, 110, 0.1)', duration: 20, delay: 0 },
-    { size: 800, position: { top: '50%', left: '60%' }, color: 'rgba(201, 169, 110, 0.08)', duration: 25, delay: 2 },
-    { size: 600, position: { top: '20%', left: '40%' }, color: 'rgba(201, 169, 110, 0.06)', duration: 30, delay: 4 },
-    { size: 700, position: { top: '60%', left: '10%' }, color: 'rgba(139, 105, 20, 0.05)', duration: 28, delay: 6 },
+    { size: 800, position: { top: '-15%', left: '-5%' }, color: 'rgba(201, 169, 110, 0.08)', duration: 25, delay: 0 },
+    { size: 600, position: { top: '50%', left: '55%' }, color: 'rgba(201, 169, 110, 0.06)', duration: 30, delay: 3 },
   ], []);
 
   return (
@@ -57,12 +55,6 @@ export default function AuroraBackground() {
           `,
           backgroundSize: '60px 60px',
         }}
-      />
-
-      {/* Moving highlight — CSS animated */}
-      <div
-        className="absolute top-0 w-[30%] h-full bg-gradient-to-r from-transparent via-gold-400/[0.03] to-transparent aurora-sweep"
-        style={{ animationDuration: '12s' }}
       />
 
       {/* Radial vignette */}

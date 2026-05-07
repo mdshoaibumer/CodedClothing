@@ -1,44 +1,21 @@
 /**
- * ParticleField.jsx — 3D Ambient Particle Effect
+ * ParticleField.jsx — Lightweight Canvas2D Ambient Particle Effect
  * 
- * Renders a Three.js particle system as a subtle background decoration.
+ * Replaces the previous Three.js implementation (~500KB bundle savings).
+ * Renders subtle floating particles using native Canvas 2D API.
  * 
  * Performance Strategy:
  * - Device capability check (skips on mobile, low-core devices, reduced motion)
- * - Low DPR (1x) and disabled antialiasing for minimal GPU load
- * - Frame throttling (renders every other frame)
- * - Minimal particle count (150 instanced meshes)
- * - "demand" frameloop — only re-renders when animation updates
- * - Lazy-loaded via React.lazy() in App.jsx
+ * - requestAnimationFrame with frame throttling (~30fps)
+ * - Minimal particle count (40 particles)
+ * - Canvas resolution capped at 1x DPR
+ * - Pauses when tab is hidden (Page Visibility API)
+ * - No external dependencies
  */
 
-import { useRef, useMemo, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
+import { useRef, useEffect, useState, memo } from 'react';
 
-/** Pre-generated particle data — computed once at module load (avoids useMemo purity issue) */
-const PARTICLE_DATA = Array.from({ length: 150 }, () => ({
-  time: Math.random() * 100,
-  factor: 20 + Math.random() * 100,
-  speed: 0.0001 + Math.random() / 40000,
-  x: (Math.random() - 0.5) * 80,
-  y: (Math.random() - 0.5) * 80,
-  z: (Math.random() - 0.5) * 80,
-}));
-
-/** Pre-generated nebula positions */
-const NEBULA_POSITIONS = (() => {
-  const pos = new Float32Array(300 * 3);
-  for (let i = 0; i < 300; i++) {
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.random() * Math.PI;
-    const r = 8 + Math.random() * 15;
-    pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-    pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-    pos[i * 3 + 2] = r * Math.cos(phi);
-  }
-  return pos;
-})();
+const PARTICLE_COUNT = 40;
 
 /**
  * Device capability check — prevents rendering on:
@@ -54,148 +31,152 @@ function useIsCapableDevice() {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     return cores >= 4 && !isMobile && !prefersReduced;
   });
-
   return capable;
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
 /**
- * Particles — Instanced mesh with 150 particles.
- * Uses InstancedMesh for batched draw calls (single GPU draw).
- * Throttled to update every 2nd frame for 30fps particle movement.
+ * Creates initial particle data with random positions and velocities
  */
-function Particles({ count = 150 }) {
-  const mesh = useRef();
-  const particles = PARTICLE_DATA.slice(0, count);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-  const frameCount = useRef(0);
-
-  useFrame(() => {
-    frameCount.current++;
-    // Throttle to every other frame for performance
-    if (frameCount.current % 2 !== 0) return;
-
-    particles.forEach((particle, i) => {
-      const { factor, speed, x, y, z } = particle;
-      const time = (particle.time += speed);
-
-      const s = Math.cos(time);
-      dummy.position.set(
-        x + Math.cos((time / 2) * factor) * 4,
-        y + Math.sin((time / 3) * factor) * 4,
-        z + Math.cos((time / 4) * factor) * 4
-      );
-      dummy.scale.setScalar(Math.max(0.1, Math.abs(s) * 0.8));
-      dummy.rotation.set(time * 0.5, time * 0.3, time * 0.2);
-      dummy.updateMatrix();
-      mesh.current.setMatrixAt(i, dummy.matrix);
-    });
-    mesh.current.instanceMatrix.needsUpdate = true;
-  });
-
-  return (
-    <instancedMesh ref={mesh} args={[null, null, count]}>
-      <sphereGeometry args={[0.03, 8, 8]} />
-      <meshBasicMaterial color="#c9a96e" transparent opacity={0.6} />
-    </instancedMesh>
-  );
+function createParticles(width, height) {
+  return Array.from({ length: PARTICLE_COUNT }, () => ({
+    x: Math.random() * width,
+    y: Math.random() * height,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    radius: Math.random() * 1.5 + 0.5,
+    opacity: Math.random() * 0.4 + 0.1,
+    pulse: Math.random() * Math.PI * 2,
+    pulseSpeed: Math.random() * 0.01 + 0.005,
+  }));
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-/**
- * NebulaCloud — Point cloud creating a nebula-like ambient effect.
- * 300 points distributed in a spherical pattern with additive blending.
- */
-function NebulaCloud() {
-  const meshRef = useRef();
-  const positions = NEBULA_POSITIONS;
-
-  useFrame(({ clock }) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = clock.getElapsedTime() * 0.02;
-      meshRef.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.01) * 0.1;
-    }
-  });
-
-  return (
-    <points ref={meshRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={300}
-          array={positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        color="#e8d5a3"
-        size={0.08}
-        transparent
-        opacity={0.4}
-        sizeAttenuation
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
-  );
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-/**
- * FloatingRings — Concentric torus rings rotating slowly.
- * Adds depth and luxury feel to the background.
- */
-function FloatingRings() {
-  const groupRef = useRef();
-
-  useFrame(({ clock }) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.z = clock.getElapsedTime() * 0.04;
-      groupRef.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.025) * 0.3;
-    }
-  });
-
-  return (
-    <group ref={groupRef}>
-      {[0, 1, 2, 3, 4].map((i) => (
-        <mesh key={i} position={[0, 0, 0]} rotation={[i * 0.4, i * 0.3, i * 0.2]}>
-          <torusGeometry args={[4 + i * 3, 0.015, 8, 80]} />
-          <meshBasicMaterial color="#c9a96e" transparent opacity={0.12 - i * 0.02} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-/**
- * ParticleField — Main export. Renders the 3D canvas with all particle effects.
- * Returns null on incapable devices (mobile, low-end, reduced motion).
- */
-export default function ParticleField() {
+const ParticleField = memo(function ParticleField() {
   const capable = useIsCapableDevice();
+  const canvasRef = useRef(null);
+  const animationRef = useRef(null);
+  const particlesRef = useRef(null);
+  const visibleRef = useRef(true);
+
+  useEffect(() => {
+    if (!capable) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    // Set canvas size at 1x DPR for performance
+    canvas.width = width;
+    canvas.height = height;
+
+    particlesRef.current = createParticles(width, height);
+
+    let lastFrame = 0;
+    const FRAME_INTERVAL = 1000 / 30; // Cap at 30fps
+
+    function animate(timestamp) {
+      if (!visibleRef.current) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
+      // Frame throttle
+      if (timestamp - lastFrame < FRAME_INTERVAL) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrame = timestamp;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const particles = particlesRef.current;
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        // Update position
+        p.x += p.vx;
+        p.y += p.vy;
+        p.pulse += p.pulseSpeed;
+
+        // Wrap around edges
+        if (p.x < -10) p.x = width + 10;
+        if (p.x > width + 10) p.x = -10;
+        if (p.y < -10) p.y = height + 10;
+        if (p.y > height + 10) p.y = -10;
+
+        // Pulsing opacity
+        const currentOpacity = p.opacity * (0.6 + 0.4 * Math.sin(p.pulse));
+
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(201, 169, 110, ${currentOpacity})`;
+        ctx.fill();
+      }
+
+      // Draw subtle connections between nearby particles
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = dx * dx + dy * dy;
+
+          if (dist < 15000) {
+            const opacity = (1 - dist / 15000) * 0.08;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(201, 169, 110, ${opacity})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationRef.current = requestAnimationFrame(animate);
+    }
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    // Handle resize (debounced)
+    let resizeTimeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }, 200);
+    };
+
+    // Handle visibility
+    const handleVisibility = () => {
+      visibleRef.current = !document.hidden;
+    };
+
+    window.addEventListener('resize', handleResize, { passive: true });
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      cancelAnimationFrame(animationRef.current);
+      clearTimeout(resizeTimeout);
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [capable]);
 
   if (!capable) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 opacity-50">
-      <Canvas
-        camera={{ position: [0, 0, 22], fov: 55 }}
-        dpr={[1, 1]}
-        gl={{ antialias: false, alpha: true, powerPreference: 'low-power' }}
-        style={{ background: 'transparent' }}
-        frameloop="always"
-        performance={{ min: 0.5 }}
-      >
-        <ambientLight intensity={0.6} />
-        <pointLight position={[10, 10, 10]} intensity={0.8} color="#c9a96e" />
-        <Particles count={150} />
-        <NebulaCloud />
-        <FloatingRings />
-      </Canvas>
-    </div>
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none z-0 opacity-50"
+      aria-hidden="true"
+    />
   );
-}
+});
+
+export default ParticleField;

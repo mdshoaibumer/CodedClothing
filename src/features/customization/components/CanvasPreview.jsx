@@ -127,18 +127,18 @@ export default function CanvasPreview({ product }) {
     <div className="w-full">
       {/* Zoom Controls */}
       <div className="flex items-center justify-center gap-2 mb-4">
-        <div className="flex items-center gap-1 p-1.5 bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div className="flex items-center gap-1 p-1.5 bg-white rounded-2xl border border-obsidian-100 shadow-sm">
           <button
             onClick={() => setCanvasZoom((z) => Math.max(MIN_ZOOM, z - ZOOM_STEP))}
             disabled={canvasZoom <= MIN_ZOOM}
-            className="w-8 h-8 flex items-center justify-center rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            className="w-8 h-8 flex items-center justify-center rounded-xl text-sm font-bold text-obsidian-400 hover:bg-obsidian-50 hover:text-obsidian-900 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             aria-label="Zoom out"
           >
             −
           </button>
           <button
             onClick={resetZoom}
-            className="px-3 h-8 flex items-center justify-center rounded-xl text-[10px] font-black text-gray-700 hover:bg-gray-100 transition-all uppercase tracking-widest min-w-[4rem]"
+            className="px-3 h-8 flex items-center justify-center rounded-xl text-xs font-black text-obsidian-600 hover:bg-obsidian-50 transition-all uppercase tracking-widest min-w-[4rem]"
             title="Reset zoom (click to reset)"
           >
             {Math.round(canvasZoom * 100)}%
@@ -146,14 +146,14 @@ export default function CanvasPreview({ product }) {
           <button
             onClick={() => setCanvasZoom((z) => Math.min(MAX_ZOOM, z + ZOOM_STEP))}
             disabled={canvasZoom >= MAX_ZOOM}
-            className="w-8 h-8 flex items-center justify-center rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            className="w-8 h-8 flex items-center justify-center rounded-xl text-sm font-bold text-obsidian-400 hover:bg-obsidian-50 hover:text-obsidian-900 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             aria-label="Zoom in"
           >
             +
           </button>
         </div>
         {canvasZoom > 1 && (
-          <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest animate-in fade-in">
+          <span className="text-2xs font-bold text-obsidian-300 uppercase tracking-widest animate-in fade-in">
             Ctrl+Scroll to zoom · Middle-click to pan
           </span>
         )}
@@ -162,7 +162,7 @@ export default function CanvasPreview({ product }) {
       {/* Zoomable Canvas Container */}
       <div
         ref={containerRef}
-        className="overflow-hidden rounded-[2.5rem]"
+        className="overflow-hidden rounded-5xl"
         onWheel={handleWheel}
         onMouseDown={handlePanStart}
         style={{ cursor: isPanning ? 'grabbing' : canvasZoom > 1 ? 'grab' : 'default' }}
@@ -198,13 +198,13 @@ export default function CanvasPreview({ product }) {
       
       {/* High-Fidelity Rendering Indicator */}
       <div className="mt-8 flex justify-center">
-        <div className="px-6 py-2 bg-gray-50 rounded-full border border-gray-100 shadow-sm flex items-center gap-3">
+        <div className="px-6 py-2 bg-obsidian-50 rounded-full border border-obsidian-100 shadow-sm flex items-center gap-3">
           <div className="flex gap-1">
-            <div className="w-1 h-1 rounded-full bg-blue-500 animate-pulse" />
-            <div className="w-1 h-1 rounded-full bg-blue-500 animate-pulse delay-75" />
-            <div className="w-1 h-1 rounded-full bg-blue-500 animate-pulse delay-150" />
+            <div className="w-1 h-1 rounded-full bg-gold-500 animate-pulse" />
+            <div className="w-1 h-1 rounded-full bg-gold-500 animate-pulse delay-75" />
+            <div className="w-1 h-1 rounded-full bg-gold-500 animate-pulse delay-150" />
           </div>
-          <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">
+          <span className="text-xs font-black text-obsidian-400 uppercase tracking-[0.3em]">
             Precision Print Preview Active
           </span>
         </div>

@@ -7,17 +7,50 @@
     
     <!-- SEO & Social -->
     <meta name="description" content="Coded Clothing — Luxury custom t-shirts crafted with premium Egyptian cotton. Design bespoke apparel with our interactive studio." />
+    <meta name="keywords" content="custom t-shirts, premium cotton, bespoke apparel, t-shirt design, coded clothing" />
+    <meta name="author" content="Coded Clothing" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://codedclothing.com" />
+    
+    <!-- Open Graph -->
     <meta property="og:title" content="Coded Clothing — Bespoke Premium Apparel" />
     <meta property="og:description" content="Luxury custom t-shirts crafted with premium Egyptian cotton. Design your masterpiece in our interactive studio." />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://codedclothing.com" />
+    <meta property="og:site_name" content="Coded Clothing" />
+    <meta property="og:image" content="/images/og-preview.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Coded Clothing — Bespoke Premium Apparel" />
+    <meta name="twitter:description" content="Luxury custom t-shirts crafted with premium Egyptian cotton." />
+    <meta name="twitter:image" content="/images/og-preview.jpg" />
+    
     <meta name="theme-color" content="#0a0a0a" />
     
     <!-- Performance: Preconnect to font CDN -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Fonts: Only load weights actually used, non-render-blocking -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet" /></noscript>
     
     <title>Coded Clothing — Premium Custom Apparel</title>
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Coded Clothing",
+      "description": "Premium custom t-shirt atelier with interactive design studio",
+      "url": "https://codedclothing.com"
+    }
+    </script>
     
     <style>
       /* Premium page loading state with cinematic feel */
@@ -29,11 +62,34 @@
       }
       @keyframes bodyReveal { to { opacity: 1; } }
       
-      /* Prevent FOUC */
-      .no-js { visibility: hidden; }
+      /* Skip to content — visible on focus for keyboard navigation */
+      .skip-to-content {
+        position: absolute;
+        top: -100%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10000;
+        padding: 0.75rem 1.5rem;
+        background: #0a0a0a;
+        color: #c9a96e;
+        border-radius: 0 0 0.5rem 0.5rem;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        text-decoration: none;
+        transition: top 0.2s ease;
+      }
+      .skip-to-content:focus {
+        top: 0;
+        outline: 2px solid #c9a96e;
+        outline-offset: 2px;
+      }
     </style>
   </head>
   <body>
+    <!-- Skip to main content for keyboard/screen reader users -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

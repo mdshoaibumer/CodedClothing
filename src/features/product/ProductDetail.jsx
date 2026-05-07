@@ -50,7 +50,7 @@ export default function ProductDetail() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
-      className="flex flex-col md:flex-row gap-8 lg:gap-16 bg-white/80 backdrop-blur-xl p-6 md:p-10 rounded-[2rem] shadow-luxury relative overflow-hidden border border-white/50"
+      className="flex flex-col md:flex-row gap-8 lg:gap-16 bg-white/80 backdrop-blur-xl p-6 md:p-10 rounded-4xl shadow-luxury relative overflow-hidden border border-white/50"
     >
       {/* Decorative corner accent */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-gold-100/20 to-transparent rounded-bl-full pointer-events-none" />
@@ -82,7 +82,7 @@ export default function ProductDetail() {
           </p>
           <div className="overflow-hidden rounded-2xl border border-obsidian-100">
             <table className="w-full text-left text-sm">
-              <thead className="bg-obsidian-50 text-obsidian-400 font-black uppercase tracking-widest text-[10px]">
+              <thead className="bg-obsidian-50 text-obsidian-400 font-black uppercase tracking-widest text-xs">
                 <tr>
                   <th className="px-6 py-4">Size</th>
                   <th className="px-6 py-4">Chest</th>
@@ -116,7 +116,7 @@ export default function ProductDetail() {
         transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         className="w-full md:w-1/2 flex flex-col gap-5"
       >
-        <div className="relative bg-gradient-to-br from-obsidian-50 to-obsidian-100/30 rounded-[2rem] overflow-hidden aspect-[3/4] md:aspect-square lg:aspect-[3/4] group">
+        <div className="relative bg-gradient-to-br from-obsidian-50 to-obsidian-100/30 rounded-4xl overflow-hidden aspect-[3/4] md:aspect-square lg:aspect-[3/4] group">
           <AnimatePresence mode="wait">
             <motion.img
               key={activeView}
@@ -130,7 +130,7 @@ export default function ProductDetail() {
             />
           </AnimatePresence>
           {product.label && (
-            <Badge className="absolute top-6 left-6 bg-white/90 backdrop-blur-md text-obsidian-800 shadow-md border-none px-4 py-1.5 rounded-full font-black uppercase tracking-widest text-[9px]">
+            <Badge className="absolute top-6 left-6 bg-white/90 backdrop-blur-md text-obsidian-800 shadow-md border-none px-4 py-1.5 rounded-full font-black uppercase tracking-widest text-xs">
               {product.label}
             </Badge>
           )}
@@ -140,7 +140,7 @@ export default function ProductDetail() {
             key={activeView + '-label'}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-obsidian-900/80 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/10 text-[9px] font-black text-white/70 uppercase tracking-[0.2em] pointer-events-none"
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-obsidian-900/80 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/10 text-xs font-black text-white/70 uppercase tracking-[0.2em] pointer-events-none"
           >
             {activeView.replace('_', ' ')}
           </motion.div>
@@ -163,7 +163,7 @@ export default function ProductDetail() {
                   : 'border-obsidian-100 bg-obsidian-50 hover:border-obsidian-300'
               }`}
             >
-              <img src={url} alt={key} className="w-full h-full object-contain p-2 mix-blend-multiply" />
+              <img src={url} alt={key} className="w-full h-full object-contain p-2 mix-blend-multiply" loading="lazy" decoding="async" />
               {activeView === key && (
                 <motion.div
                   layoutId="activeThumb"
@@ -186,7 +186,7 @@ export default function ProductDetail() {
         <motion.button
           whileHover={{ x: -4 }}
           onClick={() => navigate('/')}
-          className="text-sm text-obsidian-400 hover:text-obsidian-900 mb-8 w-fit flex items-center gap-2 font-bold uppercase tracking-widest text-[10px] transition-colors"
+          className="text-sm text-obsidian-400 hover:text-obsidian-900 mb-8 w-fit flex items-center gap-2 font-bold uppercase tracking-widest text-xs transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           Collection
@@ -198,7 +198,7 @@ export default function ProductDetail() {
         
         <div className="flex items-center gap-4 mb-8">
           <p className="text-3xl font-black gradient-text-gold">{formatPrice(product.price)}</p>
-          <span className="px-3 py-1 bg-green-50 text-green-700 text-[10px] font-black uppercase tracking-wider rounded-full">
+          <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-black uppercase tracking-wider rounded-full">
             In Stock
           </span>
         </div>
@@ -216,7 +216,7 @@ export default function ProductDetail() {
           ].map((feature) => (
             <div key={feature.label} className="flex items-center gap-2">
               <span className="text-gold-500 text-xs">{feature.icon}</span>
-              <span className="text-[10px] font-bold text-obsidian-400 uppercase tracking-wider">{feature.label}</span>
+              <span className="text-xs font-bold text-obsidian-400 uppercase tracking-wider">{feature.label}</span>
             </div>
           ))}
         </div>
@@ -224,7 +224,7 @@ export default function ProductDetail() {
         <div className="section-divider mb-8" />
 
         <div className="mb-8">
-          <h3 className="text-[10px] font-black text-obsidian-400 mb-4 uppercase tracking-[0.2em]">
+          <h3 className="text-xs font-black text-obsidian-400 mb-4 uppercase tracking-[0.2em]">
             Surface Color
           </h3>
           <div className="flex items-center gap-3 glass-card p-4 rounded-2xl w-fit">
@@ -244,13 +244,13 @@ export default function ProductDetail() {
 
         <div className="mb-10">
           <div className="flex justify-between items-end mb-4 px-1">
-            <h3 className="text-[10px] font-black text-obsidian-400 uppercase tracking-[0.2em]">
+            <h3 className="text-xs font-black text-obsidian-400 uppercase tracking-[0.2em]">
               Select Size
             </h3>
             <motion.button
               whileHover={{ scale: 1.05 }}
               onClick={() => setIsSizeGuideOpen(true)}
-              className="text-[10px] text-gold-600 font-black uppercase tracking-widest hover:text-gold-700 transition-colors"
+              className="text-xs text-gold-600 font-black uppercase tracking-widest hover:text-gold-700 transition-colors"
             >
               Size Guide →
             </motion.button>
