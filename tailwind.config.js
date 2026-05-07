@@ -1,3 +1,14 @@
+/**
+ * Tailwind CSS Configuration — Coded Clothing
+ * 
+ * Custom Design System:
+ * - Gold palette: Brand accent (luxury gold tones)
+ * - Obsidian palette: Dark neutrals (near-black shades)
+ * - Custom shadows: Multi-layered depth shadows for premium feel
+ * - Custom animations: Float, morph, glow effects
+ * - Custom easing: "luxury" cubic-bezier for smooth transitions
+ */
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [

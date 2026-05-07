@@ -1,3 +1,10 @@
+/**
+ * Skeleton.jsx — Loading Placeholder Component
+ * 
+ * Shimmer animation skeleton for content loading states.
+ * Uses CSS animation for GPU-composited performance.
+ */
+
 import { cn } from '../../lib/utils';
 
 const Skeleton = ({

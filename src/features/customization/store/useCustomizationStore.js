@@ -8,7 +8,7 @@ import { SCALE_LIMITS, POSITION_LIMITS } from '../customization.types';
  * logo uploads, and scaling, with local storage persistence.
  */
 
-// Constants for bounds checking (legacy - prefer types file)
+// Bounds checking constants (from shared types)
 const POSITION_MIN = POSITION_LIMITS.MIN;
 const POSITION_MAX = POSITION_LIMITS.MAX;
 const SCALE_MIN = SCALE_LIMITS.MIN;
@@ -16,22 +16,6 @@ const SCALE_MAX = SCALE_LIMITS.MAX;
 
 // Maximum history entries to prevent unbounded localStorage growth
 const MAX_HISTORY = 50;
-
-// Helper function for efficient deep cloning
-const deepClone = (obj) => {
-  if (obj === null || typeof obj !== 'object') return obj;
-  if (obj instanceof Date) return new Date(obj.getTime());
-  if (obj instanceof Array) return obj.map(item => deepClone(item));
-  if (typeof obj === 'object') {
-    const clonedObj = {};
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        clonedObj[key] = deepClone(obj[key]);
-      }
-    }
-    return clonedObj;
-  }
-};
 
 const useCustomizationStore = create(
   persist(
@@ -185,7 +169,7 @@ const useCustomizationStore = create(
       saveToHistory: () =>
         set((state) => ({
           history: {
-            past: [...state.history.past, deepClone(state.design)].slice(-MAX_HISTORY),
+            past: [...state.history.past, structuredClone(state.design)].slice(-MAX_HISTORY),
             future: [],
           },
         })),

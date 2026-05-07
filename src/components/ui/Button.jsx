@@ -1,3 +1,11 @@
+/**
+ * Button.jsx — Design System Button Component
+ * 
+ * Variants: default, outline, ghost, link, primary, success, luxury
+ * Sizes: sm, default, lg, xl, icon
+ * Uses Framer Motion for micro-interaction (scale on hover/tap).
+ */
+
 import { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';

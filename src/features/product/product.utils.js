@@ -1,8 +1,15 @@
+/**
+ * product.utils.js — Product Data Access Layer
+ * 
+ * Utility functions for querying and formatting product data.
+ * Acts as a service layer between components and the raw data store.
+ */
+
 import { tshirts } from '../../data/tshirts';
 
 /**
- * Get a product by its ID
- * @param {string} id - Product ID
+ * Finds a product by its unique ID.
+ * @param {string} id - Product ID (e.g., "ts-black-01")
  * @returns {object|null} Product object or null if not found
  */
 export const getProductById = (id) => {
@@ -10,44 +17,18 @@ export const getProductById = (id) => {
 };
 
 /**
- * Get all available products
- * @returns {array} Array of all products
- */
-export const getAllProducts = () => {
-  return tshirts;
-};
-
-/**
- * Get products by label
- * @param {string} label - Product label (e.g., 'Bestseller', 'New')
- * @returns {array} Array of products with the specified label
- */
-export const getProductsByLabel = (label) => {
-  return tshirts.filter(product => product.label === label);
-};
-
-/**
- * Get available sizes for products
- * @returns {array} Array of available sizes
+ * Returns the list of available sizes.
+ * @returns {string[]} Array of size codes
  */
 export const getAvailableSizes = () => {
   return ['S', 'M', 'L', 'XL', 'XXL'];
 };
 
 /**
- * Format price for display
- * @param {number} price - Price in cents/paise
- * @returns {string} Formatted price string
+ * Formats a numeric price for display with currency symbol.
+ * @param {number} price - Price value in INR
+ * @returns {string} Formatted price (e.g., "₹299")
  */
 export const formatPrice = (price) => {
   return `₹${price}`;
-};
-
-/**
- * Get product image URL with fallback
- * @param {object} product - Product object
- * @returns {string} Image URL
- */
-export const getProductImage = (product) => {
-  return product.image || 'https://placehold.co/600x800/cccccc/666666?text=No+Image';
 };

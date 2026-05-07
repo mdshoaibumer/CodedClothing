@@ -1,3 +1,10 @@
+/**
+ * ProductDetail.jsx — Full Product View Component
+ * 
+ * Displays single product with image gallery, color/size selection,
+ * pricing, and "Customize" CTA. Uses URL params for product ID.
+ */
+
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';

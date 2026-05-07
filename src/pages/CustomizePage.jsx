@@ -1,3 +1,16 @@
+/**
+ * CustomizePage.jsx — T-Shirt Customization Studio
+ * 
+ * Full-featured design editor allowing users to:
+ * - Upload logos to front/back of the shirt
+ * - Drag, scale, and rotate logo placement
+ * - Undo/Redo with keyboard shortcuts (Ctrl+Z / Ctrl+Y)
+ * - Export final design as image
+ * 
+ * State Management: Zustand store with localStorage persistence
+ * Layout: 2-column grid (preview + sidebar controls)
+ */
+
 import { useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';

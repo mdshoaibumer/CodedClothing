@@ -1,3 +1,17 @@
+/**
+ * tshirts.js — Product Catalog Data
+ * 
+ * Contains the complete collection of available t-shirt products.
+ * Each product defines its color variants, pricing, image paths, and labels.
+ * 
+ * Image Convention:
+ * - All product images stored in /public/images/tshirts/
+ * - Naming: {color}_{view}_side.png (e.g., black_front_side.png)
+ * - Three views per product: front, back, both
+ * 
+ * Pricing: All values in INR (₹)
+ */
+
 export const tshirts = [
   {
     id: "ts-black-01",

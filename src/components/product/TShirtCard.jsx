@@ -1,3 +1,11 @@
+/**
+ * TShirtCard.jsx — Product Card with 3D Tilt Effect
+ * 
+ * Interactive product card for the collection grid.
+ * Features physics-based 3D tilt on mouse move, image lazy loading
+ * with skeleton placeholder, and staggered entrance animations.
+ */
+
 import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
@@ -8,15 +16,11 @@ export default function TShirtCard({ product, index = 0 }) {
   const [isHovered, setIsHovered] = useState(false);
   const ref = useRef(null);
 
-  // 3D Tilt effect - more aggressive
+  // 3D Tilt effect
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [15, -15]), { stiffness: 300, damping: 30 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-15, 15]), { stiffness: 300, damping: 30 });
-  
-  // Spotlight effect position
-  const mouseX = useMotionValue(50);
-  const mouseY = useMotionValue(50);
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 300, damping: 30 });
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 300, damping: 30 });
 
   const handleMouseMove = (e) => {
     if (!ref.current) return;
@@ -25,8 +29,6 @@ export default function TShirtCard({ product, index = 0 }) {
     const yPos = (e.clientY - rect.top) / rect.height - 0.5;
     x.set(xPos);
     y.set(yPos);
-    mouseX.set(((e.clientX - rect.left) / rect.width) * 100);
-    mouseY.set(((e.clientY - rect.top) / rect.height) * 100);
   };
 
   const handleMouseLeave = () => {
@@ -51,32 +53,10 @@ export default function TShirtCard({ product, index = 0 }) {
         to={`/product/${product.id}`}
         className="group relative flex flex-col bg-white rounded-3xl overflow-hidden
                    shadow-soft hover:shadow-luxury transition-all duration-700 ease-luxury
-                   gradient-border cursor-view holographic-card prismatic-card card-3d-pop"
+                   gradient-border cursor-view holographic-card card-3d-pop"
       >
-        {/* Dynamic spotlight glow on hover */}
-        <motion.div 
-          className="absolute inset-0 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"
-          style={{
-            background: useTransform(
-              [mouseX, mouseY],
-              ([mx, my]) => `radial-gradient(circle at ${mx}% ${my}%, rgba(201, 169, 110, 0.2) 0%, transparent 50%)`
-            ),
-          }}
-        />
-
-        {/* Holographic rainbow shine */}
-        <motion.div
-          className="absolute inset-0 z-20 pointer-events-none rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-          style={{
-            background: useTransform(
-              [mouseX, mouseY],
-              ([mx, my]) => `linear-gradient(${mx + my}deg, rgba(255,200,100,0.05) 0%, rgba(255,215,0,0.1) 25%, rgba(201,169,110,0.05) 50%, rgba(139,105,20,0.1) 75%, rgba(255,200,100,0.05) 100%)`
-            ),
-          }}
-        />
-
-        {/* Ambient glow on hover - enhanced */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gold-100/0 to-gold-200/0 group-hover:from-gold-100/25 group-hover:to-gold-200/20 transition-all duration-700 rounded-3xl" />
+        {/* Ambient glow on hover */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gold-100/0 to-gold-200/0 group-hover:from-gold-100/20 group-hover:to-gold-200/15 transition-all duration-500 rounded-3xl z-10 pointer-events-none" />
 
         <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-obsidian-50 to-obsidian-100/50">
           {!imageLoaded && (
@@ -87,19 +67,16 @@ export default function TShirtCard({ product, index = 0 }) {
             alt={`${product.color} T-Shirt`}
             loading="lazy"
             onLoad={() => setImageLoaded(true)}
-            animate={{ scale: isHovered ? 1.12 : 1 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            animate={{ scale: isHovered ? 1.08 : 1 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className={`object-cover w-full h-full ${
               imageLoaded ? 'opacity-100' : 'opacity-0'
             }`}
-            style={{ transform: 'translateZ(30px)', transition: 'opacity 0.5s ease' }}
+            style={{ transition: 'opacity 0.5s ease' }}
           />
 
           {product.label && (
-            <motion.span
-              initial={{ opacity: 0, x: -20, scale: 0.8 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              transition={{ delay: 0.3 + index * 0.1, type: 'spring', stiffness: 200 }}
+            <span
               className="absolute top-4 left-4
                          bg-white/90 backdrop-blur-xl text-[9px] font-black
                          px-3 py-1.5 rounded-full
@@ -107,22 +84,12 @@ export default function TShirtCard({ product, index = 0 }) {
                          uppercase tracking-[0.15em]"
             >
               {product.label}
-            </motion.span>
+            </span>
           )}
 
-          {/* Premium hover overlay with gradient */}
-          <motion.div 
-            animate={{ opacity: isHovered ? 1 : 0 }}
-            transition={{ duration: 0.5 }}
-            className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-white/10"
-          />
-          
-          {/* Animated shimmer sweep - enhanced */}
-          <motion.div 
-            initial={{ x: '-100%' }}
-            animate={{ x: isHovered ? '200%' : '-100%' }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 skew-x-12"
+          {/* Hover overlay */}
+          <div 
+            className={`absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
           />
 
           {/* Shine reflection */}

@@ -1,3 +1,13 @@
+/**
+ * SmoothScroll.jsx — Lenis Smooth Scroll Provider
+ * 
+ * Integrates Lenis (smooth scroll library) with GSAP's ScrollTrigger.
+ * This ensures all scroll-triggered animations have buttery-smooth behavior.
+ * 
+ * Performance: Lenis uses requestAnimationFrame internally and syncs with
+ * GSAP's ticker for optimal frame scheduling.
+ */
+
 import { useEffect, useRef } from 'react';
 import Lenis from 'lenis';
 import gsap from 'gsap';
@@ -24,18 +34,20 @@ export default function SmoothScroll({ children }) {
 
     lenisRef.current = lenis;
 
-    // Sync Lenis with GSAP ScrollTrigger
+    /* Sync Lenis scroll position with GSAP ScrollTrigger */
     lenis.on('scroll', ScrollTrigger.update);
 
-    gsap.ticker.add((time) => {
+    /* Stable RAF callback for GSAP ticker — stored for proper cleanup */
+    const rafCallback = (time) => {
       lenis.raf(time * 1000);
-    });
+    };
 
+    gsap.ticker.add(rafCallback);
     gsap.ticker.lagSmoothing(0);
 
     return () => {
+      gsap.ticker.remove(rafCallback);
       lenis.destroy();
-      gsap.ticker.remove(lenis.raf);
     };
   }, []);
 

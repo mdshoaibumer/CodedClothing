@@ -1,3 +1,10 @@
+/**
+ * CustomizePageHeader.jsx — Design Studio Top Bar
+ * 
+ * Contains: Back navigation, product info, price display,
+ * "Add to Cart" action with download-as-PNG, and size guide modal.
+ */
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';

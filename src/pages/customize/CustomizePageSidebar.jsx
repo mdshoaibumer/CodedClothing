@@ -1,3 +1,13 @@
+/**
+ * CustomizePageSidebar.jsx — Design Studio Control Panel
+ * 
+ * Right sidebar containing:
+ * - Logo upload control
+ * - Numeric position/scale adjusters
+ * - Color picker
+ * - Product details and size guide
+ */
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { formatPrice } from '../../features/product/product.utils';

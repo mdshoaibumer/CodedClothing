@@ -1,3 +1,13 @@
+/**
+ * Modal.jsx — Accessible Dialog Component
+ * 
+ * Portal-rendered modal with:
+ * - Backdrop blur + click-to-close
+ * - Focus trap and Escape key support
+ * - Spring animation (scale + blur entrance)
+ * - Body scroll lock when open
+ */
+
 import { forwardRef, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';

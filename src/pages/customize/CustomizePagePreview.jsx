@@ -1,3 +1,10 @@
+/**
+ * CustomizePagePreview.jsx — Design Studio Canvas Area
+ * 
+ * Central preview panel with front/back view toggle.
+ * Renders the CanvasPreview component with zoom/pan support.
+ */
+
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import CanvasPreview from '../../features/customization/components/CanvasPreview';

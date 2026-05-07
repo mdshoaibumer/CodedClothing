@@ -1,3 +1,10 @@
+/**
+ * Card.jsx — Composable Card Primitives
+ * 
+ * Exports: Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter
+ * Follows compound component pattern for flexible layouts.
+ */
+
 import { forwardRef } from 'react';
 import { cn } from '../../lib/utils';
 

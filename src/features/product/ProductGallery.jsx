@@ -1,3 +1,10 @@
+/**
+ * ProductGallery.jsx — Product Collection Grid
+ * 
+ * Animated grid of TShirtCards with staggered entrance.
+ * Uses Framer Motion's useInView for scroll-triggered reveal.
+ */
+
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { tshirts } from '../../data/tshirts';

@@ -1,3 +1,10 @@
+/**
+ * Badge.jsx — Status/Label Badge Component
+ * 
+ * Variants: default, secondary, destructive, outline, gold
+ * Used for product labels ("New", "Limited", "Best Seller").
+ */
+
 import { forwardRef } from 'react';
 import { cn } from '../../lib/utils';
 

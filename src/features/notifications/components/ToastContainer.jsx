@@ -1,3 +1,11 @@
+/**
+ * ToastContainer.jsx — Global Toast Notification Renderer
+ * 
+ * Renders stacked toast notifications from the Zustand toast store.
+ * Supports: success (green), error (red), warning (amber), info (blue).
+ * Auto-dismisses with animated exit.
+ */
+
 import { motion, AnimatePresence } from 'framer-motion';
 import useToastStore from '../store/useToastStore';
 
