@@ -86,6 +86,7 @@ function AnimatedRoutes() {
         <Routes location={location}>
           <Route path="/" element={<HomePage />} />
           <Route path="/collection" element={<CollectionPage />} />
+          <Route path="/collection/:category" element={<CollectionPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/customize/:id" element={<CustomizePage />} />

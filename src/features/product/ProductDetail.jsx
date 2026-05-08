@@ -8,8 +8,8 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getProductById, getAvailableSizes, formatPrice } from './product.utils';
-import { tshirts, PRODUCT_SPECS } from '../../data/tshirts';
+import { getProductById, getAvailableSizes, formatPrice, getSpecsFor } from './product.utils';
+import { products, CATEGORIES, CATEGORY_SPECS } from '../../data/products';
 import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
 import Breadcrumb from '../../components/ui/Breadcrumb';
@@ -227,7 +227,7 @@ export default function ProductDetail() {
         </motion.button>
 
         <h1 className="text-4xl md:text-5xl font-black text-obsidian-900 mb-3 tracking-tighter leading-tight">
-          Premium Cotton Tee
+          {CATEGORIES.find(c => c.slug === product.category)?.label || 'Premium Cotton Tee'}
         </h1>
         
         <div className="flex items-center gap-4 mb-8">
@@ -253,7 +253,7 @@ export default function ProductDetail() {
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gold-600">
             <path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"/><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><path d="M15 18H9"/><circle cx="17" cy="18" r="2"/>
           </svg>
-          <span className="text-xs font-bold text-gold-700">{PRODUCT_SPECS.delivery}</span>
+          <span className="text-xs font-bold text-gold-700">{(CATEGORY_SPECS[product.category] || CATEGORY_SPECS.tshirts).delivery}</span>
         </div>
 
         {/* Premium features */}
@@ -303,9 +303,9 @@ export default function ProductDetail() {
             </div>
             <span className="text-obsidian-900 font-bold text-sm tracking-tight">{product.color}</span>
           </div>
-          {/* Color switcher — browse other colors */}
+          {/* Color switcher — browse other colors in same category */}
           <div className="flex items-center gap-2 mt-4">
-            {tshirts.filter(t => t.id !== product.id).map((t) => (
+            {products.filter(t => t.id !== product.id && t.category === product.category).map((t) => (
               <Link
                 key={t.id}
                 to={`/product/${t.id}`}
@@ -513,11 +513,11 @@ export default function ProductDetail() {
         <h3 className="text-xs font-black text-obsidian-900 uppercase tracking-[0.2em] mb-6">Product Specifications</h3>
         <dl className="space-y-4 text-sm">
           {[
-            ['Material', PRODUCT_SPECS.material],
-            ['Weight', PRODUCT_SPECS.weight],
-            ['Fit', PRODUCT_SPECS.fit],
-            ['Print Technology', PRODUCT_SPECS.print],
-            ['Neckline', PRODUCT_SPECS.neckline],
+            ['Material', (CATEGORY_SPECS[product.category] || CATEGORY_SPECS.tshirts).material],
+            ['Weight', (CATEGORY_SPECS[product.category] || CATEGORY_SPECS.tshirts).weight],
+            ['Fit', (CATEGORY_SPECS[product.category] || CATEGORY_SPECS.tshirts).fit],
+            ['Print Technology', (CATEGORY_SPECS[product.category] || CATEGORY_SPECS.tshirts).print],
+            ['Neckline', (CATEGORY_SPECS[product.category] || CATEGORY_SPECS.tshirts).neckline],
           ].map(([label, value]) => (
             <div key={label} className="flex justify-between gap-4">
               <dt className="text-obsidian-400 font-medium">{label}</dt>
@@ -531,7 +531,7 @@ export default function ProductDetail() {
       <div className="p-8 rounded-3xl bg-white border border-obsidian-100/50">
         <h3 className="text-xs font-black text-obsidian-900 uppercase tracking-[0.2em] mb-6">Care Instructions</h3>
         <ul className="space-y-3">
-          {PRODUCT_SPECS.care.map((instruction) => (
+          {(CATEGORY_SPECS[product.category] || CATEGORY_SPECS.tshirts).care.map((instruction) => (
             <li key={instruction} className="flex items-start gap-3 text-sm text-obsidian-400">
               <div className="w-1.5 h-1.5 rounded-full bg-gold-500 mt-1.5 flex-shrink-0" />
               <span>{instruction}</span>

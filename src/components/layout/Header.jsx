@@ -6,7 +6,7 @@
 import { useState, useEffect, memo, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { tshirts } from '../../data/tshirts';
+import { products } from '../../data/products';
 import useCartStore from '../../features/cart/useCartStore';
 
 const EASE_LUXURY = [0.16, 1, 0.3, 1];
@@ -43,7 +43,7 @@ const Header = memo(function Header() {
 
   // Search results
   const searchResults = searchQuery.trim().length > 0
-    ? tshirts.filter(t => t.color.toLowerCase().includes(searchQuery.toLowerCase()))
+    ? products.filter(t => t.color.toLowerCase().includes(searchQuery.toLowerCase()))
     : [];
 
   return (

@@ -3,16 +3,21 @@
  * 
  * Interactive product card for the collection grid.
  * Uses CSS transitions for hover effects instead of JS-driven springs.
- * Entrance animation only via Framer Motion.
+ * Falls back to SVG placeholder when product images aren't available.
  */
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import OptimizedImage from '../ui/OptimizedImage';
+import ProductPlaceholder from '../ui/ProductPlaceholder';
+import { CATEGORIES } from '../../data/products';
 
 export default function TShirtCard({ product, index = 0 }) {
   const isAboveFold = index < 4;
+  const [imgError, setImgError] = useState(false);
+
+  const categoryLabel = CATEGORIES.find(c => c.slug === product.category)?.label || 'Apparel';
 
   return (
     <motion.div
@@ -30,15 +35,24 @@ export default function TShirtCard({ product, index = 0 }) {
         <div className="absolute inset-0 bg-gradient-to-br from-gold-100/0 to-gold-200/0 group-hover:from-gold-100/20 group-hover:to-gold-200/15 transition-all duration-500 rounded-3xl z-10 pointer-events-none" />
 
         <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-obsidian-50 to-obsidian-100/50">
-          <OptimizedImage
-            src={product.image}
-            alt={`${product.color} Premium Cotton T-Shirt — ${product.label || 'Custom Apparel'}`}
-            width={400}
-            height={533}
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            priority={isAboveFold}
-            className="w-full h-full"
-          />
+          {imgError ? (
+            <ProductPlaceholder
+              category={product.category}
+              hex={product.hex}
+              className="w-full h-full"
+            />
+          ) : (
+            <OptimizedImage
+              src={product.image}
+              alt={`${product.color} ${categoryLabel} — ${product.label || 'Custom Apparel'}`}
+              width={400}
+              height={533}
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              priority={isAboveFold}
+              className="w-full h-full"
+              onError={() => setImgError(true)}
+            />
+          )}
 
           {product.label && (
             <span

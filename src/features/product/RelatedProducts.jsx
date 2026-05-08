@@ -8,13 +8,15 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { tshirts } from '../../data/tshirts';
+import { products } from '../../data/products';
 
 export default function RelatedProducts({ currentProductId }) {
   const related = useMemo(() => {
-    return tshirts
-      .filter((t) => t.id !== currentProductId)
-      .slice(0, 4);
+    // Show related products from the same category first, then others
+    const current = products.find(p => p.id === currentProductId);
+    const sameCategory = products.filter(p => p.id !== currentProductId && p.category === current?.category);
+    const others = products.filter(p => p.id !== currentProductId && p.category !== current?.category);
+    return [...sameCategory, ...others].slice(0, 4);
   }, [currentProductId]);
 
   if (related.length === 0) return null;

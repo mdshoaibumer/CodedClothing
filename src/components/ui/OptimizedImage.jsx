@@ -24,6 +24,7 @@ const OptimizedImage = memo(function OptimizedImage({
   sizes,
   webpSrc,
   onLoad,
+  onError: onErrorProp,
   ...props
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -43,6 +44,7 @@ const OptimizedImage = memo(function OptimizedImage({
 
   const handleError = () => {
     setHasError(true);
+    onErrorProp?.();
   };
 
   if (hasError) {

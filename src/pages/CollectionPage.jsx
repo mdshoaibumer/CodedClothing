@@ -17,6 +17,7 @@
 
 import { memo, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
+import { useParams } from 'react-router-dom';
 import ProductGallery from '../features/product/ProductGallery';
 import {
   RevealOnScroll,
@@ -36,8 +37,8 @@ const EASE_LUXURY = [0.16, 1, 0.3, 1];
 
 /** Hero statistics displayed below the headline */
 const HERO_STATS = [
-  { value: 100, suffix: '%', label: 'Premium Cotton' },
-  { value: 7, suffix: '', label: 'Signature Colors' },
+  { value: 100, suffix: '%', label: 'Premium Fabric' },
+  { value: 7, suffix: '', label: 'Product Categories' },
   { value: 50000, suffix: '+', label: 'Designs Created', prefix: '' },
 ];
 
@@ -287,6 +288,7 @@ function NewsletterSection() {
  * CollectionPage — Primary landing page component.
  */
 export default function CollectionPage() {
+  const { category } = useParams();
   const heroRef = useRef(null);
 
   /* Parallax transforms tied to hero scroll position */
@@ -494,7 +496,7 @@ export default function CollectionPage() {
           PRODUCT GALLERY — Grid of T-Shirt cards
          ════════════════════════════════════════════════════════════════════════ */}
       <div id="gallery">
-        <ProductGallery />
+        <ProductGallery category={category || 'all'} />
       </div>
 
       {/* ════════════════════════════════════════════════════════════════════════

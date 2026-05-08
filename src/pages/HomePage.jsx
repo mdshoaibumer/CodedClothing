@@ -12,7 +12,7 @@
 import { memo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { tshirts } from '../data/tshirts';
+import { products } from '../data/products';
 import {
   RevealOnScroll,
   Marquee,
@@ -23,8 +23,8 @@ import {
 const EASE_LUXURY = [0.16, 1, 0.3, 1];
 
 /** Featured products — pick first 3 labeled items or fallback to first 3 */
-const FEATURED = tshirts.filter((t) => t.label).slice(0, 3);
-if (FEATURED.length < 3) FEATURED.push(...tshirts.slice(0, 3 - FEATURED.length));
+const FEATURED = products.filter((t) => t.label).slice(0, 3);
+if (FEATURED.length < 3) FEATURED.push(...products.slice(0, 3 - FEATURED.length));
 
 const STATS = [
   { value: 50000, suffix: '+', label: 'Designs Created' },

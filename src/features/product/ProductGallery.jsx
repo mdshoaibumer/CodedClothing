@@ -1,14 +1,14 @@
 /**
  * ProductGallery.jsx — Product Collection Grid
  * 
- * Animated grid of TShirtCards with staggered entrance.
- * Includes color filtering and sort options.
+ * Animated grid of product cards with staggered entrance.
+ * Includes category tabs, color filtering, and sort options.
  * Uses Framer Motion's useInView for scroll-triggered reveal.
  */
 
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useMemo } from 'react';
-import { tshirts } from '../../data/tshirts';
+import { products, CATEGORIES } from '../../data/products';
 import TShirtCard from '../../components/product/TShirtCard';
 
 const containerVariants = {
@@ -22,21 +22,6 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 100, scale: 0.8, filter: 'blur(12px)', rotateX: 15 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    filter: 'blur(0px)',
-    rotateX: 0,
-    transition: {
-      duration: 1,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  },
-};
-
 const SORT_OPTIONS = [
   { value: 'default', label: 'Featured' },
   { value: 'price-low', label: 'Price: Low → High' },
@@ -44,21 +29,35 @@ const SORT_OPTIONS = [
   { value: 'name', label: 'Name: A → Z' },
 ];
 
-export default function ProductGallery() {
+export default function ProductGallery({ category = 'all' }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [activeCategory, setActiveCategory] = useState(category);
   const [activeColor, setActiveColor] = useState('all');
   const [sortBy, setSortBy] = useState('default');
 
-  // Unique colors for filter
+  // Products for active category
+  const categoryProducts = useMemo(() => {
+    return activeCategory === 'all' ? products : products.filter(p => p.category === activeCategory);
+  }, [activeCategory]);
+
+  // Unique colors from the active category
   const colors = useMemo(() => {
-    return [{ hex: 'all', label: 'All' }, ...tshirts.map(t => ({ hex: t.hex, label: t.color }))];
-  }, []);
+    const seen = new Set();
+    const list = [];
+    for (const p of categoryProducts) {
+      if (!seen.has(p.hex)) {
+        seen.add(p.hex);
+        list.push({ hex: p.hex, label: p.color });
+      }
+    }
+    return [{ hex: 'all', label: 'All' }, ...list];
+  }, [categoryProducts]);
 
   // Filter and sort
   const filtered = useMemo(() => {
-    let result = activeColor === 'all' ? [...tshirts] : tshirts.filter(t => t.hex === activeColor);
+    let result = activeColor === 'all' ? [...categoryProducts] : categoryProducts.filter(t => t.hex === activeColor);
     switch (sortBy) {
       case 'price-low': result.sort((a, b) => a.price - b.price); break;
       case 'price-high': result.sort((a, b) => b.price - a.price); break;
@@ -66,10 +65,49 @@ export default function ProductGallery() {
       default: break;
     }
     return result;
-  }, [activeColor, sortBy]);
+  }, [categoryProducts, activeColor, sortBy]);
+
+  // Reset color filter when category changes
+  const handleCategoryChange = (slug) => {
+    setActiveCategory(slug);
+    setActiveColor('all');
+  };
 
   return (
     <div className="flex flex-col gap-6" ref={ref}>
+      {/* Category tabs */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ delay: 0.05, duration: 0.5 }}
+        className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1"
+      >
+        <button
+          onClick={() => handleCategoryChange('all')}
+          className={`flex-shrink-0 px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-[0.15em] transition-all duration-300 border ${
+            activeCategory === 'all'
+              ? 'bg-obsidian-900 text-white border-obsidian-900 shadow-lg'
+              : 'bg-white text-obsidian-400 border-obsidian-100 hover:border-obsidian-300'
+          }`}
+        >
+          All
+        </button>
+        {CATEGORIES.map((cat) => (
+          <button
+            key={cat.slug}
+            onClick={() => handleCategoryChange(cat.slug)}
+            className={`flex-shrink-0 px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-[0.15em] transition-all duration-300 border whitespace-nowrap ${
+              activeCategory === cat.slug
+                ? 'bg-obsidian-900 text-white border-obsidian-900 shadow-lg'
+                : 'bg-white text-obsidian-400 border-obsidian-100 hover:border-obsidian-300'
+            }`}
+          >
+            <span className="mr-1.5">{cat.icon}</span>
+            {cat.label}
+          </button>
+        ))}
+      </motion.div>
+
       {/* Section header */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
