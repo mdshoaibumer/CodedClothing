@@ -95,7 +95,7 @@ const TShirtCanvas = memo(
                   onUpdate={onUpdate}
                 />
               ) : (
-                <div className="w-full h-full border-2 border-dashed border-obsidian-200/40 rounded-2xl flex flex-col items-center justify-center bg-white/5 backdrop-blur-[2px] pointer-events-none">
+                <div data-export-ignore className="w-full h-full border-2 border-dashed border-obsidian-200/40 rounded-2xl flex flex-col items-center justify-center bg-white/5 backdrop-blur-[2px] pointer-events-none">
                   <span className="text-2xs font-black text-obsidian-300 uppercase tracking-[0.3em]">Design Zone</span>
                   <span className="text-2xs font-bold text-obsidian-300 uppercase tracking-[0.2em] mt-1">Click Upload to Start</span>
                 </div>
