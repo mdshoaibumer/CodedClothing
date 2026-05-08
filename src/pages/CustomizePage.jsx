@@ -12,7 +12,7 @@
  */
 
 import { useRef, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getProductById } from '../features/product/product.utils';
 import useCustomizationStore from '../features/customization/store/useCustomizationStore';
@@ -24,6 +24,8 @@ import CustomizePageSidebar from './customize/CustomizePageSidebar';
 
 export default function CustomizePage() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const selectedSize = searchParams.get('size') || 'M';
   const navigate = useNavigate();
   const previewRef = useRef(null);
 
@@ -103,6 +105,7 @@ export default function CustomizePage() {
         <CustomizePageSidebar
           product={product}
           hasDesign={hasDesign}
+          selectedSize={selectedSize}
         />
       </div>
     </motion.div>

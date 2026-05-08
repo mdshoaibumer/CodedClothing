@@ -18,7 +18,7 @@ import NumericControls from '../../features/customization/components/NumericCont
 import useCustomizationStore from '../../features/customization/store/useCustomizationStore';
 import useToastStore from '../../features/notifications/store/useToastStore';
 
-export default function CustomizePageSidebar({ product, hasDesign }) {
+export default function CustomizePageSidebar({ product, hasDesign, selectedSize = 'M' }) {
   const [quantity, setQuantity] = useState(1);
   const [showOrderPreview, setShowOrderPreview] = useState(false);
 
@@ -54,6 +54,7 @@ export default function CustomizePageSidebar({ product, hasDesign }) {
     }
     const text = `*New Order from Coded Clothing*\n\n` +
       `- *Product:* ${product.color} Premium Tee\n` +
+      `- *Size:* ${selectedSize}\n` +
       `- *Quantity:* ${quantity}\n` +
       `- *Front Logo:* ${design.front.logo ? 'Yes' : 'No'}\n` +
       `- *Back Logo:* ${design.back.logo ? 'Yes' : 'No'}\n` +

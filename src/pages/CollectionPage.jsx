@@ -15,8 +15,8 @@
  * - Static data is declared outside the component to avoid re-creation
  */
 
-import { memo, useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { memo, useRef, useState } from 'react';
+import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import ProductGallery from '../features/product/ProductGallery';
 import {
   RevealOnScroll,
@@ -64,6 +64,16 @@ const FEATURES = [
   { icon: '△', title: 'Tailored Fit', desc: 'Ergonomic patterns designed for modern silhouettes' },
 ];
 
+/** Testimonials data */
+const TESTIMONIALS = [
+  { initials: 'AK', name: 'Arjun K.', role: 'Verified Customer', stars: 5, quote: 'The quality is unlike anything I\'ve seen. Each piece feels like it was made just for me.' },
+  { initials: 'PS', name: 'Priya S.', role: 'Fashion Blogger', stars: 5, quote: 'I ordered custom tees for my brand — the print quality and fabric feel exceeded all expectations. My followers love them.' },
+  { initials: 'RV', name: 'Rahul V.', role: 'Verified Customer', stars: 5, quote: 'Gifted these to my team. The design studio is incredibly intuitive and the final product is premium in every sense.' },
+  { initials: 'NM', name: 'Neha M.', role: 'Studio Owner', stars: 4, quote: 'We use Coded Clothing for our studio merchandise. Consistent quality, fast delivery, and the customization tools are a game-changer.' },
+  { initials: 'DK', name: 'Dev K.', role: 'Verified Customer', stars: 5, quote: 'From the packaging to the fabric, everything screams quality. Worth every rupee. Already ordered my third one.' },
+  { initials: 'SA', name: 'Sneha A.', role: 'Graphic Designer', stars: 5, quote: 'As a designer, I\'m picky about print accuracy. These tees reproduce my artwork perfectly — colors are vibrant and true.' },
+];
+
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 /**
@@ -106,6 +116,168 @@ function FloatingWords() {
         </span>
       ))}
     </div>
+  );
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/**
+ * TestimonialsSection — Auto-advancing testimonial carousel with manual controls.
+ */
+function TestimonialsSection() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const testimonial = TESTIMONIALS[activeIndex];
+
+  return (
+    <RevealOnScroll direction="up" className="mt-32 mb-16">
+      <section className="text-center max-w-4xl mx-auto px-8 relative">
+        <motion.span
+          initial={{ opacity: 0, scale: 0 }}
+          whileInView={{ opacity: 0.1, scale: 1 }}
+          viewport={{ once: true }}
+          className="absolute -top-8 left-10 text-[10rem] font-display text-gold-400 leading-none select-none"
+        >
+          &ldquo;
+        </motion.span>
+
+        <span className="text-xs font-black text-gold-600 uppercase tracking-[0.5em] block mb-6">Testimonials</span>
+
+        <div className="relative min-h-[220px] md:min-h-[200px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeIndex}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5, ease: EASE_LUXURY }}
+            >
+              <blockquote className="text-xl md:text-3xl font-bold text-obsidian-900 tracking-tight leading-tight mb-8">
+                &ldquo;{testimonial.quote}&rdquo;
+              </blockquote>
+              <div className="flex items-center justify-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-gold-500/30">
+                  {testimonial.initials}
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-bold text-obsidian-900">{testimonial.name}</p>
+                  <p className="text-xs text-obsidian-400">{testimonial.role}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-center gap-1 mt-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span key={i} className={`text-lg ${i < testimonial.stars ? 'text-gold-500' : 'text-obsidian-200'}`}>★</span>
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Navigation dots */}
+        <div className="flex items-center justify-center gap-3 mt-8">
+          {TESTIMONIALS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveIndex(i)}
+              aria-label={`View testimonial ${i + 1}`}
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                i === activeIndex
+                  ? 'bg-gold-500 scale-125 shadow-lg shadow-gold-500/30'
+                  : 'bg-obsidian-200 hover:bg-obsidian-300'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Prev/Next arrows */}
+        <div className="flex items-center justify-center gap-4 mt-4">
+          <button
+            onClick={() => setActiveIndex((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}
+            aria-label="Previous testimonial"
+            className="w-10 h-10 rounded-full border border-obsidian-100 flex items-center justify-center text-obsidian-400 hover:border-gold-400 hover:text-gold-600 transition-all"
+          >
+            ←
+          </button>
+          <button
+            onClick={() => setActiveIndex((prev) => (prev + 1) % TESTIMONIALS.length)}
+            aria-label="Next testimonial"
+            className="w-10 h-10 rounded-full border border-obsidian-100 flex items-center justify-center text-obsidian-400 hover:border-gold-400 hover:text-gold-600 transition-all"
+          >
+            →
+          </button>
+        </div>
+      </section>
+    </RevealOnScroll>
+  );
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/**
+ * NewsletterSection — Email capture with WhatsApp fallback.
+ */
+function NewsletterSection() {
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!email) return;
+    // In production, this would hit an API. For now, open WhatsApp.
+    const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER;
+    if (phoneNumber) {
+      const text = `*Newsletter Signup — Coded Clothing*\n\nEmail: ${email}`;
+      window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    }
+    setSubscribed(true);
+  };
+
+  return (
+    <RevealOnScroll direction="up" className="mt-16 mb-16">
+      <section className="relative py-16 px-8 md:px-16 rounded-[3rem] bg-obsidian-50 border border-obsidian-100/50 overflow-hidden">
+        <div className="absolute -top-20 -right-20 w-[400px] h-[400px] bg-gradient-radial from-gold-200/20 to-transparent rounded-full blur-3xl" />
+        <div className="relative z-10 text-center max-w-xl mx-auto">
+          <span className="text-xs font-black text-gold-600 uppercase tracking-[0.5em] block mb-4">Stay Updated</span>
+          <h2 className="text-2xl md:text-3xl font-black text-obsidian-900 tracking-tighter mb-3">
+            Join the <span className="gradient-text-gold">Inner Circle</span>
+          </h2>
+          <p className="text-sm text-obsidian-400 mb-8 leading-relaxed">
+            Be the first to know about new drops, exclusive designs, and members-only offers.
+          </p>
+
+          {subscribed ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="py-8"
+            >
+              <span className="text-4xl block mb-3">✓</span>
+              <p className="text-sm font-bold text-obsidian-900">You&rsquo;re in! Welcome to the club.</p>
+            </motion.div>
+          ) : (
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                className="flex-1 px-5 py-4 rounded-xl border border-obsidian-100 bg-white text-sm font-medium text-obsidian-900 focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-400 transition-all"
+                aria-label="Email address"
+              />
+              <button
+                type="submit"
+                className="px-8 py-4 bg-obsidian-900 text-white rounded-xl font-black text-xs uppercase tracking-[0.15em] hover:bg-obsidian-800 transition-all shadow-luxury btn-liquid relative overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-gold-600/0 via-gold-600/20 to-gold-600/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                <span className="relative z-10">Subscribe</span>
+              </button>
+            </form>
+          )}
+
+          <p className="text-2xs text-obsidian-300 mt-4">No spam, ever. Unsubscribe anytime.</p>
+        </div>
+      </section>
+    </RevealOnScroll>
   );
 }
 
@@ -438,55 +610,14 @@ export default function CollectionPage() {
       </RevealOnScroll>
 
       {/* ════════════════════════════════════════════════════════════════════════
-          TESTIMONIAL — Social proof quote
+          TESTIMONIALS — Social proof carousel
          ════════════════════════════════════════════════════════════════════════ */}
-      <RevealOnScroll direction="up" className="mt-32 mb-16">
-        <section className="text-center max-w-4xl mx-auto px-8 relative">
-          <motion.span
-            initial={{ opacity: 0, scale: 0 }}
-            whileInView={{ opacity: 0.1, scale: 1 }}
-            viewport={{ once: true }}
-            className="absolute -top-8 left-10 text-[10rem] font-display text-gold-400 leading-none select-none"
-          >
-            &ldquo;
-          </motion.span>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: EASE_LUXURY }}
-          >
-            <span className="text-xs font-black text-gold-600 uppercase tracking-[0.5em] block mb-6">Testimonials</span>
-            <blockquote className="text-2xl md:text-4xl font-bold text-obsidian-900 tracking-tight leading-tight mb-8">
-              &ldquo;The quality is unlike anything I&rsquo;ve seen. Each piece feels like it was made just for me.&rdquo;
-            </blockquote>
-            <div className="flex items-center justify-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-gold-500/30">
-                AK
-              </div>
-              <div className="text-left">
-                <p className="text-sm font-bold text-obsidian-900">Arjun K.</p>
-                <p className="text-xs text-obsidian-400">Verified Customer</p>
-              </div>
-            </div>
-            {/* Star rating */}
-            <div className="flex items-center justify-center gap-1 mt-4">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <motion.span
-                  key={star}
-                  initial={{ opacity: 0, scale: 0 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: star * 0.1, type: 'spring', stiffness: 300 }}
-                  className="text-gold-500 text-lg"
-                >
-                  ★
-                </motion.span>
-              ))}
-            </div>
-          </motion.div>
-        </section>
-      </RevealOnScroll>
+      <TestimonialsSection />
+
+      {/* ════════════════════════════════════════════════════════════════════════
+          NEWSLETTER — Email capture
+         ════════════════════════════════════════════════════════════════════════ */}
+      <NewsletterSection />
 
       {/* ════════════════════════════════════════════════════════════════════════
           CTA BAND — Final call-to-action
