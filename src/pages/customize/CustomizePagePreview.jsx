@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import CanvasPreview from '../../features/customization/components/CanvasPreview';
 import useCustomizationStore from '../../features/customization/store/useCustomizationStore';
+import ErrorBoundary from '../../components/error/ErrorBoundary';
 
 export default function CustomizePagePreview({ product, previewRef }) {
   const { activeView, setActiveView, design } = useCustomizationStore();
@@ -31,7 +32,9 @@ export default function CustomizePagePreview({ product, previewRef }) {
         <div className="absolute bottom-16 right-4 w-8 h-8 border-b-2 border-r-2 border-gold-300/30 rounded-br-xl pointer-events-none z-20" />
 
         <div ref={previewRef}>
-          <CanvasPreview product={product} />
+          <ErrorBoundary>
+            <CanvasPreview product={product} />
+          </ErrorBoundary>
         </div>
 
         {/* Onboarding overlay — shown when no logo has been uploaded yet */}
@@ -53,7 +56,7 @@ export default function CustomizePagePreview({ product, previewRef }) {
                   🎨
                 </motion.div>
                 <h4 className="text-xs font-black text-obsidian-900 uppercase tracking-widest mb-2">Start Designing</h4>
-                <p className="text-[11px] text-obsidian-400 leading-relaxed">
+                <p className="text-[11px] text-obsidian-500 leading-relaxed">
                   Upload a logo using the panel on the right to begin customizing your tee.
                 </p>
                 <div className="mt-4 flex items-center justify-center gap-2 text-xs font-bold text-gold-600 uppercase tracking-widest">
@@ -67,13 +70,16 @@ export default function CustomizePagePreview({ product, previewRef }) {
       </div>
 
       {/* Premium view switcher */}
-      <div className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1.5 bg-white/90 backdrop-blur-2xl rounded-2xl border border-obsidian-100/50 shadow-luxury z-10">
+      <div className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1.5 bg-white/90 backdrop-blur-2xl rounded-2xl border border-obsidian-100/50 shadow-luxury z-10" role="tablist" aria-label="T-shirt view selector">
         {['front', 'back', 'both'].map((view) => (
           <motion.button
             key={view}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setActiveView(view)}
+            role="tab"
+            aria-selected={activeView === view}
+            aria-label={`Show ${view} view`}
             className={cn(
               "relative px-5 md:px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300",
               activeView === view

@@ -165,14 +165,24 @@ const useCustomizationStore = create(
 
       /**
        * Pushes current state to history for undo functionality.
+       * Stores only lightweight references (logo presence flag + transforms)
+       * to avoid bloating localStorage with repeated base64 data URLs.
        */
       saveToHistory: () =>
-        set((state) => ({
-          history: {
-            past: [...state.history.past, structuredClone(state.design)].slice(-MAX_HISTORY),
-            future: [],
-          },
-        })),
+        set((state) => {
+          // Create a lightweight snapshot — preserve logo URLs as-is since
+          // structuredClone of large data URLs x50 would exceed localStorage quota
+          const snapshot = {
+            front: { ...state.design.front },
+            back: { ...state.design.back },
+          };
+          return {
+            history: {
+              past: [...state.history.past, snapshot].slice(-MAX_HISTORY),
+              future: [],
+            },
+          };
+        }),
 
       /**
        * Undoes the last design change.

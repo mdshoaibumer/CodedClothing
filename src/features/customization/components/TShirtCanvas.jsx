@@ -18,12 +18,16 @@ import DraggableLogo from './DraggableLogo';
  * @param {string} className - Optional container classes.
  */
 const TShirtCanvas = memo(
-  function TShirtCanvas({ image, logo, scale, x, y, rotation = 0, onUpdate, label, className, showGuides = { horizontal: false, vertical: false, edges: [] } }) {
+  function TShirtCanvas({ image, logo, scale, x, y, rotation = 0, onUpdate, onInteractionEnd, onRemoveLogo, label, className, showGuides = { horizontal: false, vertical: false, edges: [] } }) {
     return (
-      <div className={cn(
-        "relative flex-1 bg-white rounded-5xl border border-obsidian-100 overflow-hidden shadow-soft group transition-all duration-500 hover:shadow-luxury",
-        className
-      )}>
+      <div
+        role="application"
+        aria-label={`${label || 'T-shirt'} design canvas - drag to position logo`}
+        className={cn(
+          "relative flex-1 bg-white rounded-5xl border border-obsidian-100 overflow-hidden shadow-soft group transition-all duration-500 hover:shadow-luxury",
+          className
+        )}
+      >
         {/* Background */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(255,255,255,1)_0%,_rgba(248,249,250,1)_100%)]" />
         
@@ -93,11 +97,12 @@ const TShirtCanvas = memo(
                   y={y}
                   rotation={rotation}
                   onUpdate={onUpdate}
+                  onInteractionEnd={onInteractionEnd}
                 />
               ) : (
                 <div data-export-ignore className="w-full h-full border-2 border-dashed border-obsidian-200/40 rounded-2xl flex flex-col items-center justify-center bg-white/5 backdrop-blur-[2px] pointer-events-none">
-                  <span className="text-2xs font-black text-obsidian-300 uppercase tracking-[0.3em]">Design Zone</span>
-                  <span className="text-2xs font-bold text-obsidian-300 uppercase tracking-[0.2em] mt-1">Click Upload to Start</span>
+                  <span className="text-2xs font-black text-obsidian-400 uppercase tracking-[0.3em]">Design Zone</span>
+                  <span className="text-2xs font-bold text-obsidian-500 uppercase tracking-[0.2em] mt-1">Click Upload to Start</span>
                 </div>
               )}
             </div>
@@ -107,8 +112,23 @@ const TShirtCanvas = memo(
         {/* Side Label */}
         {label && (
           <div data-export-ignore className="absolute top-6 left-6 px-4 py-1.5 bg-white/90 backdrop-blur-sm rounded-full border border-obsidian-100 shadow-sm z-30">
-            <span className="text-xs font-black text-obsidian-400 uppercase tracking-widest">{label}</span>
+            <span className="text-xs font-black text-obsidian-600 uppercase tracking-widest">{label}</span>
           </div>
+        )}
+
+        {/* Remove Logo Button */}
+        {logo && onRemoveLogo && (
+          <button
+            data-export-ignore
+            onClick={onRemoveLogo}
+            className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-white/90 backdrop-blur-sm rounded-full border border-red-200 shadow-sm z-30 text-red-400 hover:text-red-600 hover:border-red-400 hover:bg-red-50 transition-all"
+            aria-label={`Remove ${label || ''} logo`}
+            title="Remove logo"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         )}
       </div>
     );
@@ -124,6 +144,7 @@ const TShirtCanvas = memo(
       prevProps.rotation === nextProps.rotation &&
       prevProps.label === nextProps.label &&
       prevProps.className === nextProps.className &&
+      prevProps.onRemoveLogo === nextProps.onRemoveLogo &&
       prevProps.showGuides?.horizontal === nextProps.showGuides?.horizontal &&
       prevProps.showGuides?.vertical === nextProps.showGuides?.vertical &&
       prevProps.showGuides?.edges?.length === nextProps.showGuides?.edges?.length &&

@@ -21,6 +21,7 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
 
   const [isExporting, setIsExporting] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const canUndo = history.past.length > 0;
   const canRedo = history.future.length > 0;
@@ -29,6 +30,16 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
     if (!previewRef.current) return;
     setIsExporting(true);
     try {
+      // Temporarily reset any canvas zoom/pan transforms for clean export
+      const zoomableContainer = previewRef.current.querySelector('[style*="scale"]');
+      let originalTransform = '';
+      if (zoomableContainer) {
+        originalTransform = zoomableContainer.style.transform;
+        zoomableContainer.style.transform = 'scale(1) translate(0px, 0px)';
+        // Wait for repaint
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      }
+
       const dataUrl = await toPng(previewRef.current, {
         cacheBust: true,
         pixelRatio: 2,
@@ -38,6 +49,12 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
           return true;
         },
       });
+
+      // Restore zoom transform
+      if (zoomableContainer && originalTransform) {
+        zoomableContainer.style.transform = originalTransform;
+      }
+
       const link = document.createElement('a');
       link.download = `coded-clothing-${product.color}-${activeView}.png`;
       link.href = dataUrl;
@@ -61,7 +78,7 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
       >
         <div className="space-y-3">
           {/* Breadcrumbs for wayfinding */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-obsidian-300">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-obsidian-500">
             <Link to="/collection" className="hover:text-gold-600 transition-colors">Collection</Link>
             <span aria-hidden="true">›</span>
             <Link to={`/product/${product.id}`} className="hover:text-gold-600 transition-colors">{product.color}</Link>
@@ -80,7 +97,7 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
           </h1>
           <div className="flex items-center gap-3">
              <div className="h-px w-8 bg-gradient-to-r from-gold-500 to-transparent" />
-             <p className="text-sm text-obsidian-400 font-bold uppercase tracking-widest">
+             <p className="text-sm text-obsidian-600 font-bold uppercase tracking-widest">
                 {product.color} <span className="mx-2 text-gold-400">|</span> {formatPrice(product.price)}
              </p>
           </div>
@@ -108,13 +125,9 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
            <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => {
-                if (window.confirm('Are you sure you want to clear all designs? This action cannot be undone.')) {
-                  resetDesign();
-                }
-              }}
+              onClick={() => setShowClearConfirm(true)}
               disabled={!hasDesign}
-              className="px-6 py-3 rounded-2xl border-2 border-obsidian-100 text-xs font-black uppercase tracking-widest text-obsidian-400 hover:text-red-500 hover:border-red-400 transition-all disabled:opacity-0"
+              className="px-6 py-3 rounded-2xl border-2 border-obsidian-100 text-xs font-black uppercase tracking-widest text-obsidian-400 hover:text-red-500 hover:border-red-400 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
            >
               Clear
            </motion.button>
@@ -142,6 +155,33 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
            </motion.button>
         </div>
       </motion.div>
+
+      {/* Clear Confirmation Modal */}
+      <Modal isOpen={showClearConfirm} onClose={() => setShowClearConfirm(false)} title="Clear Design">
+        <div className="space-y-4">
+          <p className="text-sm text-obsidian-600 leading-relaxed">
+            Are you sure you want to clear all designs? This action cannot be undone.
+          </p>
+          <div className="flex gap-3 mt-6">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setShowClearConfirm(false)}
+              className="flex-1 px-4 py-3.5 rounded-2xl border-2 border-obsidian-200 text-obsidian-600 font-bold hover:bg-obsidian-50 transition-all"
+            >
+              Cancel
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => { setShowClearConfirm(false); resetDesign(); }}
+              className="flex-1 px-4 py-3.5 rounded-2xl bg-red-500 text-white font-bold hover:bg-red-600 transition-all shadow-lg"
+            >
+              Clear All
+            </motion.button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Help Modal */}
       <Modal isOpen={showHelp} onClose={() => setShowHelp(false)} title="Design Studio Guide">

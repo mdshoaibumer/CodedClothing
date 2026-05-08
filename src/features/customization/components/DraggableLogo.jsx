@@ -14,7 +14,7 @@ import { SCALE_LIMITS, POSITION_LIMITS } from '../customization.types';
  * - +/- to scale, [/] to rotate 15°
  * - Double-click to center the logo
  */
-export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdate }) {
+export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdate, onInteractionEnd }) {
   const [isSelected, setIsSelected] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -25,11 +25,12 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
   const dragStartRef = useRef({ clientX: 0, clientY: 0, x: 0, y: 0 });
   const resizeStartRef = useRef({ clientX: 0, clientY: 0, scale: 1 });
   const rotateStartRef = useRef({ angle: 0, rotation: 0 });
+  const pinchStartRef = useRef({ distance: 0, scale: 1 });
 
   // Stable refs for values used inside effects (prevents effect re-runs during interaction)
-  const propsRef = useRef({ x, y, scale, rotation, onUpdate });
+  const propsRef = useRef({ x, y, scale, rotation, onUpdate, onInteractionEnd });
   useEffect(() => {
-    propsRef.current = { x, y, scale, rotation, onUpdate };
+    propsRef.current = { x, y, scale, rotation, onUpdate, onInteractionEnd };
   });
 
   const MIN_SCALE = SCALE_LIMITS.MIN;
@@ -48,8 +49,50 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
     update(cx, cy, newScale, cr);
   }, [MIN_SCALE, MAX_SCALE]);
 
+  // ─── PINCH-TO-ZOOM (MOBILE) → SCALE LOGO ─────────────────────────────
+  const handleTouchStartPinch = useCallback((e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      e.stopPropagation();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      pinchStartRef.current = {
+        distance: Math.hypot(dx, dy),
+        scale: propsRef.current.scale,
+      };
+    }
+  }, []);
+
+  const handleTouchMovePinch = useCallback((e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      e.stopPropagation();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const currentDistance = Math.hypot(dx, dy);
+      const ratio = currentDistance / pinchStartRef.current.distance;
+      const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, pinchStartRef.current.scale * ratio));
+      const { x: cx, y: cy, rotation: cr, onUpdate: update } = propsRef.current;
+      update(cx, cy, newScale, cr);
+    }
+  }, [MIN_SCALE, MAX_SCALE]);
+
+  const handleTouchEndPinch = useCallback((e) => {
+    if (e.touches.length < 2) {
+      propsRef.current.onInteractionEnd?.();
+    }
+  }, []);
+
   // ─── KEYBOARD SHORTCUTS (only when this element is focused) ───────────
   const handleKeyDown = useCallback((e) => {
+    // Escape to deselect and release focus
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsSelected(false);
+      containerRef.current?.blur();
+      return;
+    }
+
     const { x: cx, y: cy, scale: cs, rotation: cr, onUpdate: update } = propsRef.current;
     const step = e.shiftKey ? 5 : 1;
 
@@ -129,7 +172,10 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
       update(newX, newY, cs, cr);
     };
 
-    const handleEnd = () => setIsDragging(false);
+    const handleEnd = () => {
+      setIsDragging(false);
+      propsRef.current.onInteractionEnd?.();
+    };
 
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleEnd);
@@ -178,6 +224,7 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
     const handleEnd = () => {
       setIsResizing(false);
       setActiveHandle(null);
+      propsRef.current.onInteractionEnd?.();
     };
 
     window.addEventListener('mousemove', handleMove);
@@ -232,7 +279,10 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
       update(cx, cy, cs, newRotation);
     };
 
-    const handleEnd = () => setIsRotating(false);
+    const handleEnd = () => {
+      setIsRotating(false);
+      propsRef.current.onInteractionEnd?.();
+    };
 
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleEnd);
@@ -271,10 +321,15 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
       className="absolute inset-0 select-none"
       onWheel={handleWheel}
       onKeyDown={handleKeyDown}
+      onTouchStart={handleTouchStartPinch}
+      onTouchMove={handleTouchMovePinch}
+      onTouchEnd={handleTouchEndPinch}
       onClick={() => { setIsSelected(true); containerRef.current?.focus(); }}
 
       tabIndex={0}
       style={{ outline: 'none' }}
+      role="group"
+      aria-label={`Logo editor. Position: ${Math.round(x)}%, ${Math.round(y)}%. Scale: ${Math.round(scale * 100)}%. Rotation: ${Math.round(rotation)}°. Use arrow keys to move, +/- to scale, brackets to rotate.`}
     >
       {/* Logo element with transform */}
       <div
@@ -302,19 +357,20 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
         {showControls && (
           <div data-export-ignore>
             {[
-              { id: 'top-left', pos: '-top-2 -left-2', cursor: 'nwse-resize' },
-              { id: 'top-right', pos: '-top-2 -right-2', cursor: 'nesw-resize' },
-              { id: 'bottom-left', pos: '-bottom-2 -left-2', cursor: 'nesw-resize' },
-              { id: 'bottom-right', pos: '-bottom-2 -right-2', cursor: 'nwse-resize' },
+              { id: 'top-left', pos: '-top-3 -left-3', cursor: 'nwse-resize' },
+              { id: 'top-right', pos: '-top-3 -right-3', cursor: 'nesw-resize' },
+              { id: 'bottom-left', pos: '-bottom-3 -left-3', cursor: 'nesw-resize' },
+              { id: 'bottom-right', pos: '-bottom-3 -right-3', cursor: 'nwse-resize' },
             ].map((handle) => (
               <div
                 key={handle.id}
                 data-handle="true"
                 onMouseDown={(e) => handleResizeStart(e, handle.id)}
+                onTouchStart={(e) => handleResizeStart(e.touches[0], handle.id)}
                 style={{ cursor: handle.cursor }}
-                className={`absolute ${handle.pos} w-5 h-5 flex items-center justify-center z-20 pointer-events-auto`}
+                className={`absolute ${handle.pos} w-11 h-11 flex items-center justify-center z-20 pointer-events-auto touch-none`}
               >
-                <div className={`w-3 h-3 bg-white border-2 border-blue-500 rounded-sm shadow-md transition-transform ${
+                <div className={`w-3.5 h-3.5 bg-white border-2 border-blue-500 rounded-sm shadow-md transition-transform ${
                   activeHandle === handle.id ? 'scale-150 bg-blue-100' : 'hover:scale-125 hover:bg-blue-50'
                 }`} />
               </div>
@@ -324,9 +380,10 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
             <div
               data-handle="true"
               onMouseDown={handleRotateStart}
-              className="absolute -top-10 left-1/2 -translate-x-1/2 z-20 pointer-events-auto cursor-grab flex flex-col items-center"
+              onTouchStart={(e) => handleRotateStart(e.touches[0])}
+              className="absolute -top-12 left-1/2 -translate-x-1/2 z-20 pointer-events-auto cursor-grab flex flex-col items-center touch-none"
             >
-              <div className={`w-4 h-4 bg-white border-2 border-blue-500 rounded-full shadow-md transition-transform ${
+              <div className={`w-6 h-6 bg-white border-2 border-blue-500 rounded-full shadow-md transition-transform flex items-center justify-center ${
                 isRotating ? 'scale-125 bg-blue-100' : 'hover:scale-125 hover:bg-blue-50'
               }`}>
                 <svg viewBox="0 0 16 16" className="w-full h-full p-0.5 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2">

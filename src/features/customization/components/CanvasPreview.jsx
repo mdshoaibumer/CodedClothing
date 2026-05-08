@@ -10,9 +10,11 @@ import TShirtCanvas from './TShirtCanvas';
  * @param {Object} product - The product data containing image views.
  */
 export default function CanvasPreview({ product }) {
-  const { activeView, design, setPosition, setScale, setRotation, saveToHistory } = useCustomizationStore();
+  const { activeView, design, setPosition, setScale, setRotation, setLogo, saveToHistory } = useCustomizationStore();
   const lastSavedDesignRef = useRef(null);
   const isUndoRedoRef = useRef(false);
+  const debounceTimerRef = useRef(null);
+  const [statusMessage, setStatusMessage] = useState('');
 
   // Canvas zoom/pan state
   const [canvasZoom, setCanvasZoom] = useState(1);
@@ -104,19 +106,51 @@ export default function CanvasPreview({ product }) {
   }, []);
 
   // Save to history when design changes from user interaction (not undo/redo)
+  // Uses a longer debounce as fallback; primary save happens via onInteractionEnd
   useEffect(() => {
     if (isUndoRedoRef.current) return;
 
     const designKey = JSON.stringify(design);
     if (lastSavedDesignRef.current === designKey) return;
 
-    const timer = setTimeout(() => {
+    debounceTimerRef.current = setTimeout(() => {
       lastSavedDesignRef.current = designKey;
       saveToHistory();
-    }, 500);
+    }, 1500);
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(debounceTimerRef.current);
   }, [design, saveToHistory]);
+
+  // Called when DraggableLogo finishes a drag/resize/rotate interaction
+  const handleInteractionEnd = useCallback(() => {
+    if (isUndoRedoRef.current) return;
+    // Cancel the debounce timer since we're saving immediately
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+    }
+    const currentDesign = useCustomizationStore.getState().design;
+    const designKey = JSON.stringify(currentDesign);
+    if (lastSavedDesignRef.current === designKey) return;
+    lastSavedDesignRef.current = designKey;
+    saveToHistory();
+
+    // Announce position change for screen readers
+    const view = useCustomizationStore.getState().activeView;
+    const side = view === 'both' ? 'front' : view;
+    const d = currentDesign[side];
+    setStatusMessage(`Logo ${side}: position ${Math.round(d.x)}%, ${Math.round(d.y)}%, scale ${Math.round(d.scale * 100)}%, rotation ${Math.round(d.rotation)}°`);
+  }, [saveToHistory]);
+
+  // Compute snap guides from current position
+  const computeGuides = useCallback((viewKey) => {
+    const d = design[viewKey];
+    if (!d.logo) return { horizontal: false, vertical: false, edges: [] };
+    const SNAP_THRESHOLD = 2;
+    const horizontal = Math.abs(d.y) < SNAP_THRESHOLD;
+    const vertical = Math.abs(d.x) < SNAP_THRESHOLD;
+    return { horizontal, vertical, edges: [] };
+  }, [design]);
 
   if (!product) return null;
 
@@ -124,7 +158,11 @@ export default function CanvasPreview({ product }) {
   const viewsToRender = activeView === 'both' ? ['front', 'back'] : [activeView];
 
   return (
-    <div className="w-full">
+    <div className="w-full" role="region" aria-label="Design canvas">
+      {/* ARIA live region for screen reader announcements */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {statusMessage}
+      </div>
       {/* Zoom Controls */}
       <div data-export-ignore className="flex items-center justify-center gap-2 mb-4">
         <div className="flex items-center gap-1 p-1.5 bg-white rounded-2xl border border-obsidian-100 shadow-sm">
@@ -153,7 +191,7 @@ export default function CanvasPreview({ product }) {
           </button>
         </div>
         {canvasZoom > 1 && (
-          <span className="text-2xs font-bold text-obsidian-300 uppercase tracking-widest animate-in fade-in">
+          <span className="text-2xs font-bold text-obsidian-500 uppercase tracking-widest animate-in fade-in">
             Ctrl+Scroll to zoom · Middle-click to pan
           </span>
         )}
@@ -182,6 +220,7 @@ export default function CanvasPreview({ product }) {
               x={design[viewKey].x}
               y={design[viewKey].y}
               rotation={design[viewKey].rotation}
+              showGuides={computeGuides(viewKey)}
               onUpdate={(newX, newY, newScale, newRotation) => {
                 setPosition(viewKey, newX, newY);
                 setScale(viewKey, newScale);
@@ -189,6 +228,8 @@ export default function CanvasPreview({ product }) {
                   setRotation(viewKey, newRotation);
                 }
               }}
+              onInteractionEnd={handleInteractionEnd}
+              onRemoveLogo={() => { setLogo(viewKey, null); saveToHistory(); }}
               label={viewKey.toUpperCase()}
               className={activeView !== 'both' ? "max-w-2xl mx-auto" : ""}
             />

@@ -547,7 +547,7 @@ export default function ProductDetail() {
     </motion.div>
 
     {/* Related Products */}
-    {tshirts.filter(t => t.id !== product.id).length > 0 && (
+    {products.filter(t => t.id !== product.id && t.category === product.category).length > 0 && (
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -557,7 +557,7 @@ export default function ProductDetail() {
       >
         <h3 className="text-xs font-black text-obsidian-900 uppercase tracking-[0.3em] mb-8">You May Also Like</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {tshirts.filter(t => t.id !== product.id).slice(0, 4).map((related) => (
+          {products.filter(t => t.id !== product.id && t.category === product.category).slice(0, 4).map((related) => (
             <Link
               key={related.id}
               to={`/product/${related.id}`}
