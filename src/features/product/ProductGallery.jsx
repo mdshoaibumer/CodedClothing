@@ -2,11 +2,12 @@
  * ProductGallery.jsx — Product Collection Grid
  * 
  * Animated grid of TShirtCards with staggered entrance.
+ * Includes color filtering and sort options.
  * Uses Framer Motion's useInView for scroll-triggered reveal.
  */
 
-import { motion, useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useRef, useState, useMemo } from 'react';
 import { tshirts } from '../../data/tshirts';
 import TShirtCard from '../../components/product/TShirtCard';
 
@@ -36,19 +37,45 @@ const itemVariants = {
   },
 };
 
+const SORT_OPTIONS = [
+  { value: 'default', label: 'Featured' },
+  { value: 'price-low', label: 'Price: Low → High' },
+  { value: 'price-high', label: 'Price: High → Low' },
+  { value: 'name', label: 'Name: A → Z' },
+];
+
 export default function ProductGallery() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [activeColor, setActiveColor] = useState('all');
+  const [sortBy, setSortBy] = useState('default');
+
+  // Unique colors for filter
+  const colors = useMemo(() => {
+    return [{ hex: 'all', label: 'All' }, ...tshirts.map(t => ({ hex: t.hex, label: t.color }))];
+  }, []);
+
+  // Filter and sort
+  const filtered = useMemo(() => {
+    let result = activeColor === 'all' ? [...tshirts] : tshirts.filter(t => t.hex === activeColor);
+    switch (sortBy) {
+      case 'price-low': result.sort((a, b) => a.price - b.price); break;
+      case 'price-high': result.sort((a, b) => b.price - a.price); break;
+      case 'name': result.sort((a, b) => a.color.localeCompare(b.color)); break;
+      default: break;
+    }
+    return result;
+  }, [activeColor, sortBy]);
 
   return (
     <div className="flex flex-col gap-6" ref={ref}>
-      {/* Section header - enhanced */}
+      {/* Section header */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={isInView ? { opacity: 1, x: 0 } : {}}
         transition={{ delay: 0.1, duration: 0.6 }}
-        className="flex items-center justify-between mb-8"
+        className="flex items-center justify-between mb-4"
       >
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -56,7 +83,7 @@ export default function ProductGallery() {
             <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-gold-500 animate-ping opacity-30" />
           </div>
           <span className="text-xs font-black text-obsidian-400 uppercase tracking-[0.3em]">
-            {tshirts.length} Premium Styles Available
+            {filtered.length} Premium Style{filtered.length !== 1 ? 's' : ''} Available
           </span>
         </div>
         
@@ -76,30 +103,97 @@ export default function ProductGallery() {
         </motion.div>
       </motion.div>
 
-      {/* Premium grid with stagger animation and perspective */}
+      {/* Filters & Sort */}
       <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
-        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-7"
-        style={{ perspective: '1500px' }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4"
       >
-        {tshirts.map((shirt, index) => (
-          <motion.div 
-            key={shirt.id} 
-            variants={itemVariants}
-            custom={index}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
-            style={{
-              filter: hoveredIndex !== null && hoveredIndex !== index ? 'brightness(0.7) saturate(0.5)' : 'none',
-              transition: 'filter 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-            }}
-          >
-            <TShirtCard product={shirt} index={index} />
-          </motion.div>
-        ))}
+        {/* Color filters */}
+        <div className="flex items-center gap-2 flex-wrap" role="radiogroup" aria-label="Filter by color">
+          {colors.map((c) => (
+            <button
+              key={c.hex}
+              onClick={() => setActiveColor(c.hex)}
+              aria-label={`Filter by ${c.label}`}
+              aria-checked={activeColor === c.hex}
+              role="radio"
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-300 border ${
+                activeColor === c.hex
+                  ? 'border-obsidian-900 bg-obsidian-900 text-white shadow-lg'
+                  : 'border-obsidian-100 text-obsidian-400 hover:border-obsidian-300 bg-white'
+              }`}
+            >
+              {c.hex !== 'all' && (
+                <span className="w-3 h-3 rounded-full ring-1 ring-obsidian-200" style={{ backgroundColor: c.hex }} />
+              )}
+              <span>{c.hex === 'all' ? 'All' : c.label.split(' ').pop()}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Sort */}
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          aria-label="Sort products"
+          className="px-4 py-2.5 rounded-xl border border-obsidian-100 text-xs font-bold text-obsidian-500 bg-white focus:outline-none focus:ring-2 focus:ring-gold-500/50 cursor-pointer"
+        >
+          {SORT_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
       </motion.div>
+
+      {/* Product grid */}
+      {filtered.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-20"
+        >
+          <span className="text-6xl block mb-4 opacity-30">◇</span>
+          <h3 className="text-lg font-bold text-obsidian-900 mb-2">No products match your filter</h3>
+          <p className="text-sm text-obsidian-400 mb-6">Try selecting a different color or resetting filters.</p>
+          <button
+            onClick={() => setActiveColor('all')}
+            className="text-gold-600 font-bold text-xs uppercase tracking-widest hover:text-gold-700"
+          >
+            Show All Products
+          </button>
+        </motion.div>
+      ) : (
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? 'visible' : 'hidden'}
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-7"
+          style={{ perspective: '1500px' }}
+        >
+          <AnimatePresence mode="popLayout">
+            {filtered.map((shirt, index) => (
+              <motion.div 
+                key={shirt.id} 
+                variants={itemVariants}
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                custom={index}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                style={{
+                  filter: hoveredIndex !== null && hoveredIndex !== index ? 'brightness(0.7) saturate(0.5)' : 'none',
+                  transition: 'filter 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+              >
+                <TShirtCard product={shirt} index={index} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      )}
     </div>
   );
 }

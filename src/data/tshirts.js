@@ -23,7 +23,7 @@ export const tshirts = [
       back: "/images/tshirts/black_back_side.png",
       both: "/images/tshirts/black_both_side.png"
     },
-    price: 299,
+    price: 499,
     label: "Bestseller"
   },
   {
@@ -36,7 +36,7 @@ export const tshirts = [
       back: "/images/tshirts/white_back_side.png",
       both: "/images/tshirts/white_both_side.png"
     },
-    price: 299,
+    price: 449,
     label: "Popular"
   },
   {
@@ -49,7 +49,7 @@ export const tshirts = [
       back: "/images/tshirts/navy_blue_back_side.png",
       both: "/images/tshirts/navy_blue_both_side.png"
     },
-    price: 299,
+    price: 549,
   },
   {
     id: "ts-grey-04",
@@ -61,7 +61,7 @@ export const tshirts = [
       back: "/images/tshirts/grey_back_side.png",
       both: "/images/tshirts/grey_both_side.png"
     },
-    price: 299,
+    price: 449,
   },
   {
     id: "ts-red-05",
@@ -73,7 +73,7 @@ export const tshirts = [
       back: "/images/tshirts/crimson_red_back_side.png",
       both: "/images/tshirts/crimson_red_both_side.png"
     },
-    price: 299,
+    price: 599,
     label: "New"
   },
   {
@@ -86,7 +86,7 @@ export const tshirts = [
       back: "/images/tshirts/olive_back_side.png",
       both: "/images/tshirts/olive_both_side.png"
     },
-    price: 299,
+    price: 549,
   },
   {
     id: "ts-beige-07",
@@ -98,7 +98,7 @@ export const tshirts = [
       back: "/images/tshirts/beige_back_side.png",
       both: "/images/tshirts/beige_both_side.png"
     },
-    price: 299,
+    price: 499,
     label: "Trending"
   }
 ];

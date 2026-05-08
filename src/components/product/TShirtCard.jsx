@@ -32,7 +32,7 @@ export default function TShirtCard({ product, index = 0 }) {
         <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-obsidian-50 to-obsidian-100/50">
           <OptimizedImage
             src={product.image}
-            alt={`${product.color} T-Shirt`}
+            alt={`${product.color} Premium Cotton T-Shirt — ${product.label || 'Custom Apparel'}`}
             width={400}
             height={533}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
