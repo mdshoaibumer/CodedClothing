@@ -26,6 +26,11 @@ import Footer from './components/layout/Footer';
 const CollectionPage = lazy(() => import('./pages/CollectionPage'));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const CustomizePage = lazy(() => import('./pages/CustomizePage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const ReturnsPage = lazy(() => import('./pages/ReturnsPage'));
 
 /* Heavy 3D effect — only loaded on capable desktop devices */
 const ParticleField = lazy(() => import('./components/effects/ParticleField'));
@@ -73,6 +78,11 @@ function AnimatedRoutes() {
           <Route path="/" element={<CollectionPage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/customize/:id" element={<CustomizePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/returns" element={<ReturnsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </motion.div>
