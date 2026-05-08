@@ -83,7 +83,7 @@ const OptimizedImage = memo(function OptimizedImage({
           fetchPriority={priority ? 'high' : undefined}
           onLoad={handleLoad}
           onError={handleError}
-          className={`transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'} w-full h-full object-cover`}
+          className={`transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'} w-full h-full object-contain`}
           {...props}
         />
       </picture>

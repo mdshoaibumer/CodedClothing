@@ -4,6 +4,7 @@
 
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 const EASE_LUXURY = [0.16, 1, 0.3, 1];
 
@@ -29,13 +30,11 @@ export default function AboutPage() {
       transition={{ duration: 0.6 }}
       className="max-w-4xl mx-auto pb-20"
     >
-      {/* Back nav */}
-      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
-        <Link to="/" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-obsidian-400 hover:text-obsidian-900 transition-colors mb-12">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          Back to Collection
-        </Link>
-      </motion.div>
+      {/* Breadcrumb */}
+      <Breadcrumb items={[
+        { label: 'Home', to: '/' },
+        { label: 'Our Story' },
+      ]} />
 
       {/* Hero */}
       <motion.div
@@ -149,7 +148,7 @@ export default function AboutPage() {
         <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter mb-4">Ready to Create?</h2>
         <p className="text-white/80 text-sm mb-8">Explore our collection and design your masterpiece.</p>
         <Link
-          to="/"
+          to="/collection"
           className="inline-flex items-center gap-3 px-10 py-5 bg-white text-obsidian-900 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl hover:shadow-[0_20px_60px_rgba(0,0,0,0.3)] transition-all duration-500"
         >
           Explore Collection →

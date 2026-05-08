@@ -126,7 +126,7 @@ export default function CanvasPreview({ product }) {
   return (
     <div className="w-full">
       {/* Zoom Controls */}
-      <div className="flex items-center justify-center gap-2 mb-4">
+      <div data-export-ignore className="flex items-center justify-center gap-2 mb-4">
         <div className="flex items-center gap-1 p-1.5 bg-white rounded-2xl border border-obsidian-100 shadow-sm">
           <button
             onClick={() => setCanvasZoom((z) => Math.max(MIN_ZOOM, z - ZOOM_STEP))}
@@ -197,7 +197,7 @@ export default function CanvasPreview({ product }) {
       </div>
       
       {/* High-Fidelity Rendering Indicator */}
-      <div className="mt-8 flex justify-center">
+      <div data-export-ignore className="mt-8 flex justify-center">
         <div className="px-6 py-2 bg-obsidian-50 rounded-full border border-obsidian-100 shadow-sm flex items-center gap-3">
           <div className="flex gap-1">
             <div className="w-1 h-1 rounded-full bg-gold-500 animate-pulse" />

@@ -218,6 +218,32 @@ export default function CustomizePageSidebar({ product, hasDesign, selectedSize 
           >
             ORDER NOW
           </Button>
+
+          {/* Share Design */}
+          {(design.front.logo || design.back.logo) && (
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.02 }}
+              onClick={() => {
+                const text = `Check out my custom ${product.color} tee design on Coded Clothing! 🎨👕`;
+                const url = window.location.href;
+                if (navigator.share) {
+                  navigator.share({ title: 'My Coded Clothing Design', text, url }).catch(() => {});
+                } else {
+                  navigator.clipboard.writeText(`${text}\n${url}`).then(() => {
+                    addToast('Link copied to clipboard!', 'success');
+                  });
+                }
+              }}
+              className="w-full py-4 rounded-2xl border-2 border-obsidian-100 text-obsidian-400 font-bold text-xs uppercase tracking-widest hover:border-gold-400 hover:text-gold-600 transition-all flex items-center justify-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/>
+              </svg>
+              Share Design
+            </motion.button>
+          )}
         </motion.div>
       </motion.div>
 

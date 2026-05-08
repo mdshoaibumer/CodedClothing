@@ -29,7 +29,15 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
     if (!previewRef.current) return;
     setIsExporting(true);
     try {
-      const dataUrl = await toPng(previewRef.current, { cacheBust: true, pixelRatio: 2 });
+      const dataUrl = await toPng(previewRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        filter: (node) => {
+          // Exclude editor-only elements from the exported image
+          if (node.dataset && node.dataset.exportIgnore !== undefined) return false;
+          return true;
+        },
+      });
       const link = document.createElement('a');
       link.download = `coded-clothing-${product.color}-${activeView}.png`;
       link.href = dataUrl;
@@ -54,7 +62,7 @@ export default function CustomizePageHeader({ product, previewRef, hasDesign }) 
         <div className="space-y-3">
           {/* Breadcrumbs for wayfinding */}
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-obsidian-300">
-            <Link to="/" className="hover:text-gold-600 transition-colors">Collection</Link>
+            <Link to="/collection" className="hover:text-gold-600 transition-colors">Collection</Link>
             <span aria-hidden="true">›</span>
             <Link to={`/product/${product.id}`} className="hover:text-gold-600 transition-colors">{product.color}</Link>
             <span aria-hidden="true">›</span>

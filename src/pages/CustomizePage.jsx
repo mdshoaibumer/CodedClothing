@@ -16,6 +16,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getProductById } from '../features/product/product.utils';
 import useCustomizationStore from '../features/customization/store/useCustomizationStore';
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 // New modular components
 import CustomizePageHeader from './customize/CustomizePageHeader';
@@ -70,7 +71,7 @@ export default function CustomizePage() {
       <div className="text-center py-20">
         <h2 className="text-xl font-bold text-gray-900">Product not found</h2>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/collection')}
           className="mt-4 text-gold-600 hover:underline inline-block font-bold uppercase tracking-widest text-xs"
         >
           Return to Collection
@@ -86,6 +87,12 @@ export default function CustomizePage() {
       transition={{ duration: 0.5 }}
       className="max-w-6xl mx-auto px-2 md:px-6 lg:px-8 pb-20 md:pb-12 relative"
     >
+      {/* Breadcrumb */}
+      <Breadcrumb items={[
+        { label: 'Home', to: '/' },
+        { label: product.color, to: `/product/${id}` },
+        { label: 'Customize' },
+      ]} />
       {/* Ambient decorative elements */}
       <div className="absolute -top-20 -right-40 w-[500px] h-[500px] bg-gradient-radial from-gold-200/10 to-transparent rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-20 -left-40 w-[400px] h-[400px] bg-gradient-radial from-gold-100/8 to-transparent rounded-full blur-3xl pointer-events-none" />

@@ -39,7 +39,7 @@ const TShirtCanvas = memo(
           {/* Design Area Overlay (matches padded area) */}
           <div className="absolute inset-6 md:inset-10 pointer-events-none">
             {/* Print Safe Area Guide */}
-            <div className="absolute inset-0">
+            <div data-export-ignore className="absolute inset-0">
               <div
                 className="absolute border-2 border-dashed border-red-300/30 rounded-lg"
                 style={{
@@ -55,7 +55,7 @@ const TShirtCanvas = memo(
             </div>
 
             {/* Advanced Alignment Guide Lines */}
-            <div className="absolute inset-0">
+            <div data-export-ignore className="absolute inset-0">
               {/* Subtle reference center lines */}
               <div className="absolute left-1/2 top-0 bottom-0 w-px bg-blue-300/20" />
               <div className="absolute top-1/2 left-0 right-0 h-px bg-blue-300/20" />
@@ -106,7 +106,7 @@ const TShirtCanvas = memo(
 
         {/* Side Label */}
         {label && (
-          <div className="absolute top-6 left-6 px-4 py-1.5 bg-white/90 backdrop-blur-sm rounded-full border border-obsidian-100 shadow-sm z-30">
+          <div data-export-ignore className="absolute top-6 left-6 px-4 py-1.5 bg-white/90 backdrop-blur-sm rounded-full border border-obsidian-100 shadow-sm z-30">
             <span className="text-xs font-black text-obsidian-400 uppercase tracking-widest">{label}</span>
           </div>
         )}

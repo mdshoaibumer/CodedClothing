@@ -289,6 +289,7 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
       >
         {/* Selection border */}
         <div
+          data-export-ignore
           className={`absolute -inset-3 border-2 rounded-lg pointer-events-none transition-opacity duration-200 ${
             showControls
               ? 'opacity-100 border-blue-500'
@@ -299,7 +300,7 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
 
         {/* Resize Handles & Rotation Handle */}
         {showControls && (
-          <>
+          <div data-export-ignore>
             {[
               { id: 'top-left', pos: '-top-2 -left-2', cursor: 'nwse-resize' },
               { id: 'top-right', pos: '-top-2 -right-2', cursor: 'nesw-resize' },
@@ -350,7 +351,7 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
                 {Math.round(rotation)}°
               </div>
             )}
-          </>
+          </div>
         )}
 
         {/* Logo Image */}
@@ -369,7 +370,7 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
 
       {/* Shortcut hints when selected but idle */}
       {isSelected && !isInteracting && (
-        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+        <div data-export-ignore className="absolute -bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
           <div className="bg-obsidian-900/90 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap flex items-center gap-2">
             <span>Drag to move</span>
             <span className="text-obsidian-500">|</span>

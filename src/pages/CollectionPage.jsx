@@ -402,14 +402,43 @@ export default function CollectionPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-gold-600 to-gold-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </motion.a>
               <motion.a
-                href="#gallery"
+                href="#process"
                 whileHover={{ scale: 1.05, y: -4 }}
                 whileTap={{ scale: 0.95 }}
                 className="relative px-10 py-5 bg-white text-obsidian-900 rounded-2xl font-bold text-xs uppercase tracking-[0.2em] border border-obsidian-100 hover:border-gold-400 transition-all duration-500 shadow-soft hover:shadow-gold neon-border overflow-hidden group"
               >
-                <span className="relative z-10">Custom Design</span>
+                <span className="relative z-10">Custom Design →</span>
               </motion.a>
             </motion.div>
+          </motion.div>
+
+          {/* Hero Product Showcase — visual product presence above the fold */}
+          <motion.div
+            initial={{ opacity: 0, x: 60 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.8, duration: 1, ease: EASE_LUXURY }}
+            className="absolute right-0 top-10 hidden lg:flex items-center justify-center"
+            style={{ width: '40%' }}
+          >
+            <div className="relative">
+              <motion.img
+                src="/images/tshirts/black_front_side.png"
+                alt="Premium Cotton Tee"
+                className="w-[320px] h-auto drop-shadow-2xl mix-blend-multiply"
+                animate={{ y: [0, -12, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              {/* Badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.5, duration: 0.5 }}
+                className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-6 py-2.5 bg-white/90 backdrop-blur-sm rounded-2xl shadow-luxury border border-gold-200/30 text-center"
+              >
+                <span className="text-xs font-black text-obsidian-900 uppercase tracking-wider">From ₹449</span>
+                <span className="block text-2xs text-obsidian-400 mt-0.5">Premium Egyptian Cotton</span>
+              </motion.div>
+            </div>
           </motion.div>
 
           {/* Animated Stats Row */}
@@ -472,7 +501,7 @@ export default function CollectionPage() {
           PROCESS SECTION — How it works (4 steps)
          ════════════════════════════════════════════════════════════════════════ */}
       <RevealOnScroll direction="up" className="mt-32 mb-20">
-        <section className="relative py-20 px-8 rounded-[3rem] bg-gradient-to-br from-obsidian-50 to-white overflow-hidden border border-obsidian-100/50 holographic-card">
+        <section id="process" className="relative py-20 px-8 rounded-[3rem] bg-gradient-to-br from-obsidian-50 to-white overflow-hidden border border-obsidian-100/50 holographic-card scroll-mt-24">
           <MorphingBlob className="w-[500px] h-[500px] -top-20 -right-20 opacity-60" color="rgba(201, 169, 110, 0.08)" />
           <MorphingBlob className="w-[350px] h-[350px] -bottom-10 -left-10 opacity-50" color="rgba(201, 169, 110, 0.06)" />
 
