@@ -4,11 +4,25 @@
  */
 
 import { memo } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-const SOCIAL_LINKS = ['IG', 'TW', 'LI', 'YT'];
-const FOOTER_ATELIER_LINKS = ['Custom Design', 'Premium Fabric', 'Screen Printing', 'Express Delivery', 'Gift Cards'];
-const FOOTER_COMPANY_LINKS = ['About Us', 'Sustainability', 'Careers', 'Press Kit', 'Contact'];
+const SOCIAL_LINKS = [
+  { label: 'IG', name: 'Instagram', href: 'https://instagram.com/codedclothing' },
+  { label: 'TW', name: 'Twitter / X', href: 'https://x.com/codedclothing' },
+  { label: 'LI', name: 'LinkedIn', href: 'https://linkedin.com/company/codedclothing' },
+  { label: 'YT', name: 'YouTube', href: 'https://youtube.com/@codedclothing' },
+];
+const FOOTER_ATELIER_LINKS = [
+  { label: 'Our Story', to: '/about' },
+  { label: 'The Collection', to: '/' },
+  { label: 'Contact Us', to: '/contact' },
+];
+const FOOTER_LEGAL_LINKS = [
+  { label: 'Privacy Policy', to: '/privacy' },
+  { label: 'Terms of Service', to: '/terms' },
+  { label: 'Returns & Refunds', to: '/returns' },
+];
 
 const Footer = memo(function Footer() {
   return (
@@ -23,8 +37,8 @@ const Footer = memo(function Footer() {
           {/* Brand Column */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-obsidian-900 flex items-center justify-center shadow-lg">
-                <span className="text-gold-500 font-black text-lg italic">C</span>
+              <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg">
+                <img src="/images/codedclothinglogo.jpg" alt="Coded Clothing Logo" className="w-full h-full object-cover" />
               </div>
               <div>
                 <span className="text-sm font-bold text-obsidian-900 block">CODED CLOTHING</span>
@@ -37,15 +51,19 @@ const Footer = memo(function Footer() {
             </p>
             {/* Social Links */}
             <div className="flex gap-3">
-              {SOCIAL_LINKS.map((label) => (
-                <motion.div 
-                  key={label} 
+              {SOCIAL_LINKS.map((social) => (
+                <motion.a 
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.name}
                   whileHover={{ y: -4, scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-11 h-11 rounded-xl bg-obsidian-50 flex items-center justify-center text-xs font-bold text-obsidian-400 hover:bg-obsidian-900 hover:text-gold-500 transition-all duration-300 cursor-pointer border border-obsidian-100 hover:border-obsidian-800 hover:shadow-lg hover:shadow-obsidian-900/20"
+                  className="w-11 h-11 rounded-xl bg-obsidian-50 flex items-center justify-center text-xs font-bold text-obsidian-400 hover:bg-obsidian-900 hover:text-gold-500 transition-all duration-300 border border-obsidian-100 hover:border-obsidian-800 hover:shadow-lg hover:shadow-obsidian-900/20"
                 >
-                  {label}
-                </motion.div>
+                  {social.label}
+                </motion.a>
               ))}
             </div>
           </div>
@@ -55,24 +73,24 @@ const Footer = memo(function Footer() {
             <h4 className="text-xs font-black text-obsidian-900 uppercase tracking-[0.3em] mb-5">Atelier</h4>
             <ul className="space-y-3">
               {FOOTER_ATELIER_LINKS.map((item) => (
-                <li key={item}>
-                  <span className="text-sm text-obsidian-400 hover:text-gold-600 transition-colors duration-300 cursor-pointer inline-block">
-                    {item}
-                  </span>
+                <li key={item.label}>
+                  <Link to={item.to} className="text-sm text-obsidian-400 hover:text-gold-600 transition-colors duration-300 inline-block">
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Company Links */}
+          {/* Legal Links */}
           <div>
-            <h4 className="text-xs font-black text-obsidian-900 uppercase tracking-[0.3em] mb-5">Company</h4>
+            <h4 className="text-xs font-black text-obsidian-900 uppercase tracking-[0.3em] mb-5">Legal</h4>
             <ul className="space-y-3">
-              {FOOTER_COMPANY_LINKS.map((item) => (
-                <li key={item}>
-                  <span className="text-sm text-obsidian-400 hover:text-gold-600 transition-colors duration-300 cursor-pointer inline-block">
-                    {item}
-                  </span>
+              {FOOTER_LEGAL_LINKS.map((item) => (
+                <li key={item.label}>
+                  <Link to={item.to} className="text-sm text-obsidian-400 hover:text-gold-600 transition-colors duration-300 inline-block">
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>

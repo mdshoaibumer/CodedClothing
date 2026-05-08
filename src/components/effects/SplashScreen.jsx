@@ -168,15 +168,15 @@ export default function SplashScreen({ onComplete }) {
                 className="absolute inset-0 bg-gradient-to-br from-gold-400/50 to-gold-600/50 rounded-2xl blur-2xl"
               />
               {/* Logo container */}
-              <div className="relative w-full h-full bg-gradient-to-br from-gold-400 via-gold-500 to-gold-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-gold-500/50 overflow-hidden">
-                <motion.span
+              <div className="relative w-full h-full rounded-2xl shadow-2xl shadow-gold-500/50 overflow-hidden">
+                <motion.img
+                  src="/images/codedclothinglogo.jpg"
+                  alt="Coded Clothing Logo"
                   initial={{ opacity: 0, scale: 3 }}
                   animate={phase >= 1 ? { opacity: 1, scale: 1 } : {}}
                   transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-white font-black text-5xl italic relative z-10"
-                >
-                  C
-                </motion.span>
+                  className="w-full h-full object-cover relative z-10"
+                />
                 {/* Shine sweep across logo */}
                 <motion.div
                   initial={{ x: '-100%' }}

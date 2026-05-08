@@ -43,13 +43,12 @@ const Header = memo(function Header() {
         {/* Brand Logo */}
         <Link to="/" className="group flex items-center gap-3 cursor-hover">
           <motion.div
-            whileHover={{ rotate: 180, scale: 1.15 }}
+            whileHover={{ scale: 1.15 }}
             whileTap={{ scale: 0.9 }}
             transition={{ duration: 0.6, ease: EASE_LUXURY }}
-            className="w-11 h-11 rounded-xl bg-obsidian-900 flex items-center justify-center shadow-lg shadow-black/20 relative overflow-hidden"
+            className="w-11 h-11 rounded-xl overflow-hidden shadow-lg shadow-black/20 relative"
           >
-            <span className="text-gold-500 font-black text-sm italic relative z-10">C</span>
-            <div className="absolute inset-0 bg-gradient-to-br from-gold-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <img src="/images/codedclothinglogo.jpg" alt="Coded Clothing Logo" className="w-full h-full object-cover" />
           </motion.div>
           <div className="flex flex-col">
             <span className="text-sm font-bold tracking-tight text-obsidian-900 group-hover:text-gold-600 transition-colors duration-300">
@@ -72,10 +71,23 @@ const Header = memo(function Header() {
             Collection
           </Link>
           <div className="w-px h-4 bg-gradient-to-b from-transparent via-gold-400/30 to-transparent" />
-          <span className="text-xs font-bold tracking-[0.3em] text-gold-600 uppercase relative">
-            Bespoke Design
-            <span className="absolute -bottom-1 left-0 right-0 h-px bg-gold-400/50" />
-          </span>
+          <Link 
+            to="/about" 
+            className={`text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 hover:text-gold-600 ${
+              location.pathname === '/about' ? 'text-gold-600' : 'text-obsidian-400'
+            }`}
+          >
+            Our Story
+          </Link>
+          <div className="w-px h-4 bg-gradient-to-b from-transparent via-gold-400/30 to-transparent" />
+          <Link 
+            to="/contact" 
+            className={`text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 hover:text-gold-600 ${
+              location.pathname === '/contact' ? 'text-gold-600' : 'text-obsidian-400'
+            }`}
+          >
+            Contact
+          </Link>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -113,9 +125,23 @@ const Header = memo(function Header() {
                 Collection
               </Link>
               <div className="h-px bg-gradient-to-r from-gold-400/20 to-transparent" />
-              <span className="block text-sm font-bold tracking-[0.15em] text-gold-600 uppercase py-3">
-                Bespoke Design
-              </span>
+              <Link
+                to="/about"
+                className={`block text-sm font-bold uppercase tracking-[0.15em] transition-colors duration-300 py-3 ${
+                  location.pathname === '/about' ? 'text-gold-600' : 'text-obsidian-600 hover:text-gold-600'
+                }`}
+              >
+                Our Story
+              </Link>
+              <div className="h-px bg-gradient-to-r from-gold-400/20 to-transparent" />
+              <Link
+                to="/contact"
+                className={`block text-sm font-bold uppercase tracking-[0.15em] transition-colors duration-300 py-3 ${
+                  location.pathname === '/contact' ? 'text-gold-600' : 'text-obsidian-600 hover:text-gold-600'
+                }`}
+              >
+                Contact
+              </Link>
             </div>
           </motion.nav>
         )}

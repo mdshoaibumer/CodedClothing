@@ -1,0 +1,21 @@
+{
+  "name": "Coded Clothing — Premium Custom Apparel",
+  "short_name": "Coded Clothing",
+  "description": "Luxury custom t-shirts crafted with premium Egyptian cotton. Design your masterpiece.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "/images/codedclothinglogo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/images/codedclothinglogo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
