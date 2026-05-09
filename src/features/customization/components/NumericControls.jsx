@@ -15,10 +15,10 @@ export default function NumericControls() {
   // Track which side user is editing when in "both" view
   const [bothViewEditSide, setBothViewEditSide] = useState('front');
 
-  // For "both" view, show controls only if both sides have logos
+  // For "both" view, show controls if either side has a logo
   const hasFrontLogo = design.front.logo;
   const hasBackLogo = design.back.logo;
-  const showControls = activeView === 'both' ? (hasFrontLogo && hasBackLogo) : (design[activeView]?.logo);
+  const showControls = activeView === 'both' ? (hasFrontLogo || hasBackLogo) : (design[activeView]?.logo);
 
   // Determine which design values to show/edit
   const editSide = activeView === 'both' ? bothViewEditSide : activeView;

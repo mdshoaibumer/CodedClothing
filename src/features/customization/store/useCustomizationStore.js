@@ -17,11 +17,17 @@ const SCALE_MAX = SCALE_LIMITS.MAX;
 // Maximum history entries to prevent unbounded localStorage growth
 const MAX_HISTORY = 50;
 
+const INITIAL_DESIGN = {
+  front: { logo: null, scale: 1, x: 0, y: 0, rotation: 0 },
+  back: { logo: null, scale: 1, x: 0, y: 0, rotation: 0 },
+};
+
 const useCustomizationStore = create(
   persist(
     (set) => ({
       // --- State ---
       activeView: 'front',
+      productId: null, // Track which product the design belongs to
       design: {
         front: {
           logo: null,
@@ -46,6 +52,21 @@ const useCustomizationStore = create(
       },
 
       // --- Actions ---
+
+      /**
+       * Sets the active product. Resets design if switching to a different product.
+       * @param {string} id - Product ID
+       */
+      setProduct: (id) =>
+        set((state) => {
+          if (state.productId === id) return state;
+          return {
+            productId: id,
+            activeView: 'front',
+            design: { ...INITIAL_DESIGN },
+            history: { past: [], future: [] },
+          };
+        }),
 
       /**
        * Updates the currently active view of the T-shirt.
@@ -125,10 +146,7 @@ const useCustomizationStore = create(
       resetDesign: () =>
         set({
           activeView: 'front',
-          design: {
-            front: { logo: null, scale: 1, x: 0, y: 0, rotation: 0 },
-            back: { logo: null, scale: 1, x: 0, y: 0, rotation: 0 },
-          },
+          design: { ...INITIAL_DESIGN },
           history: { past: [], future: [] },
         }),
 

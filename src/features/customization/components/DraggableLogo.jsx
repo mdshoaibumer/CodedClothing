@@ -196,15 +196,19 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
     setIsResizing(true);
     setActiveHandle(handleId);
 
-    resizeStartRef.current = { clientX: e.clientX, clientY: e.clientY, scale: propsRef.current.scale };
+    const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+    const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+    resizeStartRef.current = { clientX, clientY, scale: propsRef.current.scale };
   }, []);
 
   useEffect(() => {
     if (!isResizing) return;
 
     const handleMove = (e) => {
-      const dx = e.clientX - resizeStartRef.current.clientX;
-      const dy = e.clientY - resizeStartRef.current.clientY;
+      const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+      const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+      const dx = clientX - resizeStartRef.current.clientX;
+      const dy = clientY - resizeStartRef.current.clientY;
 
       // Diagonal distance for proportional resize
       let distance;
@@ -229,9 +233,13 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
 
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
     return () => {
       window.removeEventListener('mousemove', handleMove);
       window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('touchend', handleEnd);
     };
   }, [isResizing, activeHandle, MIN_SCALE, MAX_SCALE]);
 
@@ -244,9 +252,11 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
 
+    const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+    const clientY = e.clientY ?? e.touches?.[0]?.clientY;
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    const startAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+    const startAngle = Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI);
 
     rotateStartRef.current = { angle: startAngle, rotation: propsRef.current.rotation };
   }, []);
@@ -258,9 +268,11 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
       const rect = containerRef.current?.getBoundingClientRect();
       if (!rect) return;
 
+      const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+      const clientY = e.clientY ?? e.touches?.[0]?.clientY;
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+      const currentAngle = Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI);
       const angleDelta = currentAngle - rotateStartRef.current.angle;
 
       let newRotation = (rotateStartRef.current.rotation + angleDelta) % 360;
@@ -286,9 +298,13 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
 
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
     return () => {
       window.removeEventListener('mousemove', handleMove);
       window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('touchend', handleEnd);
     };
   }, [isRotating]);
 
@@ -366,7 +382,7 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
                 key={handle.id}
                 data-handle="true"
                 onMouseDown={(e) => handleResizeStart(e, handle.id)}
-                onTouchStart={(e) => handleResizeStart(e.touches[0], handle.id)}
+                onTouchStart={(e) => handleResizeStart(e, handle.id)}
                 style={{ cursor: handle.cursor }}
                 className={`absolute ${handle.pos} w-11 h-11 flex items-center justify-center z-20 pointer-events-auto touch-none`}
               >
@@ -380,7 +396,7 @@ export default function DraggableLogo({ logo, scale, x, y, rotation = 0, onUpdat
             <div
               data-handle="true"
               onMouseDown={handleRotateStart}
-              onTouchStart={(e) => handleRotateStart(e.touches[0])}
+              onTouchStart={handleRotateStart}
               className="absolute -top-12 left-1/2 -translate-x-1/2 z-20 pointer-events-auto cursor-grab flex flex-col items-center touch-none"
             >
               <div className={`w-6 h-6 bg-white border-2 border-blue-500 rounded-full shadow-md transition-transform flex items-center justify-center ${

@@ -14,8 +14,11 @@
 const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
-if (!CLOUD_NAME || !UPLOAD_PRESET) {
-  console.error('Missing Cloudinary configuration. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in your .env file.');
+/** Whether Cloudinary is properly configured */
+export const isCloudinaryConfigured = Boolean(CLOUD_NAME && UPLOAD_PRESET);
+
+if (!isCloudinaryConfigured) {
+  console.warn('Cloudinary not configured — uploads will use local preview. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in .env to enable cloud uploads.');
 }
 
 const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;

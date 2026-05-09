@@ -30,9 +30,15 @@ export default function CustomizePage() {
   const previewRef = useRef(null);
 
   // Zustand Store
-  const { design, history } = useCustomizationStore();
+  const { design, history, setProduct } = useCustomizationStore();
 
   const product = getProductById(id);
+
+  // Bind store to current product — resets design if product changes
+  useEffect(() => {
+    if (id) setProduct(id);
+  }, [id, setProduct]);
+
   const hasDesign = design.front.logo || design.back.logo;
   const canUndo = history.past.length > 0;
   const canRedo = history.future.length > 0;
@@ -98,6 +104,7 @@ export default function CustomizePage() {
           product={product}
           hasDesign={hasDesign}
           selectedSize={selectedSize}
+          onProductChange={(newId) => navigate(`/customize/${newId}?size=${selectedSize}`, { replace: true })}
         />
       </div>
 

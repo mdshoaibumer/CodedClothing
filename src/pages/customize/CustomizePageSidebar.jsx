@@ -11,6 +11,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { formatPrice } from '../../features/product/product.utils';
+import { products } from '../../data/products';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import UploadLogo from '../../features/customization/components/UploadLogo';
@@ -18,7 +19,7 @@ import NumericControls from '../../features/customization/components/NumericCont
 import useCustomizationStore from '../../features/customization/store/useCustomizationStore';
 import useToastStore from '../../features/notifications/store/useToastStore';
 
-export default function CustomizePageSidebar({ product, hasDesign, selectedSize = 'M' }) {
+export default function CustomizePageSidebar({ product, hasDesign, selectedSize = 'M', onProductChange }) {
   const MAX_QUANTITY = 100;
   const [quantity, setQuantity] = useState(1);
   const [showOrderPreview, setShowOrderPreview] = useState(false);
@@ -65,6 +66,34 @@ export default function CustomizePageSidebar({ product, hasDesign, selectedSize 
         animate="visible"
         className="lg:col-span-4 flex flex-col gap-6 md:gap-8"
       >
+        {/* Color Switcher — swap tee color without leaving the editor */}
+        <motion.div variants={itemVariants} className="bg-white p-5 md:p-6 rounded-4xl shadow-luxury border border-obsidian-50 relative overflow-hidden">
+          <h3 className="text-[9px] md:text-xs font-black text-obsidian-900 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-gold-500" />
+            T-Shirt Color
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {products.filter(p => p.category === (product.category || 'tshirts')).map((p) => (
+              <button
+                key={p.id}
+                onClick={() => { if (p.id !== product.id) onProductChange?.(p.id); }}
+                title={p.color}
+                className={`w-9 h-9 rounded-full border-2 transition-all ${
+                  p.id === product.id
+                    ? 'border-gold-500 ring-2 ring-gold-300 scale-110'
+                    : 'border-obsidian-200 hover:border-obsidian-400 hover:scale-105'
+                }`}
+                style={{ backgroundColor: p.hex }}
+                aria-label={`Switch to ${p.color}`}
+                aria-current={p.id === product.id ? 'true' : undefined}
+              />
+            ))}
+          </div>
+          <p className="text-[10px] text-obsidian-500 mt-3 font-medium">
+            Current: <span className="font-black text-obsidian-900">{product.color}</span> — {formatPrice(product.price)}
+          </p>
+        </motion.div>
+
         {/* Upload Panel */}
         <motion.div variants={itemVariants} id="upload-panel" className="bg-white p-6 md:p-10 rounded-4xl shadow-luxury border border-obsidian-50 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gold-100/30 rounded-full blur-3xl -mr-16 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />

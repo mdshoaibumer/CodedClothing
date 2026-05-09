@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import useCustomizationStore from '../store/useCustomizationStore';
 import useToastStore from '../../notifications/store/useToastStore';
-import { uploadImage } from '../services/cloudinary';
+import { uploadImage, isCloudinaryConfigured } from '../services/cloudinary';
 import { cn } from '../../../lib/utils';
 import { UPLOAD_LIMITS } from '../customization.types';
 
@@ -24,6 +24,7 @@ export default function UploadLogo() {
   const setLogo = useCustomizationStore((state) => state.setLogo);
   const design = useCustomizationStore((state) => state.design);
   const setScale = useCustomizationStore((state) => state.setScale);
+  const saveToHistory = useCustomizationStore((state) => state.saveToHistory);
 
   // Toast
   const addToast = useToastStore((state) => state.addToast);
@@ -52,9 +53,10 @@ export default function UploadLogo() {
   }, []);
 
   const applyLogo = useCallback((url) => {
+    saveToHistory(); // Capture state before logo change for undo
     setLogo(effectiveView, url);
     addToast(`Logo uploaded to ${effectiveView}!`, 'success');
-  }, [effectiveView, setLogo, addToast]);
+  }, [effectiveView, setLogo, addToast, saveToHistory]);
 
   const processFile = useCallback(async (file) => {
     if (!file) return;
@@ -64,18 +66,20 @@ export default function UploadLogo() {
     try {
       validateFile(file);
 
-      try {
-        const secureUrl = await uploadImage(file);
-        applyLogo(secureUrl);
-      } catch (cloudErr) {
-        console.warn('Cloudinary upload failed, using local fallback:', cloudErr.message);
+      if (isCloudinaryConfigured) {
         try {
+          const secureUrl = await uploadImage(file);
+          applyLogo(secureUrl);
+        } catch (cloudErr) {
+          console.warn('Cloudinary upload failed, using local fallback:', cloudErr.message);
           const localUrl = await fileToDataUrl(file);
           applyLogo(localUrl);
           addToast('Using local preview (cloud upload unavailable)', 'warning');
-        } catch (fallbackErr) {
-          throw new Error('Failed to process image. Please try again.', { cause: fallbackErr });
         }
+      } else {
+        // No Cloudinary configured — use local data URL directly
+        const localUrl = await fileToDataUrl(file);
+        applyLogo(localUrl);
       }
     } catch (err) {
       addToast(err.message, 'error');
