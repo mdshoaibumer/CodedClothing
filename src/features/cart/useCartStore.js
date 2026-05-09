@@ -10,6 +10,17 @@ import { create } from 'zustand';
 
 const STORAGE_KEY = 'cc-cart';
 
+/** Category labels for display */
+const CATEGORY_LABELS = {
+  tshirts: 'T-Shirt',
+  oversized: 'Oversized Tee',
+  polos: 'Polo T-Shirt',
+  hoodies: 'Hoodie',
+  sweatshirts: 'Sweatshirt',
+  'full-sleeves': 'Full Sleeve Tee',
+  vnecks: 'V-Neck T-Shirt',
+};
+
 /** Load cart from localStorage */
 function loadCart() {
   try {
@@ -52,6 +63,7 @@ const useCartStore = create((set, get) => ({
           {
             id: `cart-${Date.now()}-${crypto.randomUUID()}`,
             productId: product.id,
+            category: product.category,
             color: product.color,
             hex: product.hex,
             image: product.image,
@@ -118,7 +130,8 @@ const useCartStore = create((set, get) => ({
     message += `━━━━━━━━━━━━━━━━━━\n\n`;
 
     items.forEach((item, i) => {
-      message += `*${i + 1}. ${item.color} Premium Tee*\n`;
+      const categoryLabel = CATEGORY_LABELS[item.category] || 'Premium Tee';
+      message += `*${i + 1}. ${item.color} ${categoryLabel}*\n`;
       message += `   Size: ${item.size} | Qty: ${item.quantity}\n`;
       message += `   ${item.hasCustomDesign ? '🎨 Custom Design' : 'Plain'}\n`;
       message += `   ₹${item.price} × ${item.quantity} = ₹${item.price * item.quantity}\n\n`;

@@ -120,7 +120,7 @@ function NotFoundPage() {
           This page has wandered beyond our collection
         </p>
         <Link 
-          to="/" 
+          to="/collection" 
           className="inline-flex items-center gap-2 px-8 py-4 bg-obsidian-900 text-white rounded-2xl font-bold text-xs uppercase tracking-[0.2em] hover:bg-gold-600 transition-all duration-500 shadow-luxury hover:shadow-gold btn-liquid"
         >
           Return to Collection

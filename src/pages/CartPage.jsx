@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import useCartStore from '../features/cart/useCartStore';
 import useToastStore from '../features/notifications/store/useToastStore';
 import Breadcrumb from '../components/ui/Breadcrumb';
+import { CATEGORIES } from '../data/products';
 
 const EASE_LUXURY = [0.16, 1, 0.3, 1];
 
@@ -28,11 +29,16 @@ export default function CartPage() {
 
   const handleWhatsAppCheckout = () => {
     const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER;
+    const message = getWhatsAppMessage();
     if (!phoneNumber) {
-      addToast('WhatsApp ordering is currently unavailable.', 'error', 5000);
+      // Fallback: copy order to clipboard so user can share via email/WhatsApp manually
+      navigator.clipboard.writeText(message).then(() => {
+        addToast('Order details copied to clipboard! Share via WhatsApp or email to complete your order.', 'success', 6000);
+      }).catch(() => {
+        addToast('WhatsApp ordering is currently unavailable. Please email hello@codedclothing.com', 'error', 5000);
+      });
       return;
     }
-    const message = getWhatsAppMessage();
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
       '_blank',
@@ -123,7 +129,7 @@ export default function CartPage() {
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <Link to={`/product/${item.productId}`} className="hover:text-gold-600 transition-colors">
-                          <h3 className="text-sm font-bold text-obsidian-900 tracking-tight">Premium Cotton Tee</h3>
+                          <h3 className="text-sm font-bold text-obsidian-900 tracking-tight">{CATEGORIES.find(c => c.slug === item.category)?.label || 'Premium Cotton Tee'}</h3>
                         </Link>
                         <div className="flex items-center gap-2 mt-1">
                           <div className="w-3.5 h-3.5 rounded-full ring-1 ring-obsidian-200" style={{ backgroundColor: item.hex }} />

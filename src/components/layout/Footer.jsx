@@ -82,7 +82,7 @@ function NewsletterSignup() {
     <div className="flex flex-col md:flex-row items-center justify-between gap-6">
       <div>
         <h4 className="text-xs font-black text-obsidian-900 uppercase tracking-[0.3em] mb-1">Stay in the Loop</h4>
-        <p className="text-xs text-obsidian-400">New drops, exclusive offers, and style inspiration. No spam.</p>
+        <p className="text-xs text-obsidian-400">New drops, exclusive offers, and style inspiration via WhatsApp.</p>
       </div>
       {submitted ? (
         <p className="text-sm font-bold text-gold-600">Thanks for subscribing! ✓</p>

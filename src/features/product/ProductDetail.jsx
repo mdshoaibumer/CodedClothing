@@ -20,7 +20,9 @@ import RelatedProducts from './RelatedProducts';
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedSize, setSelectedSize] = useState(() => {
+    try { return localStorage.getItem('cc-last-size') || 'M'; } catch { return 'M'; }
+  });
   const [quantity, setQuantity] = useState(1);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [isOrderOpen, setIsOrderOpen] = useState(false);
@@ -38,18 +40,23 @@ export default function ProductDetail() {
 
   const handleWhatsAppOrder = () => {
     const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER;
-    if (!phoneNumber) {
-      addToast('WhatsApp ordering is currently unavailable. Please email hello@codedclothing.com', 'error', 5000);
-      setIsOrderOpen(false);
-      return;
-    }
+    const categoryLabel = CATEGORIES.find(c => c.slug === product.category)?.label || 'Premium Cotton Tee';
     const text = `*New Order — Coded Clothing*\n\n` +
-      `*Product:* ${product.color} Premium Cotton Tee\n` +
+      `*Product:* ${product.color} ${categoryLabel}\n` +
       `*Size:* ${selectedSize}\n` +
       `*Quantity:* ${quantity}\n` +
       `*Unit Price:* ${formatPrice(product.price)}\n` +
       `*Total:* ${formatPrice(product.price * quantity)}\n\n` +
-      `_Plain tee (no custom design)_`;
+      `_Plain (no custom design)_`;
+    if (!phoneNumber) {
+      navigator.clipboard.writeText(text).then(() => {
+        addToast('Order details copied to clipboard! Share via WhatsApp or email to complete your order.', 'success', 6000);
+      }).catch(() => {
+        addToast('WhatsApp ordering is currently unavailable. Please email hello@codedclothing.com', 'error', 5000);
+      });
+      setIsOrderOpen(false);
+      return;
+    }
     window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
     setIsOrderOpen(false);
   };
@@ -337,7 +344,10 @@ export default function ProductDetail() {
                 key={size}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedSize(size)}
+                onClick={() => {
+                  setSelectedSize(size);
+                  try { localStorage.setItem('cc-last-size', size); } catch {}
+                }}
                 className={`py-4 rounded-2xl border-2 text-xs font-black transition-all duration-300 ${
                   selectedSize === size 
                     ? 'border-obsidian-900 bg-obsidian-900 text-white shadow-luxury' 
@@ -443,7 +453,7 @@ export default function ProductDetail() {
                 <img src={product.image} alt={product.color} className="w-full h-full object-contain mix-blend-multiply p-2" />
               </div>
               <div>
-                <h4 className="font-bold text-obsidian-900 text-sm">Premium Cotton Tee</h4>
+                <h4 className="font-bold text-obsidian-900 text-sm">{CATEGORIES.find(c => c.slug === product.category)?.label || 'Premium Cotton Tee'}</h4>
                 <p className="text-xs text-obsidian-400">{product.color}</p>
               </div>
             </div>

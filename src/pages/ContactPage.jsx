@@ -23,13 +23,16 @@ export default function ContactPage() {
     e.preventDefault();
     // Build WhatsApp message from form
     const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER;
+    const text = `*Contact Form — Coded Clothing*\n\n` +
+      `*Name:* ${form.name}\n` +
+      `*Email:* ${form.email}\n` +
+      `*Subject:* ${form.subject}\n` +
+      `*Message:* ${form.message}`;
     if (phoneNumber) {
-      const text = `*Contact Form — Coded Clothing*\n\n` +
-        `*Name:* ${form.name}\n` +
-        `*Email:* ${form.email}\n` +
-        `*Subject:* ${form.subject}\n` +
-        `*Message:* ${form.message}`;
       window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(text).catch(() => {});
     }
     setSubmitted(true);
   };

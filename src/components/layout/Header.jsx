@@ -6,7 +6,7 @@
 import { useState, useEffect, memo, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { products } from '../../data/products';
+import { products, CATEGORIES } from '../../data/products';
 import useCartStore from '../../features/cart/useCartStore';
 
 const EASE_LUXURY = [0.16, 1, 0.3, 1];
@@ -41,9 +41,19 @@ const Header = memo(function Header() {
     }
   }, [searchOpen]);
 
-  // Search results
+  // Search results — matches color, category label, and description
   const searchResults = searchQuery.trim().length > 0
-    ? products.filter(t => t.color.toLowerCase().includes(searchQuery.toLowerCase()))
+    ? products.filter(t => {
+        const q = searchQuery.toLowerCase();
+        const categoryLabel = CATEGORIES.find(c => c.slug === t.category)?.label || '';
+        return (
+          t.color.toLowerCase().includes(q) ||
+          categoryLabel.toLowerCase().includes(q) ||
+          t.category.toLowerCase().includes(q) ||
+          (t.description || '').toLowerCase().includes(q) ||
+          (t.label || '').toLowerCase().includes(q)
+        );
+      })
     : [];
 
   return (
@@ -189,6 +199,7 @@ const Header = memo(function Header() {
                     >
                       <div className="w-3 h-3 rounded-full ring-1 ring-obsidian-200 flex-shrink-0" style={{ backgroundColor: product.hex }} />
                       <span className="text-sm font-bold text-obsidian-700">{product.color}</span>
+                      <span className="text-2xs text-obsidian-400">{CATEGORIES.find(c => c.slug === product.category)?.label}</span>
                       <span className="text-xs text-obsidian-400 ml-auto">₹{product.price}</span>
                     </Link>
                   ))}
@@ -265,7 +276,8 @@ const Header = memo(function Header() {
                       </div>
                       <div className="flex-1">
                         <span className="text-sm font-bold text-obsidian-900 group-hover:text-gold-700 transition-colors">{product.color}</span>
-                        {product.label && <span className="ml-2 text-2xs font-black text-gold-600 uppercase">{product.label}</span>}
+                        <span className="ml-2 text-2xs font-bold text-obsidian-400">{CATEGORIES.find(c => c.slug === product.category)?.label}</span>
+                        {product.label && <span className="ml-1 text-2xs font-black text-gold-600 uppercase">{product.label}</span>}
                       </div>
                       <span className="text-sm font-black text-obsidian-900">₹{product.price}</span>
                     </Link>

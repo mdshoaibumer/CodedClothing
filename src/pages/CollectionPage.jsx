@@ -65,14 +65,72 @@ const FEATURES = [
   { icon: '△', title: 'Tailored Fit', desc: 'Ergonomic patterns designed for modern silhouettes' },
 ];
 
-/** Testimonials data */
-const TESTIMONIALS = [
-  { initials: 'AK', name: 'Arjun K.', role: 'Verified Customer', stars: 5, quote: 'The quality is unlike anything I\'ve seen. Each piece feels like it was made just for me.' },
-  { initials: 'PS', name: 'Priya S.', role: 'Fashion Blogger', stars: 5, quote: 'I ordered custom tees for my brand — the print quality and fabric feel exceeded all expectations. My followers love them.' },
-  { initials: 'RV', name: 'Rahul V.', role: 'Verified Customer', stars: 5, quote: 'Gifted these to my team. The design studio is incredibly intuitive and the final product is premium in every sense.' },
-  { initials: 'NM', name: 'Neha M.', role: 'Studio Owner', stars: 4, quote: 'We use Coded Clothing for our studio merchandise. Consistent quality, fast delivery, and the customization tools are a game-changer.' },
-  { initials: 'DK', name: 'Dev K.', role: 'Verified Customer', stars: 5, quote: 'From the packaging to the fabric, everything screams quality. Worth every rupee. Already ordered my third one.' },
-  { initials: 'SA', name: 'Sneha A.', role: 'Graphic Designer', stars: 5, quote: 'As a designer, I\'m picky about print accuracy. These tees reproduce my artwork perfectly — colors are vibrant and true.' },
+/** Customer categories — who uses custom t-shirts */
+const CUSTOMER_CATEGORIES = [
+  {
+    icon: '🎓',
+    title: 'Schools & Colleges',
+    desc: 'Uniforms, fest tees, batch hoodies, and farewell merchandise — designed by students, crafted by us.',
+    customers: '200+ institutions',
+    quote: 'Our entire batch of 400 students got custom hoodies and the quality blew everyone away.',
+    author: 'Priya S., College Fest Coordinator',
+  },
+  {
+    icon: '🎪',
+    title: 'Events & Conferences',
+    desc: 'Hackathons, marathons, music festivals, and corporate summits — branded apparel that makes your event memorable.',
+    customers: '500+ events',
+    quote: 'We ordered 1,000 tees for our tech conference and every single one was flawless. True bulk quality.',
+    author: 'Arjun K., Event Manager',
+  },
+  {
+    icon: '🍽️',
+    title: 'Restaurants & Cafés',
+    desc: 'Staff uniforms, branded polos, and apron-friendly tees that look professional and last through daily wear.',
+    customers: '150+ outlets',
+    quote: 'Our staff wears these daily and they hold up beautifully even after months of washing. Perfect fit for the team.',
+    author: 'Neha M., Restaurant Owner',
+  },
+  {
+    icon: '💪',
+    title: 'Gyms & Fitness Studios',
+    desc: 'Moisture-friendly cotton tees, trainer polos, and gym merch that performs as hard as your members do.',
+    customers: '100+ gyms',
+    quote: 'The cotton breathes so well during workouts. We sell branded tees to our members and they sell out fast.',
+    author: 'Rahul V., Gym Owner',
+  },
+  {
+    icon: '🏢',
+    title: 'Corporate & Startups',
+    desc: 'Team uniforms, onboarding kits, swag for retreats, and branded merch that builds company culture.',
+    customers: '300+ companies',
+    quote: 'We use Coded Clothing for all our company swag. The customization tools make reordering effortless.',
+    author: 'Dev K., Startup Founder',
+  },
+  {
+    icon: '⚽',
+    title: 'Sports Clubs & Teams',
+    desc: 'Jersey-style tees, team hoodies, supporter merchandise, and tournament apparel — built for the love of the game.',
+    customers: '80+ clubs',
+    quote: 'Our cricket league ordered custom jerseys for 12 teams. The colors were spot-on and delivery was lightning fast.',
+    author: 'Vikram P., League Organizer',
+  },
+  {
+    icon: '🎵',
+    title: 'Bands & Communities',
+    desc: 'Merch drops, fan club tees, community hoodies, and limited-edition runs for creators and artists.',
+    customers: '120+ creators',
+    quote: 'As an indie band, merch is everything. The print quality is insane — our fans collect every drop.',
+    author: 'Sneha A., Independent Artist',
+  },
+  {
+    icon: '🏥',
+    title: 'NGOs & Social Causes',
+    desc: 'Awareness campaigns, charity runs, volunteer tees, and cause-driven merchandise that spreads the message.',
+    customers: '60+ NGOs',
+    quote: 'Our awareness run had 2,000 participants — every tee was delivered on time with perfect prints.',
+    author: 'Meera J., NGO Director',
+  },
 ];
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -123,88 +181,97 @@ function FloatingWords() {
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 /**
- * TestimonialsSection — Auto-advancing testimonial carousel with manual controls.
+ * HappyCustomersSection — Category-based showcase of who uses custom apparel.
+ * Shows customer segments (schools, gyms, events, etc.) with quotes and stats.
  */
-function TestimonialsSection() {
+function HappyCustomersSection() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const testimonial = TESTIMONIALS[activeIndex];
+  const active = CUSTOMER_CATEGORIES[activeIndex];
 
   return (
     <RevealOnScroll direction="up" className="mt-32 mb-16">
-      <section className="text-center max-w-4xl mx-auto px-8 relative">
-        <motion.span
-          initial={{ opacity: 0, scale: 0 }}
-          whileInView={{ opacity: 0.1, scale: 1 }}
-          viewport={{ once: true }}
-          className="absolute -top-8 left-10 text-[10rem] font-display text-gold-400 leading-none select-none"
-        >
-          &ldquo;
-        </motion.span>
-
-        <span className="text-xs font-black text-gold-600 uppercase tracking-[0.5em] block mb-6">Testimonials</span>
-
-        <div className="relative min-h-[220px] md:min-h-[200px]">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeIndex}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5, ease: EASE_LUXURY }}
-            >
-              <blockquote className="text-xl md:text-3xl font-bold text-obsidian-900 tracking-tight leading-tight mb-8">
-                &ldquo;{testimonial.quote}&rdquo;
-              </blockquote>
-              <div className="flex items-center justify-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-gold-500/30">
-                  {testimonial.initials}
-                </div>
-                <div className="text-left">
-                  <p className="text-sm font-bold text-obsidian-900">{testimonial.name}</p>
-                  <p className="text-xs text-obsidian-400">{testimonial.role}</p>
-                </div>
-              </div>
-              <div className="flex items-center justify-center gap-1 mt-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} className={`text-lg ${i < testimonial.stars ? 'text-gold-500' : 'text-obsidian-200'}`}>★</span>
-                ))}
-              </div>
-            </motion.div>
-          </AnimatePresence>
+      <section className="max-w-5xl mx-auto px-6 relative">
+        <div className="text-center mb-12">
+          <span className="text-xs font-black text-gold-600 uppercase tracking-[0.5em] block mb-4">Trusted By</span>
+          <h2 className="text-3xl md:text-5xl font-black text-obsidian-900 tracking-tighter">
+            Who Wears <span className="gradient-text-gold">Coded Clothing</span>?
+          </h2>
+          <p className="text-sm text-obsidian-400 mt-4 max-w-lg mx-auto leading-relaxed">
+            From college fests to corporate retreats — thousands of teams and organizations trust us for their custom apparel.
+          </p>
         </div>
 
+        {/* Category Tabs */}
+        <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-10">
+          {CUSTOMER_CATEGORIES.map((cat, i) => (
+            <button
+              key={cat.title}
+              onClick={() => setActiveIndex(i)}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${
+                i === activeIndex
+                  ? 'bg-obsidian-900 text-white shadow-luxury'
+                  : 'bg-white border border-obsidian-100 text-obsidian-400 hover:border-gold-300 hover:text-gold-600'
+              }`}
+            >
+              <span>{cat.icon}</span>
+              <span className="hidden sm:inline">{cat.title}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Active Category Detail */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeIndex}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, ease: EASE_LUXURY }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
+          >
+            {/* Info Card */}
+            <div className="p-8 md:p-10 rounded-[2rem] bg-white border border-obsidian-100/50 shadow-luxury relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-gold-100/20 to-transparent rounded-bl-full pointer-events-none" />
+              <span className="text-5xl block mb-5">{active.icon}</span>
+              <h3 className="text-2xl font-black text-obsidian-900 tracking-tight mb-3">{active.title}</h3>
+              <p className="text-sm text-obsidian-400 leading-relaxed mb-6">{active.desc}</p>
+              <div className="flex items-center gap-2 px-4 py-2.5 bg-gold-50 rounded-xl w-fit">
+                <span className="text-xs font-black text-gold-700 uppercase tracking-wider">{active.customers}</span>
+                <span className="text-xs text-gold-500">served</span>
+              </div>
+            </div>
+
+            {/* Quote Card */}
+            <div className="p-8 md:p-10 rounded-[2rem] bg-obsidian-950 relative overflow-hidden">
+              <div className="absolute top-4 left-6 text-[6rem] font-display text-gold-500/10 leading-none select-none">&ldquo;</div>
+              <div className="absolute bottom-0 right-0 w-[200px] h-[200px] bg-gradient-radial from-gold-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+              <blockquote className="relative z-10 text-lg md:text-xl font-bold text-white leading-relaxed mb-6 mt-4">
+                &ldquo;{active.quote}&rdquo;
+              </blockquote>
+              <div className="relative z-10 flex items-center gap-1 mb-2">
+                {[1,2,3,4,5].map((s) => (
+                  <span key={s} className="text-gold-500 text-sm">★</span>
+                ))}
+              </div>
+              <p className="relative z-10 text-sm font-bold text-gold-400">{active.author}</p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
         {/* Navigation dots */}
-        <div className="flex items-center justify-center gap-3 mt-8">
-          {TESTIMONIALS.map((_, i) => (
+        <div className="flex items-center justify-center gap-2 mt-8">
+          {CUSTOMER_CATEGORIES.map((_, i) => (
             <button
               key={i}
               onClick={() => setActiveIndex(i)}
-              aria-label={`View testimonial ${i + 1}`}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+              aria-label={`View ${CUSTOMER_CATEGORIES[i].title}`}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 i === activeIndex
-                  ? 'bg-gold-500 scale-125 shadow-lg shadow-gold-500/30'
+                  ? 'bg-gold-500 w-6 rounded-full'
                   : 'bg-obsidian-200 hover:bg-obsidian-300'
               }`}
             />
           ))}
-        </div>
-
-        {/* Prev/Next arrows */}
-        <div className="flex items-center justify-center gap-4 mt-4">
-          <button
-            onClick={() => setActiveIndex((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}
-            aria-label="Previous testimonial"
-            className="w-10 h-10 rounded-full border border-obsidian-100 flex items-center justify-center text-obsidian-400 hover:border-gold-400 hover:text-gold-600 transition-all"
-          >
-            ←
-          </button>
-          <button
-            onClick={() => setActiveIndex((prev) => (prev + 1) % TESTIMONIALS.length)}
-            aria-label="Next testimonial"
-            className="w-10 h-10 rounded-full border border-obsidian-100 flex items-center justify-center text-obsidian-400 hover:border-gold-400 hover:text-gold-600 transition-all"
-          >
-            →
-          </button>
         </div>
       </section>
     </RevealOnScroll>
@@ -242,7 +309,7 @@ function NewsletterSection() {
             Join the <span className="gradient-text-gold">Inner Circle</span>
           </h2>
           <p className="text-sm text-obsidian-400 mb-8 leading-relaxed">
-            Be the first to know about new drops, exclusive designs, and members-only offers.
+            Be the first to know about new drops, exclusive designs, and members-only offers via WhatsApp.
           </p>
 
           {subscribed ? (
@@ -275,7 +342,7 @@ function NewsletterSection() {
             </form>
           )}
 
-          <p className="text-2xs text-obsidian-300 mt-4">No spam, ever. Unsubscribe anytime.</p>
+          <p className="text-2xs text-obsidian-300 mt-4">You&rsquo;ll be redirected to WhatsApp to confirm. No spam, ever.</p>
         </div>
       </section>
     </RevealOnScroll>
@@ -641,9 +708,9 @@ export default function CollectionPage() {
       </RevealOnScroll>
 
       {/* ════════════════════════════════════════════════════════════════════════
-          TESTIMONIALS — Social proof carousel
+          HAPPY CUSTOMERS — Category-based social proof
          ════════════════════════════════════════════════════════════════════════ */}
-      <TestimonialsSection />
+      <HappyCustomersSection />
 
       {/* ════════════════════════════════════════════════════════════════════════
           NEWSLETTER — Email capture

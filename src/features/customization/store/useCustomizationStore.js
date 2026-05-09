@@ -239,6 +239,12 @@ const useCustomizationStore = create(
     {
       name: 'coded-clothing-customization-storage', // unique name for localStorage key
       storage: createJSONStorage(() => localStorage),
+      // Only persist view preference and product ID — never persist uploaded logos
+      // or undo/redo history to avoid leaking user uploads across sessions
+      partialize: (state) => ({
+        activeView: state.activeView,
+        productId: state.productId,
+      }),
     }
   )
 );
