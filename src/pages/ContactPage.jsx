@@ -12,7 +12,7 @@ const EASE_LUXURY = [0.16, 1, 0.3, 1];
 const CONTACT_METHODS = [
   { icon: '✉', label: 'Email', value: 'hello@codedclothing.com', href: 'mailto:hello@codedclothing.com' },
   { icon: '◈', label: 'WhatsApp', value: 'Chat with us', href: `https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER || ''}` },
-  { icon: '◇', label: 'Instagram', value: '@codedclothing', href: 'https://instagram.com/codedclothing' },
+  { icon: '◇', label: 'Instagram', value: '@coded_clothing__', href: 'https://www.instagram.com/coded_clothing__?igsh=MTYxeHl1b2thYXYzZw==' },
 ];
 
 export default function ContactPage() {

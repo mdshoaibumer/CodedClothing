@@ -19,6 +19,7 @@ import CursorFollower from './components/effects/CursorFollower';
 import AuroraBackground from './components/effects/AuroraBackground';
 import SplashScreen from './components/effects/SplashScreen';
 import SmoothScroll from './components/effects/SmoothScroll';
+import ScrollToTop from './components/effects/ScrollToTop';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import CookieConsent from './components/ui/CookieConsent';
@@ -171,6 +172,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        <ScrollToTop />
         <SmoothScroll>
           {/* Skip to main content — WCAG 2.1 AA */}
           <a
