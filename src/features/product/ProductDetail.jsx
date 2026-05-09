@@ -191,14 +191,16 @@ export default function ProductDetail() {
         </div>
 
         {/* Thumbnail Switcher */}
-        <div className="grid grid-cols-3 gap-3">
-          {Object.entries(product.views || {}).map(([key, url]) => (
+        <div className="flex justify-center gap-3">
+          {Object.entries(product.views || {})
+            .filter(([key]) => key !== 'both')
+            .map(([key, url]) => (
             <motion.button
               key={key}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => setActiveView(key)}
-              className={`relative aspect-square rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
+              className={`relative aspect-square w-20 md:w-24 rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
                 activeView === key 
                   ? 'border-obsidian-900 bg-white shadow-luxury ring-4 ring-gold-500/10' 
                   : 'border-obsidian-100 bg-obsidian-50 hover:border-obsidian-300'

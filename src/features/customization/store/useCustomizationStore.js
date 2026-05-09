@@ -70,9 +70,12 @@ const useCustomizationStore = create(
 
       /**
        * Updates the currently active view of the T-shirt.
-       * @param {'front' | 'back'} view
+       * @param {'front' | 'back' | 'both'} view
        */
-      setActiveView: (view) => set({ activeView: view }),
+      setActiveView: (view) => 
+        set((state) => ({ 
+          activeView: (view === 'front' || view === 'back' || view === 'both') ? view : 'front' 
+        })),
 
       /**
        * Sets the logo URL for a specific view.

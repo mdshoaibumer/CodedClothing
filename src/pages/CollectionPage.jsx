@@ -38,7 +38,7 @@ const EASE_LUXURY = [0.16, 1, 0.3, 1];
 /** Hero statistics displayed below the headline */
 const HERO_STATS = [
   { value: 100, suffix: '%', label: 'Premium Fabric' },
-  { value: 7, suffix: '', label: 'Product Categories' },
+  { value: 1, suffix: '', label: 'Product Category' },
   { value: 50000, suffix: '+', label: 'Designs Created', prefix: '' },
 ];
 

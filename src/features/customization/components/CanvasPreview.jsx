@@ -139,13 +139,15 @@ export default function CanvasPreview({ product }) {
     const view = useCustomizationStore.getState().activeView;
     const side = view === 'both' ? 'front' : view;
     const d = currentDesign[side];
-    setStatusMessage(`Logo ${side}: position ${Math.round(d.x)}%, ${Math.round(d.y)}%, scale ${Math.round(d.scale * 100)}%, rotation ${Math.round(d.rotation)}°`);
+    if (d) {
+      setStatusMessage(`Logo ${side}: position ${Math.round(d.x)}%, ${Math.round(d.y)}%, scale ${Math.round(d.scale * 100)}%, rotation ${Math.round(d.rotation)}°`);
+    }
   }, [saveToHistory]);
 
   // Compute snap guides from current position
   const computeGuides = useCallback((viewKey) => {
     const d = design[viewKey];
-    if (!d.logo) return { horizontal: false, vertical: false, edges: [] };
+    if (!d || !d.logo) return { horizontal: false, vertical: false, edges: [] };
     const SNAP_THRESHOLD = 2;
     const horizontal = Math.abs(d.y) < SNAP_THRESHOLD;
     const vertical = Math.abs(d.x) < SNAP_THRESHOLD;
@@ -215,11 +217,11 @@ export default function CanvasPreview({ product }) {
             <TShirtCanvas
               key={viewKey}
               image={product.views?.[viewKey] || product.image}
-              logo={design[viewKey].logo}
-              scale={design[viewKey].scale}
-              x={design[viewKey].x}
-              y={design[viewKey].y}
-              rotation={design[viewKey].rotation}
+              logo={design[viewKey]?.logo}
+              scale={design[viewKey]?.scale || 1}
+              x={design[viewKey]?.x || 0}
+              y={design[viewKey]?.y || 0}
+              rotation={design[viewKey]?.rotation || 0}
               showGuides={computeGuides(viewKey)}
               onUpdate={(newX, newY, newScale, newRotation) => {
                 setPosition(viewKey, newX, newY);
