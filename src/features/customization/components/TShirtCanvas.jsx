@@ -18,7 +18,7 @@ import DraggableLogo from './DraggableLogo';
  * @param {string} className - Optional container classes.
  */
 const TShirtCanvas = memo(
-  function TShirtCanvas({ image, logo, scale, x, y, rotation = 0, onUpdate, onInteractionEnd, onRemoveLogo, label, className, showGuides = { horizontal: false, vertical: false, edges: [] } }) {
+  function TShirtCanvas({ image, logo, scale, x, y, onRemoveLogo, label, className, showGuides = { horizontal: false, vertical: false, edges: [] }, activeZone = null }) {
     const [imgError, setImgError] = useState(false);
 
     return (
@@ -53,20 +53,47 @@ const TShirtCanvas = memo(
 
           {/* Design Area Overlay (matches padded area) */}
           <div className="absolute inset-6 md:inset-10 pointer-events-none">
-            {/* Print Safe Area Guide */}
+            {/* Print Safe Area Guide — shows active zone or default print area */}
             <div data-export-ignore className="absolute inset-0">
-              <div
-                className="absolute border-2 border-dashed border-red-300/30 rounded-lg"
-                style={{
-                  left: '15%',
-                  top: '25%',
-                  width: '70%',
-                  height: '50%',
-                }}
-              />
-              <div className="absolute top-[23%] left-1/2 -translate-x-1/2 bg-red-500/80 text-white text-2xs font-black px-2 py-0.5 rounded-full uppercase tracking-widest">
-                Print Area
-              </div>
+              {activeZone ? (
+                <>
+                  {/* Active placement zone boundary */}
+                  <div
+                    className="absolute border-2 border-dashed border-gold-400/50 rounded-lg bg-gold-400/5 transition-all duration-500"
+                    style={{
+                      left: activeZone.boundingBox.left,
+                      top: activeZone.boundingBox.top,
+                      width: activeZone.boundingBox.width,
+                      height: activeZone.boundingBox.height,
+                    }}
+                  />
+                  <div
+                    className="absolute -translate-x-1/2 bg-gold-500/90 text-white text-2xs font-black px-2.5 py-1 rounded-full uppercase tracking-widest shadow-sm whitespace-nowrap transition-all duration-500"
+                    style={{
+                      left: `calc(${activeZone.boundingBox.left} + ${activeZone.boundingBox.width} / 2)`,
+                      top: `calc(${activeZone.boundingBox.top} - 12px)`,
+                    }}
+                  >
+                    {activeZone.icon} {activeZone.label}
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Default full print area */}
+                  <div
+                    className="absolute border-2 border-dashed border-red-300/30 rounded-lg"
+                    style={{
+                      left: '15%',
+                      top: '25%',
+                      width: '70%',
+                      height: '50%',
+                    }}
+                  />
+                  <div className="absolute top-[23%] left-1/2 -translate-x-1/2 bg-red-500/80 text-white text-2xs font-black px-2 py-0.5 rounded-full uppercase tracking-widest">
+                    Print Area
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Advanced Alignment Guide Lines */}
@@ -106,9 +133,6 @@ const TShirtCanvas = memo(
                   scale={scale}
                   x={x}
                   y={y}
-                  rotation={rotation}
-                  onUpdate={onUpdate}
-                  onInteractionEnd={onInteractionEnd}
                 />
               ) : (
                 <div data-export-ignore className="w-full h-full border-2 border-dashed border-obsidian-200/40 rounded-2xl flex flex-col items-center justify-center bg-white/5 backdrop-blur-[2px] pointer-events-none">
@@ -152,10 +176,10 @@ const TShirtCanvas = memo(
       prevProps.scale === nextProps.scale &&
       prevProps.x === nextProps.x &&
       prevProps.y === nextProps.y &&
-      prevProps.rotation === nextProps.rotation &&
       prevProps.label === nextProps.label &&
       prevProps.className === nextProps.className &&
       prevProps.onRemoveLogo === nextProps.onRemoveLogo &&
+      prevProps.activeZone?.id === nextProps.activeZone?.id &&
       prevProps.showGuides?.horizontal === nextProps.showGuides?.horizontal &&
       prevProps.showGuides?.vertical === nextProps.showGuides?.vertical &&
       prevProps.showGuides?.edges?.length === nextProps.showGuides?.edges?.length &&

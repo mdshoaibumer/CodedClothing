@@ -1,205 +1,206 @@
-// NumericControls updated for better both-view editor UX
-import { useState, useEffect } from 'react';
-import useCustomizationStore from '../store/useCustomizationStore';
-import useToastStore from '../../notifications/store/useToastStore';
-
 /**
- * NumericControls Component
- * Provides precise numeric input controls for position, scale, and rotation
- * Now enhanced to work with "both" view for better UX
+ * NumericControls — Vistaprint-style Zone-Locked Controls
+ *
+ * Replaces freeform position/rotation inputs with:
+ * - A size slider (capped by zone's maxScale)
+ * - Nudge buttons (±nudgeRange within zone boundary)
+ * - Center-in-zone button to snap back to zone center
+ * - No rotation controls (screen printing doesn't need it)
  */
-export default function NumericControls() {
-  const { activeView, design, setPosition, setScale, setRotation } = useCustomizationStore();
-  const addToast = useToastStore((state) => state.addToast);
+import { memo } from 'react';
+import { motion } from 'framer-motion';
+import useCustomizationStore from '../store/useCustomizationStore';
+import { getZoneById, SCALE_LIMITS } from '../customization.types';
 
-  // Track which side user is editing when in "both" view
-  const [bothViewEditSide, setBothViewEditSide] = useState('front');
+const NumericControls = memo(function NumericControls() {
+  const { activeView, design, placementZones, setPosition, setScale, saveToHistory } = useCustomizationStore();
 
-  // For "both" view, show controls if either side has a logo
-  const hasFrontLogo = design.front.logo;
-  const hasBackLogo = design.back.logo;
-  const showControls = activeView === 'both' ? (hasFrontLogo || hasBackLogo) : (design[activeView]?.logo);
-
-  // Determine which design values to show/edit
-  const editSide = activeView === 'both' ? bothViewEditSide : activeView;
+  // Determine which side to edit
+  const editSide = activeView === 'both' ? 'front' : activeView;
   const currentDesign = design[editSide];
+  const zoneId = placementZones[editSide];
+  const zone = zoneId ? getZoneById(zoneId) : null;
 
-  const [localValues, setLocalValues] = useState({
-    x: currentDesign?.x || 0,
-    y: currentDesign?.y || 0,
-    scale: currentDesign?.scale || 1,
-    rotation: currentDesign?.rotation || 0,
-  });
+  // Don't show if no logo uploaded
+  if (!currentDesign?.logo) return null;
 
-  // Sync from store when values change externally (via drag, undo/redo, etc.)
-  useEffect(() => {
-    const newValues = {
-      x: currentDesign?.x || 0,
-      y: currentDesign?.y || 0,
-      scale: currentDesign?.scale || 1,
-      rotation: currentDesign?.rotation || 0,
-    };
-    setLocalValues((prev) => {
-      if (
-        prev.x === newValues.x &&
-        prev.y === newValues.y &&
-        prev.scale === newValues.scale &&
-        prev.rotation === newValues.rotation
-      ) {
-        return prev;
-      }
-      return newValues;
-    });
-  }, [editSide, currentDesign?.x, currentDesign?.y, currentDesign?.scale, currentDesign?.rotation]);
+  // Scale limits based on zone
+  const minScale = SCALE_LIMITS.MIN;
+  const maxScale = zone?.maxScale || SCALE_LIMITS.MAX;
+  const nudgeStep = 2; // Each nudge moves 2%
 
-  const handlePositionChange = (axis, value) => {
-    const numValue = parseFloat(value) || 0;
-    const clampedValue = Math.max(-80, Math.min(80, numValue));
-
-    setLocalValues(prev => ({ ...prev, [axis]: clampedValue }));
-    setPosition(editSide, axis === 'x' ? clampedValue : currentDesign.x, axis === 'y' ? clampedValue : currentDesign.y);
+  const handleNudge = (dx, dy) => {
+    saveToHistory();
+    setPosition(editSide, currentDesign.x + dx, currentDesign.y + dy);
   };
 
   const handleScaleChange = (value) => {
-    const numValue = parseFloat(value) || 1;
-    const clampedValue = Math.max(0.1, Math.min(2.0, numValue));
-
-    setLocalValues(prev => ({ ...prev, scale: clampedValue }));
-    setScale(editSide, clampedValue);
+    setScale(editSide, parseFloat(value));
   };
 
-  const handleRotationChange = (value) => {
-    const numValue = parseFloat(value) || 0;
-    const normalizedValue = ((numValue % 360) + 360) % 360;
-
-    setLocalValues(prev => ({ ...prev, rotation: normalizedValue }));
-    setRotation(editSide, normalizedValue);
+  const handleCenterInZone = () => {
+    if (!zone) return;
+    saveToHistory();
+    setPosition(editSide, zone.x, zone.y);
+    setScale(editSide, zone.scale);
   };
 
-  const resetToDefaults = () => {
-    if (activeView === 'both') {
-      // Reset both sides
-      setPosition('front', 0, 0);
-      setScale('front', 1);
-      setRotation('front', 0);
-      setPosition('back', 0, 0);
-      setScale('back', 1);
-      setRotation('back', 0);
-      addToast('Both sides reset to defaults!', 'success');
-    } else {
-      setLocalValues({ x: 0, y: 0, scale: 1, rotation: 0 });
-      setPosition(editSide, 0, 0);
-      setScale(editSide, 1);
-      setRotation(editSide, 0);
-      addToast('Reset to defaults!', 'success');
-    }
-  };
-
-  if (!showControls) {
-    return null;
-  }
+  // Calculate how much the logo has been nudged from zone center
+  const nudgeOffsetX = zone ? Math.round(currentDesign.x - zone.x) : 0;
+  const nudgeOffsetY = zone ? Math.round(currentDesign.y - zone.y) : 0;
+  const isAtCenter = nudgeOffsetX === 0 && nudgeOffsetY === 0;
 
   return (
-    <div className="bg-gradient-to-br from-gold-50 to-gold-100/30 p-6 md:p-8 rounded-4xl border border-gold-200/50 space-y-4">
-      <h4 className="text-xs md:text-xs font-black text-obsidian-900 mb-3 md:mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-gold-500" />
-        Precision Controls {activeView === 'both' ? `(${editSide})` : `(${activeView})`}
-      </h4>
+    <div className="bg-white p-5 md:p-6 rounded-4xl shadow-luxury border border-obsidian-50 relative overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-[9px] md:text-xs font-black text-obsidian-900 uppercase tracking-[0.2em] flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-gold-500" />
+          Size & Position
+        </h3>
+        {zone && (
+          <span className="text-[9px] font-bold text-gold-600 uppercase tracking-widest bg-gold-50 px-2 py-1 rounded-md">
+            {zone.label}
+          </span>
+        )}
+      </div>
 
-      {activeView === 'both' && (
-        <div className="flex gap-2 p-2 bg-white/50 rounded-lg">
-          <button
-            onClick={() => setBothViewEditSide('front')}
-            className={`flex-1 px-3 py-2 text-xs font-black uppercase tracking-widest rounded-md transition-all ${
-              bothViewEditSide === 'front'
-                ? 'bg-obsidian-900 text-gold-400'
-                : 'bg-white border-2 border-gold-200 text-obsidian-700 hover:border-gold-500'
-            }`}
-          >
-            Front
-          </button>
-          <button
-            onClick={() => setBothViewEditSide('back')}
-            className={`flex-1 px-3 py-2 text-xs font-black uppercase tracking-widest rounded-md transition-all ${
-              bothViewEditSide === 'back'
-                ? 'bg-obsidian-900 text-gold-400'
-                : 'bg-white border-2 border-gold-200 text-obsidian-700 hover:border-gold-500'
-            }`}
-          >
-            Back
-          </button>
+      {/* Size Slider */}
+      <div className="space-y-3 mb-6">
+        <div className="flex items-center justify-between">
+          <label className="text-[10px] font-black text-obsidian-600 uppercase tracking-widest">
+            Logo Size
+          </label>
+          <span className="text-[10px] font-black text-obsidian-900 bg-obsidian-50 px-2.5 py-1 rounded-lg">
+            {Math.round(currentDesign.scale * 100)}%
+          </span>
         </div>
-      )}
-
-      <div className="grid grid-cols-2 gap-3 md:gap-4">
-        {/* Position X */}
-        <div className="space-y-2">
-          <label htmlFor="ctrl-pos-x" className="text-2xs font-black text-obsidian-600 uppercase tracking-widest">X Position</label>
-          <input
-            id="ctrl-pos-x"
-            type="number"
-            value={Math.round(localValues.x)}
-            onChange={(e) => handlePositionChange('x', e.target.value)}
-            min="-80"
-            max="80"
-            step="1"
-            className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-gold-200 rounded-lg focus:border-gold-500 focus:outline-none transition-colors"
-          />
-        </div>
-
-        {/* Position Y */}
-        <div className="space-y-2">
-          <label htmlFor="ctrl-pos-y" className="text-2xs font-black text-obsidian-600 uppercase tracking-widest">Y Position</label>
-          <input
-            id="ctrl-pos-y"
-            type="number"
-            value={Math.round(localValues.y)}
-            onChange={(e) => handlePositionChange('y', e.target.value)}
-            min="-80"
-            max="80"
-            step="1"
-            className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-gold-200 rounded-lg focus:border-gold-500 focus:outline-none transition-colors"
-          />
-        </div>
-
-        {/* Scale */}
-        <div className="space-y-2">
-          <label htmlFor="ctrl-scale" className="text-2xs font-black text-obsidian-600 uppercase tracking-widest">Scale (%)</label>
-          <input
-            id="ctrl-scale"
-            type="number"
-            value={Math.round(localValues.scale * 100)}
-            onChange={(e) => handleScaleChange(e.target.value / 100)}
-            min="10"
-            max="200"
-            step="1"
-            className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-gold-200 rounded-lg focus:border-gold-500 focus:outline-none transition-colors"
-          />
-        </div>
-
-        {/* Rotation */}
-        <div className="space-y-2">
-          <label htmlFor="ctrl-rotation" className="text-2xs font-black text-obsidian-600 uppercase tracking-widest">Rotation (°)</label>
-          <input
-            id="ctrl-rotation"
-            type="number"
-            value={Math.round(localValues.rotation)}
-            onChange={(e) => handleRotationChange(e.target.value)}
-            min="0"
-            max="359"
-            step="15"
-            className="w-full px-3 py-2 text-xs font-bold bg-white border-2 border-gold-200 rounded-lg focus:border-gold-500 focus:outline-none transition-colors"
-          />
+        <input
+          type="range"
+          min={minScale}
+          max={maxScale}
+          step="0.01"
+          value={currentDesign.scale}
+          onChange={(e) => handleScaleChange(e.target.value)}
+          className="w-full h-2 bg-obsidian-100 rounded-full appearance-none cursor-pointer accent-gold-500
+            [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 
+            [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gold-500 [&::-webkit-slider-thumb]:shadow-md
+            [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white
+            [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:transition-transform
+            [&::-webkit-slider-thumb]:hover:scale-125"
+        />
+        <div className="flex justify-between">
+          <span className="text-[9px] font-bold text-obsidian-400 uppercase">Small</span>
+          {zone && (
+            <span className="text-[9px] font-bold text-gold-500 uppercase">Max: {Math.round(maxScale * 100)}%</span>
+          )}
+          <span className="text-[9px] font-bold text-obsidian-400 uppercase">Large</span>
         </div>
       </div>
 
-      {/* Reset Button */}
-      <button
-        onClick={resetToDefaults}
-        className="w-full px-4 py-2 bg-white border-2 border-gold-200 text-xs font-black uppercase tracking-widest text-obsidian-700 hover:border-gold-500 hover:bg-gold-50 transition-all rounded-lg"
-      >
-        🔄 Reset to Center
-      </button>
+      {/* Nudge Controls */}
+      {zone && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-[10px] font-black text-obsidian-600 uppercase tracking-widest">
+              Fine-Tune Position
+            </label>
+            {!isAtCenter && (
+              <span className="text-[9px] font-medium text-obsidian-400">
+                offset: {nudgeOffsetX > 0 ? '+' : ''}{nudgeOffsetX}, {nudgeOffsetY > 0 ? '+' : ''}{nudgeOffsetY}
+              </span>
+            )}
+          </div>
+
+          {/* D-pad nudge controls */}
+          <div className="flex items-center justify-center">
+            <div className="grid grid-cols-3 gap-1 w-fit">
+              {/* Top row */}
+              <div />
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleNudge(0, -nudgeStep)}
+                className="w-10 h-10 rounded-xl bg-obsidian-50 border border-obsidian-100 flex items-center justify-center text-obsidian-500 hover:bg-gold-50 hover:border-gold-300 hover:text-gold-600 transition-all"
+                aria-label="Nudge up"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="18 15 12 9 6 15" />
+                </svg>
+              </motion.button>
+              <div />
+
+              {/* Middle row */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleNudge(-nudgeStep, 0)}
+                className="w-10 h-10 rounded-xl bg-obsidian-50 border border-obsidian-100 flex items-center justify-center text-obsidian-500 hover:bg-gold-50 hover:border-gold-300 hover:text-gold-600 transition-all"
+                aria-label="Nudge left"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleCenterInZone}
+                disabled={isAtCenter}
+                className="w-10 h-10 rounded-xl bg-gold-50 border border-gold-200 flex items-center justify-center text-gold-600 hover:bg-gold-100 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                aria-label="Center in zone"
+                title="Reset to zone center"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+                </svg>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleNudge(nudgeStep, 0)}
+                className="w-10 h-10 rounded-xl bg-obsidian-50 border border-obsidian-100 flex items-center justify-center text-obsidian-500 hover:bg-gold-50 hover:border-gold-300 hover:text-gold-600 transition-all"
+                aria-label="Nudge right"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </motion.button>
+
+              {/* Bottom row */}
+              <div />
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleNudge(0, nudgeStep)}
+                className="w-10 h-10 rounded-xl bg-obsidian-50 border border-obsidian-100 flex items-center justify-center text-obsidian-500 hover:bg-gold-50 hover:border-gold-300 hover:text-gold-600 transition-all"
+                aria-label="Nudge down"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </motion.button>
+              <div />
+            </div>
+          </div>
+
+          <p className="text-[9px] text-obsidian-400 text-center font-medium mt-2">
+            Fine-tune within ±{zone.nudgeRange}% of zone center
+          </p>
+        </div>
+      )}
+
+      {/* No zone selected — show helpful message */}
+      {!zone && currentDesign?.logo && (
+        <div className="p-3 bg-amber-50 rounded-xl border border-amber-200/50 mt-2">
+          <p className="text-[10px] text-amber-700 font-medium text-center">
+            ⚠️ Select a placement zone above to lock your logo's position
+          </p>
+        </div>
+      )}
     </div>
   );
-}
+});
+
+export default NumericControls;

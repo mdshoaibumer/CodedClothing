@@ -1,11 +1,14 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { SCALE_LIMITS, POSITION_LIMITS } from '../customization.types';
+import { SCALE_LIMITS, POSITION_LIMITS, PLACEMENT_ZONES, getZoneById } from '../customization.types';
 
 /**
- * Customization Store
- * Manages the state of T-shirt customization including active view,
- * logo uploads, and scaling, with local storage persistence.
+ * Customization Store — Vistaprint-style Zone-Locked Editor
+ * 
+ * When a placement zone is active, logo position is LOCKED to the zone's
+ * predefined coordinates with only ±nudgeRange% adjustment allowed.
+ * Scale is capped by the zone's maxScale value.
+ * Rotation is removed entirely (screen printing doesn't need it).
  */
 
 // Bounds checking constants (from shared types)
@@ -14,12 +17,35 @@ const POSITION_MAX = POSITION_LIMITS.MAX;
 const SCALE_MIN = SCALE_LIMITS.MIN;
 const SCALE_MAX = SCALE_LIMITS.MAX;
 
+/**
+ * Clamp a value within a zone's nudge range around the zone's center coordinate.
+ * If no zone is active, falls back to global position limits.
+ */
+function clampToZone(value, zoneCenter, nudgeRange) {
+  const min = zoneCenter - nudgeRange;
+  const max = zoneCenter + nudgeRange;
+  return Math.max(min, Math.min(max, value));
+}
+
+/**
+ * Get the effective scale limits for the current zone (or global defaults).
+ */
+function getScaleLimits(zone) {
+  if (!zone) return { min: SCALE_MIN, max: SCALE_MAX };
+  return { min: SCALE_MIN, max: zone.maxScale || SCALE_MAX };
+}
+
 // Maximum history entries to prevent unbounded localStorage growth
 const MAX_HISTORY = 50;
 
 const INITIAL_DESIGN = {
-  front: { logo: null, scale: 1, x: 0, y: 0, rotation: 0 },
-  back: { logo: null, scale: 1, x: 0, y: 0, rotation: 0 },
+  front: { logo: null, scale: 1, x: 0, y: 0 },
+  back: { logo: null, scale: 1, x: 0, y: 0 },
+};
+
+const INITIAL_PLACEMENT = {
+  front: null, // placement zone ID or null for free-form
+  back: null,
 };
 
 const useCustomizationStore = create(
@@ -28,20 +54,19 @@ const useCustomizationStore = create(
       // --- State ---
       activeView: 'front',
       productId: null, // Track which product the design belongs to
+      placementZones: { front: null, back: null }, // Active placement zone IDs
       design: {
         front: {
           logo: null,
           scale: 1,
           x: 0,
           y: 0,
-          rotation: 0,
         },
         back: {
           logo: null,
           scale: 1,
           x: 0,
           y: 0,
-          rotation: 0,
         },
       },
 
@@ -63,6 +88,7 @@ const useCustomizationStore = create(
           return {
             productId: id,
             activeView: 'front',
+            placementZones: { ...INITIAL_PLACEMENT },
             design: { ...INITIAL_DESIGN },
             history: { past: [], future: [] },
           };
@@ -94,54 +120,62 @@ const useCustomizationStore = create(
         })),
 
       /**
-       * Updates the position coordinates for a specific view's logo with bounds checking.
+       * Updates the position coordinates for a specific view's logo.
+       * When a zone is active, movement is constrained to ±nudgeRange around zone center.
        * @param {'front' | 'back'} view
        * @param {number} x - Horizontal offset.
        * @param {number} y - Vertical offset.
        */
       setPosition: (view, x, y) =>
-        set((state) => ({
-          design: {
-            ...state.design,
-            [view]: {
-              ...state.design[view],
-              x: Math.max(POSITION_MIN, Math.min(POSITION_MAX, x)),
-              y: Math.max(POSITION_MIN, Math.min(POSITION_MAX, y)),
+        set((state) => {
+          const zoneId = state.placementZones[view];
+          const zone = zoneId ? getZoneById(zoneId) : null;
+
+          let clampedX, clampedY;
+          if (zone) {
+            // Zone-locked: only allow nudge within zone boundary
+            clampedX = clampToZone(x, zone.x, zone.nudgeRange);
+            clampedY = clampToZone(y, zone.y, zone.nudgeRange);
+          } else {
+            // Free-form: use global limits
+            clampedX = Math.max(POSITION_MIN, Math.min(POSITION_MAX, x));
+            clampedY = Math.max(POSITION_MIN, Math.min(POSITION_MAX, y));
+          }
+
+          return {
+            design: {
+              ...state.design,
+              [view]: {
+                ...state.design[view],
+                x: clampedX,
+                y: clampedY,
+              },
             },
-          },
-        })),
+          };
+        }),
 
       /**
-       * Updates the scale value for a specific view's logo with bounds checking.
+       * Updates the scale value for a specific view's logo.
+       * When a zone is active, scale is capped by the zone's maxScale.
        * @param {'front' | 'back'} view
-       * @param {number} value - Scale multiplier (e.g., 0.5 to 2.0).
+       * @param {number} value - Scale multiplier.
        */
       setScale: (view, value) =>
-        set((state) => ({
-          design: {
-            ...state.design,
-            [view]: {
-              ...state.design[view],
-              scale: Math.max(SCALE_MIN, Math.min(SCALE_MAX, value)),
-            },
-          },
-        })),
+        set((state) => {
+          const zoneId = state.placementZones[view];
+          const zone = zoneId ? getZoneById(zoneId) : null;
+          const { min, max } = getScaleLimits(zone);
 
-      /**
-       * Updates the rotation value for a specific view's logo.
-       * @param {'front' | 'back'} view
-       * @param {number} value - Rotation angle in degrees (0-360).
-       */
-      setRotation: (view, value) =>
-        set((state) => ({
-          design: {
-            ...state.design,
-            [view]: {
-              ...state.design[view],
-              rotation: ((value % 360) + 360) % 360, // Normalize to 0-360
+          return {
+            design: {
+              ...state.design,
+              [view]: {
+                ...state.design[view],
+                scale: Math.max(min, Math.min(max, value)),
+              },
             },
-          },
-        })),
+          };
+        }),
 
       /**
        * Resets the entire design to initial state.
@@ -149,6 +183,7 @@ const useCustomizationStore = create(
       resetDesign: () =>
         set({
           activeView: 'front',
+          placementZones: { ...INITIAL_PLACEMENT },
           design: { ...INITIAL_DESIGN },
           history: { past: [], future: [] },
         }),
@@ -167,6 +202,40 @@ const useCustomizationStore = create(
               y: 0,
             },
           },
+        })),
+
+      /**
+       * Applies a predefined placement zone — snaps logo to the zone's position and scale.
+       * Logo becomes LOCKED to this zone until cleared.
+       * @param {string} zoneId - Placement zone ID (e.g., 'left-chest', 'full-front')
+       */
+      applyPlacementZone: (zoneId) =>
+        set((state) => {
+          const zone = getZoneById(zoneId);
+          if (!zone) return state;
+          const { side, x, y, scale } = zone;
+          return {
+            activeView: side,
+            placementZones: { ...state.placementZones, [side]: zoneId },
+            design: {
+              ...state.design,
+              [side]: {
+                ...state.design[side],
+                x,
+                y,
+                scale,
+              },
+            },
+          };
+        }),
+
+      /**
+       * Clears the placement zone for a side (switches to free-form mode).
+       * @param {'front' | 'back'} side
+       */
+      clearPlacementZone: (side) =>
+        set((state) => ({
+          placementZones: { ...state.placementZones, [side]: null },
         })),
 
       /**

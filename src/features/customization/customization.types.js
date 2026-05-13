@@ -60,11 +60,30 @@ export const POSITION_LIMITS = {
   DEFAULT: 0
 };
 
-// Rotation limits
+// Rotation removed — screen printing doesn't need it
+// Kept as zero-value constant for backward compat if needed
 export const ROTATION_LIMITS = {
   MIN: 0,
-  MAX: 360,
+  MAX: 0,
   DEFAULT: 0
+};
+
+// DPI constants for print quality validation
+export const DPI_REQUIREMENTS = {
+  MIN_ACCEPTABLE: 150, // Minimum for acceptable print
+  RECOMMENDED: 300,    // Recommended for crisp output
+  // Zone print sizes in inches (used to calculate required pixels)
+  ZONE_PRINT_SIZES: {
+    'left-chest': { width: 4, height: 4 },
+    'right-chest': { width: 4, height: 4 },
+    'center-chest': { width: 8, height: 8 },
+    'full-front': { width: 12, height: 14 },
+    'lower-front': { width: 8, height: 6 },
+    'upper-back': { width: 10, height: 5 },
+    'center-back': { width: 10, height: 8 },
+    'full-back': { width: 12, height: 14 },
+    'lower-back': { width: 8, height: 6 },
+  },
 };
 
 // Canvas dimensions (relative)
@@ -78,6 +97,160 @@ export const UPLOAD_LIMITS = {
   MAX_SIZE: 5 * 1024 * 1024, // 5MB
   ALLOWED_TYPES: ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 };
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PLACEMENT ZONES — Vistaprint-style predefined print area zones
+   Each zone defines: position (x,y), scale, and the bounding box on the canvas.
+   Coordinates are percentages relative to the printable area (-80 to 80).
+   boundingBox is CSS percentages for visual overlay on the TShirtCanvas.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/**
+ * @typedef {Object} PlacementZone
+ * @property {string} id - Unique zone identifier
+ * @property {string} label - Display label
+ * @property {string} description - Short description for tooltips
+ * @property {string} icon - Emoji icon
+ * @property {'front'|'back'} side - Which side of the shirt
+ * @property {number} x - Default X position (percentage)
+ * @property {number} y - Default Y position (percentage)
+ * @property {number} scale - Default scale for this zone
+ * @property {Object} boundingBox - CSS positioning for visual overlay
+ * @property {string} boundingBox.top - CSS top
+ * @property {string} boundingBox.left - CSS left
+ * @property {string} boundingBox.width - CSS width
+ * @property {string} boundingBox.height - CSS height
+ */
+
+export const PLACEMENT_ZONES = {
+  // ─── FRONT ZONES ───
+  'left-chest': {
+    id: 'left-chest',
+    label: 'Left Chest',
+    description: 'Small logo on the left chest area — perfect for corporate branding',
+    icon: '◈',
+    side: 'front',
+    x: -28,
+    y: -22,
+    scale: 0.35,
+    maxScale: 0.5,
+    nudgeRange: 10,
+    boundingBox: { top: '28%', left: '18%', width: '25%', height: '20%' },
+  },
+  'right-chest': {
+    id: 'right-chest',
+    label: 'Right Chest',
+    description: 'Small logo on the right chest area — great for badges & monograms',
+    icon: '◇',
+    side: 'front',
+    x: 28,
+    y: -22,
+    scale: 0.35,
+    maxScale: 0.5,
+    nudgeRange: 10,
+    boundingBox: { top: '28%', left: '57%', width: '25%', height: '20%' },
+  },
+  'center-chest': {
+    id: 'center-chest',
+    label: 'Center Chest',
+    description: 'Medium design centered on the chest — the classic placement',
+    icon: '⬡',
+    side: 'front',
+    x: 0,
+    y: -15,
+    scale: 0.65,
+    maxScale: 0.85,
+    nudgeRange: 10,
+    boundingBox: { top: '27%', left: '25%', width: '50%', height: '25%' },
+  },
+  'full-front': {
+    id: 'full-front',
+    label: 'Full Front',
+    description: 'Large design covering the entire front — maximum impact',
+    icon: '▣',
+    side: 'front',
+    x: 0,
+    y: 0,
+    scale: 1.0,
+    maxScale: 1.2,
+    nudgeRange: 8,
+    boundingBox: { top: '25%', left: '15%', width: '70%', height: '50%' },
+  },
+  'lower-front': {
+    id: 'lower-front',
+    label: 'Lower Front',
+    description: 'Design placed on the lower front area — streetwear style',
+    icon: '▽',
+    side: 'front',
+    x: 0,
+    y: 20,
+    scale: 0.55,
+    maxScale: 0.75,
+    nudgeRange: 10,
+    boundingBox: { top: '50%', left: '22%', width: '56%', height: '25%' },
+  },
+
+  // ─── BACK ZONES ───
+  'upper-back': {
+    id: 'upper-back',
+    label: 'Upper Back',
+    description: 'Design across the upper back — great for names & numbers',
+    icon: '△',
+    side: 'back',
+    x: 0,
+    y: -25,
+    scale: 0.6,
+    maxScale: 0.8,
+    nudgeRange: 10,
+    boundingBox: { top: '25%', left: '20%', width: '60%', height: '22%' },
+  },
+  'center-back': {
+    id: 'center-back',
+    label: 'Center Back',
+    description: 'Centered on the back — balanced and professional',
+    icon: '⬡',
+    side: 'back',
+    x: 0,
+    y: -5,
+    scale: 0.7,
+    maxScale: 0.9,
+    nudgeRange: 10,
+    boundingBox: { top: '30%', left: '20%', width: '60%', height: '30%' },
+  },
+  'full-back': {
+    id: 'full-back',
+    label: 'Full Back',
+    description: 'Large design covering the entire back — go bold',
+    icon: '▣',
+    side: 'back',
+    x: 0,
+    y: 0,
+    scale: 1.0,
+    maxScale: 1.2,
+    nudgeRange: 8,
+    boundingBox: { top: '25%', left: '15%', width: '70%', height: '50%' },
+  },
+  'lower-back': {
+    id: 'lower-back',
+    label: 'Lower Back',
+    description: 'Design on the lower back area',
+    icon: '▽',
+    side: 'back',
+    x: 0,
+    y: 22,
+    scale: 0.5,
+    maxScale: 0.7,
+    nudgeRange: 10,
+    boundingBox: { top: '52%', left: '25%', width: '50%', height: '22%' },
+  },
+};
+
+/** Get placement zones for a specific side */
+export const getZonesForSide = (side) =>
+  Object.values(PLACEMENT_ZONES).filter((z) => z.side === side);
+
+/** Get a placement zone by ID */
+export const getZoneById = (id) => PLACEMENT_ZONES[id] || null;
 
 // Animation durations
 export const ANIMATION_DURATIONS = {

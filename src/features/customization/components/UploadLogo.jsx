@@ -3,12 +3,13 @@ import useCustomizationStore from '../store/useCustomizationStore';
 import useToastStore from '../../notifications/store/useToastStore';
 import { uploadImage, isCloudinaryConfigured } from '../services/cloudinary';
 import { cn } from '../../../lib/utils';
-import { UPLOAD_LIMITS } from '../customization.types';
+import { UPLOAD_LIMITS, DPI_REQUIREMENTS, getZoneById } from '../customization.types';
 
 /**
  * UploadLogo Component
  * Handles uploading logos via button click or drag-and-drop.
- * Uses shared constants and shows an indeterminate spinner instead of fake progress.
+ * Includes DPI validation that warns users if their image is too low-resolution
+ * for the selected placement zone's print area.
  */
 
 const { MAX_SIZE, ALLOWED_TYPES } = UPLOAD_LIMITS;
@@ -17,12 +18,14 @@ export default function UploadLogo() {
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadTarget, setUploadTarget] = useState('front'); // Used when activeView === 'both'
+  const [dpiWarning, setDpiWarning] = useState(null); // DPI warning message or null
   const fileInputRef = useRef(null);
 
   // Store integration
   const activeView = useCustomizationStore((state) => state.activeView);
   const setLogo = useCustomizationStore((state) => state.setLogo);
   const design = useCustomizationStore((state) => state.design);
+  const placementZones = useCustomizationStore((state) => state.placementZones);
   const setScale = useCustomizationStore((state) => state.setScale);
   const saveToHistory = useCustomizationStore((state) => state.saveToHistory);
 
@@ -32,6 +35,43 @@ export default function UploadLogo() {
   // Determine which side we're uploading to
   const effectiveView = activeView === 'both' ? uploadTarget : activeView;
   const currentDesign = design[effectiveView];
+
+  /**
+   * Check if the image has sufficient resolution for the active zone's print size.
+   * Returns a warning message if DPI is too low, null if acceptable.
+   */
+  const checkDPI = useCallback((imageWidth, imageHeight) => {
+    const zoneId = placementZones[effectiveView];
+    if (!zoneId) return null; // No zone selected, skip check
+
+    const zonePrintSize = DPI_REQUIREMENTS.ZONE_PRINT_SIZES[zoneId];
+    if (!zonePrintSize) return null;
+
+    // Calculate effective DPI for this zone's print size
+    const dpiX = imageWidth / zonePrintSize.width;
+    const dpiY = imageHeight / zonePrintSize.height;
+    const effectiveDPI = Math.min(dpiX, dpiY);
+
+    if (effectiveDPI < DPI_REQUIREMENTS.MIN_ACCEPTABLE) {
+      const requiredWidth = zonePrintSize.width * DPI_REQUIREMENTS.MIN_ACCEPTABLE;
+      const requiredHeight = zonePrintSize.height * DPI_REQUIREMENTS.MIN_ACCEPTABLE;
+      return {
+        level: 'error',
+        dpi: Math.round(effectiveDPI),
+        message: `Low resolution! Your image is ${imageWidth}×${imageHeight}px (${Math.round(effectiveDPI)} DPI). For "${getZoneById(zoneId)?.label}" you need at least ${requiredWidth}×${requiredHeight}px (150 DPI) for acceptable print quality.`,
+      };
+    }
+
+    if (effectiveDPI < DPI_REQUIREMENTS.RECOMMENDED) {
+      return {
+        level: 'warning',
+        dpi: Math.round(effectiveDPI),
+        message: `Your image (${Math.round(effectiveDPI)} DPI) is acceptable but below the recommended 300 DPI for crisp printing. Consider using a higher resolution image.`,
+      };
+    }
+
+    return null; // Good to go
+  }, [effectiveView, placementZones]);
 
   const validateFile = (file) => {
     if (file.size > MAX_SIZE) {
@@ -55,8 +95,23 @@ export default function UploadLogo() {
   const applyLogo = useCallback((url) => {
     saveToHistory(); // Capture state before logo change for undo
     setLogo(effectiveView, url);
+    setDpiWarning(null); // Clear any previous warning
+
+    // Check DPI by loading the image to get its natural dimensions
+    const img = new Image();
+    img.onload = () => {
+      const warning = checkDPI(img.naturalWidth, img.naturalHeight);
+      if (warning) {
+        setDpiWarning(warning);
+        if (warning.level === 'error') {
+          addToast(`⚠️ Low resolution image (${warning.dpi} DPI) — may look pixelated when printed`, 'warning');
+        }
+      }
+    };
+    img.src = url;
+
     addToast(`Logo uploaded to ${effectiveView}!`, 'success');
-  }, [effectiveView, setLogo, addToast, saveToHistory]);
+  }, [effectiveView, setLogo, addToast, saveToHistory, checkDPI]);
 
   const processFile = useCallback(async (file) => {
     if (!file) return;
@@ -195,29 +250,44 @@ export default function UploadLogo() {
 
         {/* File requirements hint */}
         <p className="text-[10px] text-obsidian-500 text-center tracking-wide">
-          PNG, JPG, WebP or GIF — Max 5MB
+          PNG, JPG, WebP or GIF — Max 5MB — Use high-res for best print quality
         </p>
 
-        {currentDesign?.logo && (
-          <div className="p-6 bg-obsidian-50 rounded-3xl border border-obsidian-100 animate-in fade-in slide-in-from-bottom-2">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[10px] font-black text-obsidian-600 uppercase tracking-widest">Logo Scale</span>
-              <span className="text-[10px] font-black text-obsidian-900 bg-white px-2 py-1 rounded-md shadow-sm">
-                {Math.round(currentDesign.scale * 100)}%
+        {/* DPI Warning Banner */}
+        {dpiWarning && (
+          <div className={cn(
+            "p-4 rounded-2xl border animate-in fade-in slide-in-from-bottom-2",
+            dpiWarning.level === 'error'
+              ? "bg-red-50 border-red-200"
+              : "bg-amber-50 border-amber-200"
+          )}>
+            <div className="flex items-start gap-3">
+              <span className="text-lg flex-shrink-0">
+                {dpiWarning.level === 'error' ? '🚫' : '⚠️'}
               </span>
-            </div>
-            <input
-              type="range"
-              min="0.1"
-              max="2.0"
-              step="0.01"
-              value={currentDesign.scale}
-              onChange={(e) => setScale(effectiveView, parseFloat(e.target.value))}
-              className="w-full h-1.5 bg-obsidian-200 rounded-lg appearance-none cursor-pointer accent-obsidian-900"
-            />
-            <div className="flex justify-between mt-2">
-              <span className="text-[9px] font-bold text-obsidian-500 uppercase">Min</span>
-              <span className="text-[9px] font-bold text-obsidian-500 uppercase">Max</span>
+              <div className="flex-1 min-w-0">
+                <p className={cn(
+                  "text-[10px] font-black uppercase tracking-widest mb-1",
+                  dpiWarning.level === 'error' ? "text-red-700" : "text-amber-700"
+                )}>
+                  {dpiWarning.level === 'error' ? 'Resolution Too Low' : 'Resolution Advisory'}
+                </p>
+                <p className={cn(
+                  "text-[10px] leading-relaxed font-medium",
+                  dpiWarning.level === 'error' ? "text-red-600" : "text-amber-600"
+                )}>
+                  {dpiWarning.message}
+                </p>
+              </div>
+              <button
+                onClick={() => setDpiWarning(null)}
+                className="text-obsidian-400 hover:text-obsidian-600 flex-shrink-0"
+                aria-label="Dismiss warning"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
             </div>
           </div>
         )}

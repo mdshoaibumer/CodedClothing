@@ -3,6 +3,7 @@
  * 
  * Right sidebar containing:
  * - Logo upload control
+ * - Placement zone selector (Vistaprint-style)
  * - Numeric position/scale adjusters
  * - Color picker
  * - Product details and size guide
@@ -12,9 +13,11 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { formatPrice } from '../../features/product/product.utils';
 import { products } from '../../data/products';
+import { getZoneById } from '../../features/customization/customization.types';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import UploadLogo from '../../features/customization/components/UploadLogo';
+import PlacementZoneSelector from '../../features/customization/components/PlacementZoneSelector';
 import NumericControls from '../../features/customization/components/NumericControls';
 import useCustomizationStore from '../../features/customization/store/useCustomizationStore';
 import useToastStore from '../../features/notifications/store/useToastStore';
@@ -25,8 +28,12 @@ export default function CustomizePageSidebar({ product, hasDesign, selectedSize 
   const [showOrderPreview, setShowOrderPreview] = useState(false);
   const [showTips, setShowTips] = useState(false);
 
-  const { activeView, design } = useCustomizationStore();
+  const { activeView, design, placementZones } = useCustomizationStore();
   const addToast = useToastStore((state) => state.addToast);
+
+  // Get zone labels for the order
+  const frontZone = placementZones.front ? getZoneById(placementZones.front) : null;
+  const backZone = placementZones.back ? getZoneById(placementZones.back) : null;
 
   const handleWhatsAppOrder = () => {
     const phoneNumber = import.meta.env.VITE_WHATSAPP_NUMBER;
@@ -38,8 +45,8 @@ export default function CustomizePageSidebar({ product, hasDesign, selectedSize 
       `- *Product:* ${product.color} Premium Tee\n` +
       `- *Size:* ${selectedSize}\n` +
       `- *Quantity:* ${quantity}\n` +
-      `- *Front Logo:* ${design.front.logo ? 'Yes' : 'No'}\n` +
-      `- *Back Logo:* ${design.back.logo ? 'Yes' : 'No'}\n` +
+      `- *Front Logo:* ${design.front.logo ? 'Yes' : 'No'}${frontZone ? ` (${frontZone.label})` : ''}\n` +
+      `- *Back Logo:* ${design.back.logo ? 'Yes' : 'No'}${backZone ? ` (${backZone.label})` : ''}\n` +
       `- *Total Price:* ${formatPrice(product.price * quantity)}`;
 
     window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
@@ -94,6 +101,11 @@ export default function CustomizePageSidebar({ product, hasDesign, selectedSize 
           </p>
         </motion.div>
 
+        {/* Placement Zone Selector — Vistaprint-style preset zones */}
+        <motion.div variants={itemVariants}>
+          <PlacementZoneSelector />
+        </motion.div>
+
         {/* Upload Panel */}
         <motion.div variants={itemVariants} id="upload-panel" className="bg-white p-6 md:p-10 rounded-4xl shadow-luxury border border-obsidian-50 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gold-100/30 rounded-full blur-3xl -mr-16 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -114,7 +126,7 @@ export default function CustomizePageSidebar({ product, hasDesign, selectedSize 
             </div>
 
             <p className="text-xs md:text-sm text-obsidian-600 mb-6 md:mb-10 leading-relaxed font-medium">
-              Position your identity. Select a transparent PNG for seamless integration. <br />
+              Upload your logo — it will be locked to the selected zone. Use a transparent PNG for seamless integration. <br />
               <a href="https://www.flaticon.com/free-icons/logo" target="_blank" rel="noopener noreferrer" className="text-gold-600 hover:text-gold-700 hover:underline transition-colors">Find sample logos</a> to get started.
             </p>
 
@@ -202,10 +214,10 @@ export default function CustomizePageSidebar({ product, hasDesign, selectedSize 
           {showTips && (
             <ul className="space-y-2 md:space-y-3 mt-3 md:mt-4">
               {[
-                { icon: '🖱️', text: 'Drag to reposition' },
-                { icon: '🖱️', text: 'Hover to see handles' },
-                { icon: '⌨️', text: 'Scroll to resize' },
-                { icon: '📍', text: 'Use Center button' }
+                { icon: '�', text: 'Select a zone first' },
+                { icon: '📤', text: 'Upload your logo' },
+                { icon: '📏', text: 'Adjust size with slider' },
+                { icon: '🎯', text: 'Fine-tune with nudge arrows' }
               ].map((tip, i) => (
                 <motion.li
                   key={i}
@@ -255,7 +267,13 @@ export default function CustomizePageSidebar({ product, hasDesign, selectedSize 
             <h4 className="font-black text-obsidian-900 mb-3 text-xs uppercase tracking-wider">Design Details</h4>
             <div className="space-y-2 text-obsidian-600">
               <p className="flex justify-between"><span>Front Logo:</span> <span className={`font-bold ${design.front.logo ? 'text-gold-600' : 'text-obsidian-300'}`}>{design.front.logo ? '✓ Applied' : '✕ None'}</span></p>
+              {design.front.logo && frontZone && (
+                <p className="flex justify-between text-xs"><span className="text-obsidian-400">Front Placement:</span> <span className="font-bold text-gold-600">{frontZone.label}</span></p>
+              )}
               <p className="flex justify-between"><span>Back Logo:</span> <span className={`font-bold ${design.back.logo ? 'text-gold-600' : 'text-obsidian-300'}`}>{design.back.logo ? '✓ Applied' : '✕ None'}</span></p>
+              {design.back.logo && backZone && (
+                <p className="flex justify-between text-xs"><span className="text-obsidian-400">Back Placement:</span> <span className="font-bold text-gold-600">{backZone.label}</span></p>
+              )}
             </div>
           </div>
           <p className="text-[11px] text-obsidian-400 leading-relaxed">Click "Send to WhatsApp" to place your order. Our artisan team will contact you for payment and production details.</p>

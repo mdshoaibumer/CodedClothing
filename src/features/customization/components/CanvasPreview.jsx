@@ -1,19 +1,18 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import useCustomizationStore from '../store/useCustomizationStore';
+import { getZoneById } from '../customization.types';
 import TShirtCanvas from './TShirtCanvas';
 
 /**
  * CanvasPreview Component
  * Main orchestrator for the Design Studio's visual area.
- * Includes canvas zoom & pan for precise editing of minute details.
+ * Zone-locked Vistaprint-style — canvas is display-only, controls are in sidebar.
+ * Includes canvas zoom & pan for inspecting print placement.
  * 
  * @param {Object} product - The product data containing image views.
  */
 export default function CanvasPreview({ product }) {
-  const { activeView, design, setPosition, setScale, setRotation, setLogo, saveToHistory } = useCustomizationStore();
-  const lastSavedDesignRef = useRef(null);
-  const isUndoRedoRef = useRef(false);
-  const debounceTimerRef = useRef(null);
+  const { activeView, design, placementZones, setPosition, setScale, setLogo, saveToHistory } = useCustomizationStore();
   const [statusMessage, setStatusMessage] = useState('');
 
   // Canvas zoom/pan state
@@ -90,59 +89,6 @@ export default function CanvasPreview({ product }) {
     setCanvasZoom(1);
     setPanOffset({ x: 0, y: 0 });
   }, []);
-
-  // Listen for undo/redo to skip saving those changes back to history
-  useEffect(() => {
-    const unsub = useCustomizationStore.subscribe(
-      (state, prevState) => {
-        if (state.history.past.length < prevState.history.past.length ||
-            state.history.future.length < prevState.history.future.length) {
-          isUndoRedoRef.current = true;
-          setTimeout(() => { isUndoRedoRef.current = false; }, 600);
-        }
-      }
-    );
-    return unsub;
-  }, []);
-
-  // Save to history when design changes from user interaction (not undo/redo)
-  // Uses a longer debounce as fallback; primary save happens via onInteractionEnd
-  useEffect(() => {
-    if (isUndoRedoRef.current) return;
-
-    const designKey = JSON.stringify(design);
-    if (lastSavedDesignRef.current === designKey) return;
-
-    debounceTimerRef.current = setTimeout(() => {
-      lastSavedDesignRef.current = designKey;
-      saveToHistory();
-    }, 1500);
-
-    return () => clearTimeout(debounceTimerRef.current);
-  }, [design, saveToHistory]);
-
-  // Called when DraggableLogo finishes a drag/resize/rotate interaction
-  const handleInteractionEnd = useCallback(() => {
-    if (isUndoRedoRef.current) return;
-    // Cancel the debounce timer since we're saving immediately
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-      debounceTimerRef.current = null;
-    }
-    const currentDesign = useCustomizationStore.getState().design;
-    const designKey = JSON.stringify(currentDesign);
-    if (lastSavedDesignRef.current === designKey) return;
-    lastSavedDesignRef.current = designKey;
-    saveToHistory();
-
-    // Announce position change for screen readers
-    const view = useCustomizationStore.getState().activeView;
-    const side = view === 'both' ? 'front' : view;
-    const d = currentDesign[side];
-    if (d) {
-      setStatusMessage(`Logo ${side}: position ${Math.round(d.x)}%, ${Math.round(d.y)}%, scale ${Math.round(d.scale * 100)}%, rotation ${Math.round(d.rotation)}°`);
-    }
-  }, [saveToHistory]);
 
   // Compute snap guides from current position
   const computeGuides = useCallback((viewKey) => {
@@ -221,16 +167,8 @@ export default function CanvasPreview({ product }) {
               scale={design[viewKey]?.scale || 1}
               x={design[viewKey]?.x || 0}
               y={design[viewKey]?.y || 0}
-              rotation={design[viewKey]?.rotation || 0}
               showGuides={computeGuides(viewKey)}
-              onUpdate={(newX, newY, newScale, newRotation) => {
-                setPosition(viewKey, newX, newY);
-                setScale(viewKey, newScale);
-                if (newRotation !== undefined) {
-                  setRotation(viewKey, newRotation);
-                }
-              }}
-              onInteractionEnd={handleInteractionEnd}
+              activeZone={placementZones[viewKey] ? getZoneById(placementZones[viewKey]) : null}
               onRemoveLogo={() => { setLogo(viewKey, null); saveToHistory(); }}
               label={viewKey.toUpperCase()}
               className={activeView !== 'both' ? "max-w-2xl mx-auto" : ""}
