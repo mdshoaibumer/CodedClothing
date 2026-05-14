@@ -119,7 +119,7 @@ describe('useCustomizationStore', () => {
 
     it('constrains position to zone nudge range when zone is active', () => {
       act(() => {
-        // Apply left-chest zone (x: -28, y: -22, nudgeRange: 10)
+        // Apply left-chest zone (x: -28, y: -22, nudgeRange: 30)
         useCustomizationStore.getState().applyPlacementZone('left-chest');
         // Try to move far from zone center
         useCustomizationStore.getState().setPosition('front', 50, 50);
@@ -127,8 +127,8 @@ describe('useCustomizationStore', () => {
 
       const { x, y } = useCustomizationStore.getState().design.front;
       // Should be clamped to zone center ± nudgeRange
-      expect(x).toBe(-28 + 10); // -18 (max of zone)
-      expect(y).toBe(-22 + 10); // -12 (max of zone)
+      expect(x).toBe(-28 + 30); // 2 (max of zone)
+      expect(y).toBe(-22 + 30); // 8 (max of zone)
     });
   });
 

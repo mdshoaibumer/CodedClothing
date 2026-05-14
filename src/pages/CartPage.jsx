@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import useCartStore from '../features/cart/useCartStore';
 import useToastStore from '../features/notifications/store/useToastStore';
@@ -18,7 +18,6 @@ const EASE_LUXURY = [0.16, 1, 0.3, 1];
 export default function CartPage() {
   const { items, removeItem, updateQuantity, clearCart, getTotalPrice, getTotalItems, getWhatsAppMessage } = useCartStore();
   const addToast = useToastStore((state) => state.addToast);
-  const navigate = useNavigate();
   const [confirmClear, setConfirmClear] = useState(false);
 
   const totalPrice = getTotalPrice();

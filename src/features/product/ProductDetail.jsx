@@ -8,14 +8,13 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getProductById, getAvailableSizes, formatPrice, getSpecsFor } from './product.utils';
+import { getProductById, getAvailableSizes, formatPrice } from './product.utils';
 import { products, CATEGORIES, CATEGORY_SPECS } from '../../data/products';
 import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
 import Breadcrumb from '../../components/ui/Breadcrumb';
 import useToastStore from '../notifications/store/useToastStore';
 import useCartStore from '../cart/useCartStore';
-import RelatedProducts from './RelatedProducts';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -348,7 +347,7 @@ export default function ProductDetail() {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
                   setSelectedSize(size);
-                  try { localStorage.setItem('cc-last-size', size); } catch {}
+                  try { localStorage.setItem('cc-last-size', size); } catch { /* ignore */ }
                 }}
                 className={`py-4 rounded-2xl border-2 text-xs font-black transition-all duration-300 ${
                   selectedSize === size 

@@ -30,7 +30,6 @@ const SILHOUETTES = {
 const ProductPlaceholder = memo(function ProductPlaceholder({
   category = 'tshirts',
   hex = '#1a1a1a',
-  label,
   className = '',
 }) {
   const silhouette = SILHOUETTES[category] || SILHOUETTES.tshirts;

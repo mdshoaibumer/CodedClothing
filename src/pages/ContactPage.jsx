@@ -4,7 +4,6 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import Breadcrumb from '../components/ui/Breadcrumb';
 
 const EASE_LUXURY = [0.16, 1, 0.3, 1];

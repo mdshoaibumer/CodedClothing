@@ -12,8 +12,8 @@ import TShirtCanvas from './TShirtCanvas';
  * @param {Object} product - The product data containing image views.
  */
 export default function CanvasPreview({ product }) {
-  const { activeView, design, placementZones, setPosition, setScale, setLogo, saveToHistory } = useCustomizationStore();
-  const [statusMessage, setStatusMessage] = useState('');
+  const { activeView, design, placementZones, setLogo, saveToHistory } = useCustomizationStore();
+  const [statusMessage] = useState('');
 
   // Canvas zoom/pan state
   const [canvasZoom, setCanvasZoom] = useState(1);

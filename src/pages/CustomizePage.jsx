@@ -30,7 +30,7 @@ export default function CustomizePage() {
   const previewRef = useRef(null);
 
   // Zustand Store
-  const { design, history, setProduct } = useCustomizationStore();
+  const { design, setProduct } = useCustomizationStore();
 
   const product = getProductById(id);
 
@@ -40,8 +40,6 @@ export default function CustomizePage() {
   }, [id, setProduct]);
 
   const hasDesign = design.front.logo || design.back.logo;
-  const canUndo = history.past.length > 0;
-  const canRedo = history.future.length > 0;
 
   // Keyboard shortcuts — reads fresh state via getState() so no deps needed
   useEffect(() => {

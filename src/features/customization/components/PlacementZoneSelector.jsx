@@ -41,7 +41,7 @@ function mapToSilhouette(bb) {
   };
 }
 
-function TShirtSilhouette({ zones, activeZoneId, hoveredZone, onZoneClick, onZoneHover, side }) {
+function TShirtSilhouette({ zones, activeZoneId, hoveredZone, onZoneClick, onZoneHover }) {
   return (
     <div className="relative w-full aspect-[3/4] max-w-[180px] mx-auto">
       {/* T-shirt outline SVG */}
@@ -121,7 +121,7 @@ function TShirtSilhouette({ zones, activeZoneId, hoveredZone, onZoneClick, onZon
 }
 
 /* ─── Zone List (button list below the silhouette) ─── */
-function ZoneButtonList({ zones, activeZoneId, onZoneClick, onZoneHover, hoveredZone }) {
+function ZoneButtonList({ zones, activeZoneId, onZoneClick, onZoneHover }) {
   return (
     <div className="grid grid-cols-1 gap-1.5 mt-3">
       {zones.map((zone) => {
@@ -180,14 +180,13 @@ function ZoneButtonList({ zones, activeZoneId, onZoneClick, onZoneHover, hovered
 
 /* ─── Main Component ─── */
 const PlacementZoneSelector = memo(function PlacementZoneSelector() {
-  const { activeView, placementZones, applyPlacementZone, clearPlacementZone, design, saveToHistory } = useCustomizationStore();
+  const { activeView, placementZones, applyPlacementZone, clearPlacementZone, saveToHistory } = useCustomizationStore();
   const [hoveredZone, setHoveredZone] = useState(null);
 
   // Determine the effective side
   const effectiveSide = activeView === 'both' ? 'front' : activeView;
   const zones = getZonesForSide(effectiveSide);
   const activeZoneId = placementZones[effectiveSide];
-  const hasLogo = design[effectiveSide]?.logo;
 
   const handleZoneClick = (zoneId) => {
     if (activeZoneId === zoneId) {

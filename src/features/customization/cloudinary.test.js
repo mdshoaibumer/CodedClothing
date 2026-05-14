@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // Mock import.meta.env before importing the module
 vi.stubEnv('VITE_CLOUDINARY_CLOUD_NAME', 'test-cloud');
@@ -40,8 +40,9 @@ describe('cloudinary upload service', () => {
     });
 
     it('rejects null file', () => {
+      const file = null;
       expect(() => {
-        if (!null) throw new Error('No file provided');
+        if (!file) throw new Error('No file provided');
       }).toThrow('No file provided');
     });
   });
@@ -103,12 +104,16 @@ describe('cloudinary upload service', () => {
 
   describe('configuration check', () => {
     it('reports configured when env vars present', () => {
-      const isConfigured = Boolean('test-cloud' && 'test-preset');
+      const cloudName = 'test-cloud';
+      const preset = 'test-preset';
+      const isConfigured = Boolean(cloudName && preset);
       expect(isConfigured).toBe(true);
     });
 
     it('reports not configured when env vars missing', () => {
-      const isConfigured = Boolean('' && '');
+      const cloudName = '';
+      const preset = '';
+      const isConfigured = Boolean(cloudName && preset);
       expect(isConfigured).toBe(false);
     });
   });

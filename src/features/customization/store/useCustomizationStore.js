@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { SCALE_LIMITS, POSITION_LIMITS, PLACEMENT_ZONES, getZoneById } from '../customization.types';
+import { SCALE_LIMITS, POSITION_LIMITS, getZoneById } from '../customization.types';
 
 /**
  * Customization Store — Vistaprint-style Zone-Locked Editor
@@ -99,7 +99,7 @@ const useCustomizationStore = create(
        * @param {'front' | 'back' | 'both'} view
        */
       setActiveView: (view) => 
-        set((state) => ({ 
+        set(() => ({ 
           activeView: (view === 'front' || view === 'back' || view === 'both') ? view : 'front' 
         })),
 

@@ -20,6 +20,7 @@ Object.defineProperty(globalThis, 'crypto', {
 });
 
 // Reset localStorage between tests
+// eslint-disable-next-line no-undef
 beforeEach(() => {
   localStorage.clear();
 });

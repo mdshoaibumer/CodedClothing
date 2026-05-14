@@ -22,13 +22,13 @@ import NumericControls from '../../features/customization/components/NumericCont
 import useCustomizationStore from '../../features/customization/store/useCustomizationStore';
 import useToastStore from '../../features/notifications/store/useToastStore';
 
-export default function CustomizePageSidebar({ product, hasDesign, selectedSize = 'M', onProductChange }) {
+export default function CustomizePageSidebar({ product, selectedSize = 'M', onProductChange }) {
   const MAX_QUANTITY = 100;
   const [quantity, setQuantity] = useState(1);
   const [showOrderPreview, setShowOrderPreview] = useState(false);
   const [showTips, setShowTips] = useState(false);
 
-  const { activeView, design, placementZones } = useCustomizationStore();
+  const { design, placementZones } = useCustomizationStore();
   const addToast = useToastStore((state) => state.addToast);
 
   // Get zone labels for the order

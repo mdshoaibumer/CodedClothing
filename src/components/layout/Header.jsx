@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, memo, useRef } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { products, CATEGORIES } from '../../data/products';
 import useCartStore from '../../features/cart/useCartStore';
@@ -18,7 +18,6 @@ const Header = memo(function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef(null);
   const location = useLocation();
-  const navigate = useNavigate();
   const totalCartItems = useCartStore((state) => state.getTotalItems());
 
   useEffect(() => {

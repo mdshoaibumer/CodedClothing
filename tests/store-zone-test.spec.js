@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -75,10 +75,7 @@ test.describe('Direct Store Zone Test', () => {
 
       // Check store state
       const storeState = await page.evaluate(() => {
-        // Try to get the store state from React component tree
-        const root = document.getElementById('root');
-        const fiber = root?._reactRootContainer?._internalRoot?.current || root?.__reactFiber$;
-        // Alternative: check DOM for zone indicators
+        // Check DOM for zone indicators
         const zoneLabel = document.querySelector('[role="application"] .bg-gold-500\\/90');
         const zoneBorder = document.querySelector('[role="application"] .border-gold-400\\/50');
         const logo = document.querySelector('[role="application"] img[alt="Custom Design"]');

@@ -24,9 +24,7 @@ export default function UploadLogo() {
   // Store integration
   const activeView = useCustomizationStore((state) => state.activeView);
   const setLogo = useCustomizationStore((state) => state.setLogo);
-  const design = useCustomizationStore((state) => state.design);
   const placementZones = useCustomizationStore((state) => state.placementZones);
-  const setScale = useCustomizationStore((state) => state.setScale);
   const saveToHistory = useCustomizationStore((state) => state.saveToHistory);
 
   // Toast
@@ -34,7 +32,6 @@ export default function UploadLogo() {
 
   // Determine which side we're uploading to
   const effectiveView = activeView === 'both' ? uploadTarget : activeView;
-  const currentDesign = design[effectiveView];
 
   /**
    * Check if the image has sufficient resolution for the active zone's print size.
