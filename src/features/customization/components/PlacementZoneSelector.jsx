@@ -13,6 +13,34 @@ import { getZonesForSide, getZoneById } from '../customization.types';
 import useCustomizationStore from '../store/useCustomizationStore';
 
 /* ─── T-Shirt Silhouette SVG ─── */
+/**
+ * Maps zone bounding box (relative to portrait image overlay)
+ * to the silhouette SVG coordinates.
+ * Portrait image: T-shirt body at ~18-82% width, 18-82% height.
+ * Silhouette SVG: body at x=20-80%, y=23-92%.
+ */
+function mapToSilhouette(bb) {
+  const left = parseFloat(bb.left);
+  const top = parseFloat(bb.top);
+  const width = parseFloat(bb.width);
+  const height = parseFloat(bb.height);
+
+  // Map from portrait image coords → silhouette coords
+  // X: 18-82% in image → 20-80% in silhouette
+  const silLeft = 20 + (left - 18) * (60 / 64);
+  const silWidth = width * (60 / 64);
+  // Y: 18-82% in image → 23-92% in silhouette
+  const silTop = 23 + (top - 18) * (69 / 64);
+  const silHeight = height * (69 / 64);
+
+  return {
+    top: `${Math.max(0, silTop).toFixed(1)}%`,
+    left: `${Math.max(0, silLeft).toFixed(1)}%`,
+    width: `${Math.min(100, silWidth).toFixed(1)}%`,
+    height: `${Math.min(100, silHeight).toFixed(1)}%`,
+  };
+}
+
 function TShirtSilhouette({ zones, activeZoneId, hoveredZone, onZoneClick, onZoneHover, side }) {
   return (
     <div className="relative w-full aspect-[3/4] max-w-[180px] mx-auto">
@@ -44,7 +72,11 @@ function TShirtSilhouette({ zones, activeZoneId, hoveredZone, onZoneClick, onZon
       {zones.map((zone) => {
         const isActive = activeZoneId === zone.id;
         const isHovered = hoveredZone === zone.id;
-        const bb = zone.boundingBox;
+        const bb = mapToSilhouette(zone.boundingBox);
+
+        // Smaller zones get higher z-index so they're clickable over larger zones
+        const area = parseFloat(bb.width) * parseFloat(bb.height);
+        const zIndex = Math.round(1000 / Math.max(area, 1));
 
         return (
           <button
@@ -66,6 +98,7 @@ function TShirtSilhouette({ zones, activeZoneId, hoveredZone, onZoneClick, onZon
               left: bb.left,
               width: bb.width,
               height: bb.height,
+              zIndex,
             }}
             aria-label={`${zone.label} placement zone`}
             aria-pressed={isActive}

@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Runtime artifacts
+.copilot-bridge.json
+test-results/
+tests/screenshots/
+
+# Image backups
+public/images/tshirts/originals_landscape/

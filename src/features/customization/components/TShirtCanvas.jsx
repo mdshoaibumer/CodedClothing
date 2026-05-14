@@ -47,11 +47,11 @@ const TShirtCanvas = memo(
               alt={label || 'T-shirt View'} 
               crossOrigin="anonymous"
               onError={() => setImgError(true)}
-              className="w-full h-full object-contain mix-blend-multiply drop-shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-transform duration-700 group-hover:scale-[1.02]"
+              className="w-full h-full object-cover mix-blend-multiply drop-shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-transform duration-700 group-hover:scale-[1.02]"
             />
           )}
 
-          {/* Design Area Overlay (matches padded area) */}
+          {/* Design Area Overlay — matches padded image area (object-cover fills container) */}
           <div className="absolute inset-6 md:inset-10 pointer-events-none">
             {/* Print Safe Area Guide — shows active zone or default print area */}
             <div data-export-ignore className="absolute inset-0">
@@ -83,13 +83,13 @@ const TShirtCanvas = memo(
                   <div
                     className="absolute border-2 border-dashed border-red-300/30 rounded-lg"
                     style={{
-                      left: '15%',
-                      top: '25%',
-                      width: '70%',
-                      height: '50%',
+                      left: '20%',
+                      top: '18%',
+                      width: '60%',
+                      height: '52%',
                     }}
                   />
-                  <div className="absolute top-[23%] left-1/2 -translate-x-1/2 bg-red-500/80 text-white text-2xs font-black px-2 py-0.5 rounded-full uppercase tracking-widest">
+                  <div className="absolute top-[16%] left-1/2 -translate-x-1/2 bg-red-500/80 text-white text-2xs font-black px-2 py-0.5 rounded-full uppercase tracking-widest">
                     Print Area
                   </div>
                 </>
@@ -112,16 +112,16 @@ const TShirtCanvas = memo(
 
               {/* Edge snapping guides */}
               {showGuides.edges?.includes('left') && (
-                <div className="absolute left-[15%] top-0 bottom-0 w-px bg-gradient-to-b from-green-400 via-green-500 to-green-400 animate-in fade-in duration-200" />
+                <div className="absolute left-[20%] top-0 bottom-0 w-px bg-gradient-to-b from-green-400 via-green-500 to-green-400 animate-in fade-in duration-200" />
               )}
               {showGuides.edges?.includes('right') && (
-                <div className="absolute right-[15%] top-0 bottom-0 w-px bg-gradient-to-b from-green-400 via-green-500 to-green-400 animate-in fade-in duration-200" />
+                <div className="absolute right-[20%] top-0 bottom-0 w-px bg-gradient-to-b from-green-400 via-green-500 to-green-400 animate-in fade-in duration-200" />
               )}
               {showGuides.edges?.includes('top') && (
-                <div className="absolute top-[25%] left-0 right-0 h-px bg-gradient-to-r from-green-400 via-green-500 to-green-400 animate-in fade-in duration-200" />
+                <div className="absolute top-[18%] left-0 right-0 h-px bg-gradient-to-r from-green-400 via-green-500 to-green-400 animate-in fade-in duration-200" />
               )}
               {showGuides.edges?.includes('bottom') && (
-                <div className="absolute bottom-[25%] left-0 right-0 h-px bg-gradient-to-r from-green-400 via-green-500 to-green-400 animate-in fade-in duration-200" />
+                <div className="absolute bottom-[30%] left-0 right-0 h-px bg-gradient-to-r from-green-400 via-green-500 to-green-400 animate-in fade-in duration-200" />
               )}
             </div>
 
@@ -133,6 +133,7 @@ const TShirtCanvas = memo(
                   scale={scale}
                   x={x}
                   y={y}
+                  activeZone={activeZone}
                 />
               ) : (
                 <div data-export-ignore className="w-full h-full border-2 border-dashed border-obsidian-200/40 rounded-2xl flex flex-col items-center justify-center bg-white/5 backdrop-blur-[2px] pointer-events-none">

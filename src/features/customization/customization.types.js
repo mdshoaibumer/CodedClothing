@@ -124,6 +124,10 @@ export const UPLOAD_LIMITS = {
 
 export const PLACEMENT_ZONES = {
   // ─── FRONT ZONES ───
+  // NOTE: boundingBox percentages are relative to the overlay div (inset-6/inset-10
+  // inside the 3:4 canvas container). Portrait images (1152×1536) fill the container
+  // exactly via object-cover. The t-shirt torso spans roughly 18-82% width and
+  // 18-82% height within the overlay.
   'left-chest': {
     id: 'left-chest',
     label: 'Left Chest',
@@ -134,8 +138,8 @@ export const PLACEMENT_ZONES = {
     y: -22,
     scale: 0.35,
     maxScale: 0.5,
-    nudgeRange: 10,
-    boundingBox: { top: '28%', left: '18%', width: '25%', height: '20%' },
+    nudgeRange: 30,
+    boundingBox: { top: '26%', left: '22%', width: '20%', height: '16%' },
   },
   'right-chest': {
     id: 'right-chest',
@@ -147,8 +151,8 @@ export const PLACEMENT_ZONES = {
     y: -22,
     scale: 0.35,
     maxScale: 0.5,
-    nudgeRange: 10,
-    boundingBox: { top: '28%', left: '57%', width: '25%', height: '20%' },
+    nudgeRange: 30,
+    boundingBox: { top: '26%', left: '58%', width: '20%', height: '16%' },
   },
   'center-chest': {
     id: 'center-chest',
@@ -160,8 +164,8 @@ export const PLACEMENT_ZONES = {
     y: -15,
     scale: 0.65,
     maxScale: 0.85,
-    nudgeRange: 10,
-    boundingBox: { top: '27%', left: '25%', width: '50%', height: '25%' },
+    nudgeRange: 30,
+    boundingBox: { top: '24%', left: '28%', width: '44%', height: '20%' },
   },
   'full-front': {
     id: 'full-front',
@@ -173,8 +177,8 @@ export const PLACEMENT_ZONES = {
     y: 0,
     scale: 1.0,
     maxScale: 1.2,
-    nudgeRange: 8,
-    boundingBox: { top: '25%', left: '15%', width: '70%', height: '50%' },
+    nudgeRange: 25,
+    boundingBox: { top: '18%', left: '20%', width: '60%', height: '52%' },
   },
   'lower-front': {
     id: 'lower-front',
@@ -186,8 +190,8 @@ export const PLACEMENT_ZONES = {
     y: 20,
     scale: 0.55,
     maxScale: 0.75,
-    nudgeRange: 10,
-    boundingBox: { top: '50%', left: '22%', width: '56%', height: '25%' },
+    nudgeRange: 30,
+    boundingBox: { top: '52%', left: '27%', width: '46%', height: '20%' },
   },
 
   // ─── BACK ZONES ───
@@ -201,8 +205,8 @@ export const PLACEMENT_ZONES = {
     y: -25,
     scale: 0.6,
     maxScale: 0.8,
-    nudgeRange: 10,
-    boundingBox: { top: '25%', left: '20%', width: '60%', height: '22%' },
+    nudgeRange: 30,
+    boundingBox: { top: '20%', left: '22%', width: '56%', height: '20%' },
   },
   'center-back': {
     id: 'center-back',
@@ -214,8 +218,8 @@ export const PLACEMENT_ZONES = {
     y: -5,
     scale: 0.7,
     maxScale: 0.9,
-    nudgeRange: 10,
-    boundingBox: { top: '30%', left: '20%', width: '60%', height: '30%' },
+    nudgeRange: 30,
+    boundingBox: { top: '30%', left: '24%', width: '52%', height: '26%' },
   },
   'full-back': {
     id: 'full-back',
@@ -227,8 +231,8 @@ export const PLACEMENT_ZONES = {
     y: 0,
     scale: 1.0,
     maxScale: 1.2,
-    nudgeRange: 8,
-    boundingBox: { top: '25%', left: '15%', width: '70%', height: '50%' },
+    nudgeRange: 25,
+    boundingBox: { top: '18%', left: '20%', width: '60%', height: '52%' },
   },
   'lower-back': {
     id: 'lower-back',
@@ -240,8 +244,8 @@ export const PLACEMENT_ZONES = {
     y: 22,
     scale: 0.5,
     maxScale: 0.7,
-    nudgeRange: 10,
-    boundingBox: { top: '52%', left: '25%', width: '50%', height: '22%' },
+    nudgeRange: 30,
+    boundingBox: { top: '55%', left: '27%', width: '46%', height: '18%' },
   },
 };
 
