@@ -51,7 +51,7 @@ export default function ProductDetail() {
       navigator.clipboard.writeText(text).then(() => {
         addToast('Order details copied to clipboard! Share via WhatsApp or email to complete your order.', 'success', 6000);
       }).catch(() => {
-        addToast('WhatsApp ordering is currently unavailable. Please email hello@codedclothing.com', 'error', 5000);
+        addToast('WhatsApp ordering is currently unavailable. Please email sales@codedclothing.in', 'error', 5000);
       });
       setIsOrderOpen(false);
       return;

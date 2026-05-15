@@ -44,7 +44,7 @@ We never sell, rent, or trade your personal information to third parties.`
 • **Deletion**: Request that we delete your personal data
 • **Opt-out**: Unsubscribe from marketing communications at any time
 
-To exercise any of these rights, contact us at hello@codedclothing.com.`
+To exercise any of these rights, contact us at support@codedclothing.in.`
   },
   {
     title: 'Third-Party Services',

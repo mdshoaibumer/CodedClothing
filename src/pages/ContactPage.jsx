@@ -9,7 +9,7 @@ import Breadcrumb from '../components/ui/Breadcrumb';
 const EASE_LUXURY = [0.16, 1, 0.3, 1];
 
 const CONTACT_METHODS = [
-  { icon: '✉', label: 'Email', value: 'hello@codedclothing.com', href: 'mailto:hello@codedclothing.com' },
+  { icon: '✉', label: 'Email', value: 'info@codedclothing.in', href: 'mailto:info@codedclothing.in' },
   { icon: '◈', label: 'WhatsApp', value: 'Chat with us', href: `https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER || ''}` },
   { icon: '◇', label: 'Instagram', value: '@coded_clothing__', href: 'https://www.instagram.com/coded_clothing__?igsh=MTYxeHl1b2thYXYzZw==' },
 ];
@@ -63,7 +63,7 @@ export default function ContactPage() {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {CONTACT_METHODS.map((method, i) => (
           <motion.a
             key={method.label}
@@ -81,6 +81,41 @@ export default function ContactPage() {
             <p className="text-xs text-obsidian-400">{method.value}</p>
           </motion.a>
         ))}
+      </div>
+
+      {/* Specialized Inquiries */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="p-8 rounded-[2rem] bg-obsidian-950 text-white relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-gold-500/10 to-transparent rounded-bl-full pointer-events-none" />
+          <h3 className="text-xl font-black mb-2 tracking-tight">Bulk & Corporate</h3>
+          <p className="text-sm text-obsidian-300 mb-6 leading-relaxed">
+            Interested in large orders, school uniforms, or corporate branding? Get special pricing and dedicated support.
+          </p>
+          <a href="mailto:sales@codedclothing.in" className="text-sm font-bold text-gold-400 hover:text-gold-300 transition-colors flex items-center gap-2">
+            sales@codedclothing.in →
+          </a>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="p-8 rounded-[2rem] bg-white border border-obsidian-100 shadow-soft relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-obsidian-50 to-transparent rounded-bl-full pointer-events-none" />
+          <h3 className="text-xl font-black text-obsidian-900 mb-2 tracking-tight">Technical Support</h3>
+          <p className="text-sm text-obsidian-400 mb-6 leading-relaxed">
+            Encountering issues with the design studio or your account? Our tech team is ready to assist.
+          </p>
+          <a href="mailto:support@codedclothing.in" className="text-sm font-bold text-gold-600 hover:text-gold-700 transition-colors flex items-center gap-2">
+            support@codedclothing.in →
+          </a>
+        </motion.div>
       </div>
 
       {/* Contact Form */}
@@ -123,7 +158,7 @@ export default function ContactPage() {
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="w-full px-5 py-4 rounded-xl border border-obsidian-100 bg-obsidian-50/50 text-sm font-medium text-obsidian-900 focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-400 transition-all"
-                  placeholder="you@example.com"
+                  placeholder="info@codedclothing.in"
                 />
               </div>
             </div>

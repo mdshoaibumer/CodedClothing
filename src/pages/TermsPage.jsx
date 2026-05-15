@@ -8,7 +8,7 @@ import Breadcrumb from '../components/ui/Breadcrumb';
 const SECTIONS = [
   {
     title: '1. Acceptance of Terms',
-    content: `By accessing and using the Coded Clothing website (codedclothing.com), you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.`
+    content: `By accessing and using the Coded Clothing website (codedclothing.in), you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.`
   },
   {
     title: '2. Products & Pricing',
@@ -51,7 +51,7 @@ const SECTIONS = [
   },
   {
     title: '8. Contact',
-    content: `For questions about these terms, contact us at hello@codedclothing.com or reach out via WhatsApp.`
+    content: `For questions about these terms, contact us at support@codedclothing.in or reach out via WhatsApp.`
   },
 ];
 

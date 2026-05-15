@@ -328,7 +328,7 @@ function NewsletterSection() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
+                placeholder="info@codedclothing.in"
                 className="flex-1 px-5 py-4 rounded-xl border border-obsidian-100 bg-white text-sm font-medium text-obsidian-900 focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-400 transition-all"
                 aria-label="Email address"
               />

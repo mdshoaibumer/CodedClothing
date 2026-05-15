@@ -154,6 +154,28 @@ export default function AboutPage() {
           Explore Collection →
         </Link>
       </motion.section>
+
+      {/* Careers / HR Section */}
+      <motion.section
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: EASE_LUXURY }}
+        className="mt-24 p-10 rounded-[2rem] bg-white border border-obsidian-100/50 shadow-soft text-center"
+      >
+        <span className="text-xs font-black text-gold-600 uppercase tracking-[0.5em] block mb-4">Join the Atelier</span>
+        <h2 className="text-3xl font-black text-obsidian-900 tracking-tighter mb-4">Careers at Coded Clothing</h2>
+        <p className="text-sm text-obsidian-400 mb-8 max-w-lg mx-auto leading-relaxed font-medium">
+          We&rsquo;re always looking for passionate designers, engineers, and craftspeople. 
+          If you want to help us redefine premium apparel, send your portfolio to:
+        </p>
+        <a 
+          href="mailto:hr@codedclothing.in"
+          className="text-lg font-black gradient-text-gold hover:opacity-80 transition-opacity"
+        >
+          hr@codedclothing.in
+        </a>
+      </motion.section>
     </motion.div>
   );
 }
