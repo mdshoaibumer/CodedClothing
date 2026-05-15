@@ -32,7 +32,6 @@ const SORT_OPTIONS = [
 export default function ProductGallery({ category = 'all' }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
-  const [hoveredIndex, setHoveredIndex] = useState(null);
   const [activeCategory, setActiveCategory] = useState(category);
   const [activeColor, setActiveColor] = useState('all');
   const [sortBy, setSortBy] = useState('default');
@@ -219,12 +218,6 @@ export default function ProductGallery({ category = 'all' }) {
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.6, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
                 custom={index}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                style={{
-                  filter: hoveredIndex !== null && hoveredIndex !== index ? 'brightness(0.7) saturate(0.5)' : 'none',
-                  transition: 'filter 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-                }}
               >
                 <TShirtCard product={shirt} index={index} />
               </motion.div>
